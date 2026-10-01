@@ -1,816 +1,676 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>
-
-    <meta name="description"
-          content="7BOX | اسپیکر، گجت و لوازم جانبی دیجیتال">
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: Tahoma, Arial, sans-serif;
-            background: #080808;
-            color: white;
-            line-height: 1.8;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        .container {
-            width: 92%;
-            max-width: 1150px;
-            margin: auto;
-        }
-
-        /* HEADER */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(8,8,8,.94);
-            border-bottom: 1px solid #222;
-            backdrop-filter: blur(12px);
-        }
-
-        .navbar {
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            color: white;
-            font-size: 27px;
-            font-weight: 900;
-            letter-spacing: 2px;
-        }
-
-        .logo span {
-            display: inline-flex;
-            width: 34px;
-            height: 34px;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid white;
-            border-radius: 8px;
-            margin-left: 5px;
-        }
-
-        nav {
-            display: flex;
-            gap: 25px;
-        }
-
-        nav a {
-            color: #aaa;
-            font-size: 14px;
-            transition: .2s;
-        }
-
-        nav a:hover {
-            color: white;
-        }
-
-        /* HERO */
-
-        .hero {
-            min-height: 650px;
-            display: flex;
-            align-items: center;
-
-            background:
-            radial-gradient(
-                circle at 75% 40%,
-                #292929 0%,
-                #111 30%,
-                #080808 65%
-            );
-        }
-
-        .hero-content {
-            display: grid;
-            grid-template-columns: 1.2fr .8fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .small-title {
-            color: #888;
-            font-size: 12px;
-            letter-spacing: 3px;
-        }
-
-        .hero h1 {
-            font-size: clamp(45px, 7vw, 78px);
-            line-height: 1.25;
-            margin: 15px 0;
-        }
-
-        .hero h1 span {
-            color: #999;
-        }
-
-        .hero p {
-            color: #aaa;
-            font-size: 18px;
-            max-width: 600px;
-        }
-
-        .buttons {
-            margin-top: 30px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 11px 21px;
-            border-radius: 12px;
-            margin: 5px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .btn-white {
-            background: white;
-            color: black;
-        }
-
-        .btn-outline {
-            color: white;
-            border: 1px solid #555;
-        }
-
-        /* LOGO BOX */
-
-        .hero-logo {
-            height: 360px;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-
-            border: 1px solid #333;
-            border-radius: 30px;
-
-            background:
-            linear-gradient(
-                145deg,
-                #1b1b1b,
-                #090909
-            );
-
-            box-shadow: 0 30px 80px #000;
-        }
-
-        .seven {
-            width: 100px;
-            height: 100px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border: 2px solid white;
-            border-radius: 22px;
-
-            font-size: 60px;
-            font-weight: 900;
-        }
-
-        .hero-logo h2 {
-            margin-top: 20px;
-            font-size: 42px;
-            letter-spacing: 7px;
-        }
-
-        .hero-logo p {
-            color: #666;
-            font-size: 11px;
-            letter-spacing: 3px;
-        }
-
-        /* PRODUCTS */
-
-        .products {
-            background: #fff;
-            color: #111;
-            padding: 90px 0;
-        }
-
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            gap: 30px;
-            align-items: end;
-            margin-bottom: 40px;
-        }
-
-        .section-title small {
-            color: #888;
-            letter-spacing: 3px;
-        }
-
-        .section-title h2 {
-            font-size: 38px;
-        }
-
-        .section-title p {
-            color: #666;
-            max-width: 500px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 22px;
-        }
-
-        .product {
-            border: 1px solid #e5e5e5;
-            border-radius: 20px;
-            padding: 14px;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,.06);
-        }
-
-        .product-image {
-            height: 240px;
-
-            background: #111;
-
-            border-radius: 14px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            overflow: hidden;
-        }
-
-        .product-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .product-placeholder {
-            color: #555;
-            font-size: 25px;
-            font-weight: bold;
-        }
-
-        .product h3 {
-            margin-top: 15px;
-            font-size: 18px;
-        }
-
-        .product p {
-            color: #777;
-            font-size: 13px;
-            margin: 5px 0 12px;
-        }
-
-        .product a {
-            color: #111;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        /* ABOUT */
-
-        .about {
-            padding: 90px 0;
-            background: #111;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .about h2 {
-            font-size: 40px;
-        }
-
-        .about p {
-            color: #aaa;
-            font-size: 18px;
-        }
-
-        /* CONTACT */
-
-        .contact {
-            background: #f2f2f2;
-            color: #111;
-            padding: 90px 0;
-        }
-
-        .contact-box {
-            background: #111;
-            color: white;
-            border-radius: 28px;
-            padding: 45px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .contact-box p {
-            color: #aaa;
-            margin-top: 8px;
-        }
-
-        /* FOOTER */
-
-        footer {
-            padding: 30px 0;
-            background: #080808;
-            color: #777;
-            font-size: 12px;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        footer strong {
-            color: white;
-            font-size: 20px;
-        }
-
-        /* MOBILE */
-
-        @media(max-width:800px) {
-
-            nav {
-                display: none;
-            }
-
-            .hero {
-                padding: 70px 0;
-            }
-
-            .hero-content {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-logo {
-                height: 280px;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(2,1fr);
-            }
-
-            .section-title,
-            .contact-box {
-                display: block;
-            }
-
-        }
-
-        @media(max-width:520px) {
-
-            .product-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero h1 {
-                font-size: 43px;
-            }
-
-            .footer-content {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>
+
+<meta name="description" content="7BOX | فروش اسپیکر، گجت، لوازم جانبی دیجیتال و محصولات کاربردی">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Tahoma,Arial,sans-serif;
+    background:#080808;
+    color:#fff;
+    line-height:1.8;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+.container{
+    width:92%;
+    max-width:1200px;
+    margin:auto;
+}
+
+/* HEADER */
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:rgba(8,8,8,.94);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid #222;
+}
+
+.nav{
+    min-height:78px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo img{
+    width:58px;
+    height:58px;
+    object-fit:contain;
+}
+
+.logo-text strong{
+    display:block;
+    font-size:21px;
+    letter-spacing:1px;
+}
+
+.logo-text span{
+    color:#aaa;
+    font-size:11px;
+}
+
+.nav-links{
+    display:flex;
+    gap:22px;
+    color:#ccc;
+    font-size:14px;
+}
+
+.nav-links a:hover{
+    color:#fff;
+}
+
+/* HERO */
+.hero{
+    min-height:520px;
+    display:flex;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid #222;
+}
+
+.hero:before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    background:#fff;
+    opacity:.035;
+    filter:blur(100px);
+    border-radius:50%;
+    top:-200px;
+    left:-150px;
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    max-width:720px;
+    padding:80px 0;
+}
+
+.hero-logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    margin-bottom:20px;
+}
+
+.hero h1{
+    font-size:clamp(32px,6vw,64px);
+    line-height:1.25;
+    margin-bottom:18px;
+}
+
+.hero h1 span{
+    color:#aaa;
+}
+
+.hero p{
+    color:#bbb;
+    font-size:17px;
+    max-width:650px;
+    margin-bottom:30px;
+}
+
+.buttons{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:13px 24px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.btn-primary{
+    background:#fff;
+    color:#000;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+.btn-outline{
+    border:1px solid #444;
+    color:#fff;
+}
+
+.btn-outline:hover{
+    background:#151515;
+}
+
+/* SECTION */
+section{
+    padding:75px 0;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:45px;
+}
+
+.section-title h2{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+.section-title p{
+    color:#888;
+}
+
+/* PRODUCTS */
+.products{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.product{
+    background:#111;
+    border:1px solid #242424;
+    border-radius:18px;
+    overflow:hidden;
+    transition:.25s;
+}
+
+.product:hover{
+    transform:translateY(-5px);
+    border-color:#444;
+}
+
+.product-image{
+    height:270px;
+    background:#f4f4f4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+
+.product-image img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.product-info{
+    padding:20px;
+}
+
+.product-info h3{
+    font-size:19px;
+    margin-bottom:8px;
+}
+
+.product-info p{
+    color:#999;
+    font-size:13px;
+    margin-bottom:16px;
+}
+
+.product-link{
+    display:inline-block;
+    border:1px solid #444;
+    padding:8px 16px;
+    border-radius:8px;
+    font-size:13px;
+}
+
+.product-link:hover{
+    background:#fff;
+    color:#000;
+}
+
+/* BRAND IMAGE */
+.brand-banner{
+    margin-top:20px;
+    background:#111;
+    border:1px solid #242424;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.brand-banner img{
+    width:100%;
+    display:block;
+    max-height:500px;
+    object-fit:contain;
+}
+
+/* ABOUT */
+.about{
+    background:#0d0d0d;
+    border-top:1px solid #1d1d1d;
+    border-bottom:1px solid #1d1d1d;
+}
+
+.about-box{
+    max-width:850px;
+    margin:auto;
+    text-align:center;
+}
+
+.about-box h2{
+    font-size:30px;
+    margin-bottom:15px;
+}
+
+.about-box p{
+    color:#aaa;
+    font-size:15px;
+}
+
+/* CONTACT */
+.contact{
+    text-align:center;
+}
+
+.contact-buttons{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+.social{
+    padding:13px 25px;
+    border:1px solid #333;
+    border-radius:10px;
+    transition:.2s;
+}
+
+.social:hover{
+    background:#fff;
+    color:#000;
+}
+
+/* FOOTER */
+footer{
+    border-top:1px solid #222;
+    padding:30px 0;
+    text-align:center;
+    color:#777;
+    font-size:13px;
+}
+
+.footer-brand{
+    color:#fff;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+/* MOBILE */
+@media(max-width:850px){
+    .products{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .nav-links{
+        display:none;
+    }
+
+    .hero{
+        min-height:460px;
+    }
+}
+
+@media(max-width:550px){
+    .products{
+        grid-template-columns:1fr;
+    }
+
+    .product-image{
+        height:300px;
+    }
+
+    .hero-content{
+        padding:60px 0;
+    }
+
+    .hero h1{
+        font-size:38px;
+    }
+
+    .hero p{
+        font-size:15px;
+    }
+
+    .logo img{
+        width:50px;
+        height:50px;
+    }
+}
+</style>
 </head>
-
 
 <body>
 
-
-<!-- HEADER -->
-
 <header>
+<div class="container nav">
 
-    <div class="container navbar">
+    <a href="#" class="logo">
+        <img src="file_0000000088e481fdb76b9fde3b01e677.png" alt="7BOX Logo">
+        <div class="logo-text">
+            <strong>7BOX</strong>
+            <span>انتخاب هوشمندانه، خرید مطمئن</span>
+        </div>
+    </a>
 
-        <a href="#home" class="logo">
-            <span>7</span>BOX
-        </a>
+    <nav class="nav-links">
+        <a href="#products">محصولات</a>
+        <a href="#about">درباره 7BOX</a>
+        <a href="#contact">ارتباط با ما</a>
+    </nav>
 
-        <nav>
-            <a href="#home">خانه</a>
-            <a href="#products">محصولات</a>
-            <a href="#about">درباره ما</a>
-            <a href="#contact">ارتباط با ما</a>
-        </nav>
-
-    </div>
-
+</div>
 </header>
 
 
+<main>
+
 <!-- HERO -->
+<section class="hero">
+<div class="container">
 
-<section class="hero" id="home">
+<div class="hero-content">
 
-    <div class="container hero-content">
+<img
+class="hero-logo"
+src="file_0000000088e481fdb76b9fde3b01e677.png"
+alt="لوگوی 7BOX">
 
-        <div>
+<h1>
+انتخاب هوشمندانه،
+<span>خرید مطمئن.</span>
+</h1>
 
-            <div class="small-title">
-                7BOX • DIGITAL ACCESSORIES
-            </div>
+<p>
+در 7BOX مجموعه‌ای از اسپیکرها، گجت‌ها،
+لوازم جانبی دیجیتال و محصولات کاربردی را
+با تمرکز بر انتخاب بهتر و خرید مطمئن پیدا کنید.
+</p>
 
-            <h1>
-                انتخاب هوشمندانه،
-                <br>
-                <span>خرید مطمئن.</span>
-            </h1>
+<div class="buttons">
+<a class="btn btn-primary" href="#products">
+مشاهده محصولات
+</a>
 
-            <p>
-                اسپیکر، گجت و لوازم جانبی دیجیتال
-                با انتخابی ساده و کاربردی.
-            </p>
+<a class="btn btn-outline" href="https://t.me/i7BOX" target="_blank">
+تلگرام 7BOX
+</a>
+</div>
 
-            <div class="buttons">
-
-                <a class="btn btn-white"
-                   href="#products">
-                    مشاهده محصولات
-                </a>
-
-                <a class="btn btn-outline"
-                   href="https://t.me/i7BOX"
-                   target="_blank">
-                    تلگرام 7BOX
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <div class="hero-logo">
-
-            <div class="seven">
-                7
-            </div>
-
-            <h2>
-                7BOX
-            </h2>
-
-            <p>
-                SMART • SIMPLE • DIGITAL
-            </p>
-
-        </div>
-
-    </div>
-
+</div>
+</div>
 </section>
 
 
 <!-- PRODUCTS -->
-
-<section class="products" id="products">
-
-    <div class="container">
-
-        <div class="section-title">
-
-            <div>
-
-                <small>
-                    PRODUCTS
-                </small>
-
-                <h2>
-                    محصولات 7BOX
-                </h2>
-
-            </div>
-
-            <p>
-                محصولات کاربردی دیجیتال را
-                با معرفی ساده و شفاف انتخاب کنید.
-            </p>
-
-        </div>
-
-
-        <div class="product-grid">
-
-
-            <!-- PRODUCT 1 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        ZQS-4273
-                    </div>
-
-                </div>
-
-                <h3>
-                    اسپیکر ZQS-4273
-                </h3>
-
-                <p>
-                    بلوتوث • رقص نور • USB • AUX • میکروفون
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-            <!-- PRODUCT 2 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        KTS 1576
-                    </div>
-
-                </div>
-
-                <h3>
-                    اسپیکر KTS 1576
-                </h3>
-
-                <p>
-                    مناسب دورهمی، موسیقی و استفاده روزمره.
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-            <!-- PRODUCT 3 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        KTS 2006
-                    </div>
-
-                </div>
-
-                <h3>
-                    اسپیکر KTS 2006
-                </h3>
-
-                <p>
-                    طراحی کاربردی برای سرگرمی و استفاده روزمره.
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-            <!-- PRODUCT 4 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        VGR 071
-                    </div>
-
-                </div>
-
-                <h3>
-                    ماشین اصلاح VGR 071
-                </h3>
-
-                <p>
-                    انتخابی کاربردی برای اصلاح و مرتب‌سازی.
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-            <!-- PRODUCT 5 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        KH-740
-                    </div>
-
-                </div>
-
-                <h3>
-                    ماساژور KH-740
-                </h3>
-
-                <p>
-                    برای استفاده روزمره و ایجاد حس آرامش.
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-            <!-- PRODUCT 6 -->
-
-            <div class="product">
-
-                <div class="product-image">
-
-                    <div class="product-placeholder">
-                        B310e
-                    </div>
-
-                </div>
-
-                <h3>
-                    گوشی B310e
-                </h3>
-
-                <p>
-                    طراحی ساده و کاربردی برای استفاده روزمره.
-                </p>
-
-                <a href="https://t.me/i7BOX"
-                   target="_blank">
-                    استعلام و سفارش ←
-                </a>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
+<section id="products">
+
+<div class="container">
+
+<div class="section-title">
+<h2>محصولات 7BOX</h2>
+<p>محصولات کاربردی و جذاب، انتخاب شده برای شما</p>
+</div>
+
+<div class="products">
+
+
+<!-- KTS 2006 -->
+<div class="product">
+<div class="product-image">
+<img src="file_0000000004e881f48828bdab9ffaf089.png" alt="KTS 2006">
+</div>
+<div class="product-info">
+<h3>KTS 2006</h3>
+<p>اسپیکر بلوتوثی کاربردی با طراحی جذاب</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- GTS 1360 -->
+<div class="product">
+<div class="product-image">
+<img src="file_0000000070f081f594186c8b7bfd03ac.png" alt="GTS 1360">
+</div>
+<div class="product-info">
+<h3>GTS 1360</h3>
+<p>اسپیکر جذاب برای استفاده روزمره و سرگرمی</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- KH 740 -->
+<div class="product">
+<div class="product-image">
+<img src="file_000000008b4881f4afdaca2c40fe0b21.png" alt="ماساژور KH-740">
+</div>
+<div class="product-info">
+<h3>KH-740</h3>
+<p>ماساژور کاربردی برای استفاده در منزل</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- ZQS 8210 -->
+<div class="product">
+<div class="product-image">
+<img src="file_000000009298821099bceb4c4e8cf665.png" alt="ZQS 8210">
+</div>
+<div class="product-info">
+<h3>ZQS 8210</h3>
+<p>اسپیکر بلوتوثی با طراحی جذاب و کاربردی</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- Samsung B310e -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000980482468609e818921cad4c.png" alt="Samsung B310e">
+</div>
+<div class="product-info">
+<h3>Samsung B310e</h3>
+<p>گوشی ساده و کاربردی برای استفاده روزمره</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- VGR V071 -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000b7cc8210a154a3902c791fa8.png" alt="VGR V-071">
+</div>
+<div class="product-info">
+<h3>VGR V-071</h3>
+<p>ماشین اصلاح کاربردی برای اصلاح و پیرایش</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- ZQS 6169 -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000b868820c8f72bfd40c201441.png" alt="ZQS 6169">
+</div>
+<div class="product-info">
+<h3>ZQS 6169</h3>
+<p>اسپیکر قابل حمل برای موسیقی و سرگرمی</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- KTS 1576 -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000c61881f4b5045ed01c793b2b.png" alt="KTS 1576">
+</div>
+<div class="product-info">
+<h3>KTS 1576</h3>
+<p>اسپیکر کاربردی با طراحی مناسب برای استفاده روزمره</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- KTS 1579 -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000e5b48210af39bd972b307b94.png" alt="KTS 1579">
+</div>
+<div class="product-info">
+<h3>KTS 1579</h3>
+<p>اسپیکر بلوتوثی با طراحی جذاب و کاربردی</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+
+<!-- Arm Style -->
+<div class="product">
+<div class="product-image">
+<img src="file_00000000ea5c8243bef44201b6af8110.png" alt="فشارسنج Arm Style">
+</div>
+<div class="product-info">
+<h3>Arm Style</h3>
+<p>فشارسنج بازویی برای استفاده خانگی</p>
+<a class="product-link" href="https://t.me/i7BOX" target="_blank">استعلام و سفارش</a>
+</div>
+</div>
+
+</div>
+
+
+<!-- BRAND BANNER -->
+<div class="brand-banner">
+<img
+src="file_000000000bc881f4b380545386922ec1.png"
+alt="7BOX | Telegram">
+</div>
+
+</div>
 </section>
 
 
 <!-- ABOUT -->
+<section id="about" class="about">
 
-<section class="about" id="about">
+<div class="container">
 
-    <div class="container about-content">
+<div class="about-box">
 
-        <div>
+<h2>درباره 7BOX</h2>
 
-            <div class="small-title">
-                WHY 7BOX
-            </div>
+<p>
+7BOX با هدف ارائه محصولات دیجیتال، گجت‌ها،
+اسپیکرها و لوازم جانبی کاربردی فعالیت می‌کند.
+تلاش ما این است که انتخاب محصول برای شما ساده‌تر
+و خریدتان مطمئن‌تر باشد.
+</p>
 
-            <h2>
-                دیجیتال، ساده‌تر.
-            </h2>
+</div>
 
-        </div>
-
-        <p>
-            در 7BOX تلاش می‌کنیم محصولات دیجیتال
-            و لوازم جانبی کاربردی را با معرفی روشن
-            و تجربه خرید ساده در اختیار شما قرار دهیم.
-        </p>
-
-    </div>
+</div>
 
 </section>
 
 
 <!-- CONTACT -->
+<section id="contact" class="contact">
 
-<section class="contact" id="contact">
+<div class="container">
 
-    <div class="container">
+<div class="section-title">
+<h2>با 7BOX در ارتباط باشید</h2>
+<p>برای مشاهده محصولات، قیمت و ثبت سفارش با ما در ارتباط باشید.</p>
+</div>
 
-        <div class="contact-box">
+<div class="contact-buttons">
 
-            <div>
+<a class="social" href="https://t.me/i7BOX" target="_blank">
+Telegram: @i7BOX
+</a>
 
-                <div class="small-title">
-                    CONTACT
-                </div>
+<a class="social" href="https://instagram.com/7box.1" target="_blank">
+Instagram: @7box.1
+</a>
 
-                <h2>
-                    برای سفارش و استعلام قیمت
-                </h2>
+</div>
 
-                <p>
-                    از طریق تلگرام و اینستاگرام
-                    با 7BOX در ارتباط باشید.
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <a class="btn btn-white"
-                   href="https://t.me/i7BOX"
-                   target="_blank">
-
-                    Telegram: @i7BOX
-
-                </a>
-
-                <a class="btn btn-outline"
-                   href="https://instagram.com/7box.1"
-                   target="_blank">
-
-                    Instagram: @7box.1
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 </section>
 
+</main>
 
-<!-- FOOTER -->
 
 <footer>
 
-    <div class="container footer-content">
+<div class="container">
 
-        <strong>
-            7BOX
-        </strong>
+<div class="footer-brand">
+7BOX
+</div>
 
-        <span>
-            انتخاب هوشمندانه، خرید مطمئن
-        </span>
+<div>
+انتخاب هوشمندانه، خرید مطمئن
+</div>
 
-        <span>
-            © 2026 7BOX
-        </span>
+<div>
+© 2026 7BOX — All Rights Reserved
+</div>
 
-    </div>
+</div>
 
 </footer>
-
 
 </body>
 </html>
