@@ -1,610 +1,652 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Tahoma,Arial,sans-serif;
-  background:#050505;
-  color:#fff;
-  line-height:1.9;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-header{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:rgba(0,0,0,.92);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid #222;
-}
-
-.nav{
-  max-width:1200px;
-  margin:auto;
-  padding:12px 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo{
-  width:58px;
-  height:58px;
-  object-fit:contain;
-}
-
-.nav a{
-  background:#fff;
-  color:#000;
-  padding:7px 18px;
-  border-radius:30px;
-  font-size:14px;
-}
-
-.hero{
-  min-height:500px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  position:relative;
-  background:
-    linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.82)),
-    url("file_000000000bc881f4b380545386922ec1.png")
-    center/cover no-repeat;
-}
-
-.hero-content{
-  padding:50px 20px;
-}
-
-.hero img{
-  width:130px;
-  max-width:40%;
-  margin-bottom:20px;
-}
-
-.hero h1{
-  font-size:38px;
-  margin-bottom:10px;
-}
-
-.hero p{
-  color:#ccc;
-  font-size:17px;
-}
-
-.section{
-  max-width:1200px;
-  margin:auto;
-  padding:60px 20px;
-}
-
-.section-title{
-  text-align:center;
-  font-size:28px;
-  margin-bottom:35px;
-}
-
-.products{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-}
-
-.product{
-  background:#111;
-  border:1px solid #252525;
-  border-radius:18px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.product:hover{
-  transform:translateY(-5px);
-  border-color:#555;
-}
-
-.product img{
-  width:100%;
-  height:230px;
-  object-fit:contain;
-  background:#fff;
-}
-
-.product-info{
-  padding:18px;
-}
-
-.product-info h3{
-  font-size:16px;
-  margin-bottom:8px;
-}
-
-.product-info p{
-  color:#aaa;
-  font-size:13px;
-}
-
-#productPage{
-  display:none;
-}
-
-.detail{
-  max-width:1000px;
-  margin:auto;
-  padding:50px 20px;
-}
-
-.back{
-  display:inline-block;
-  margin-bottom:25px;
-  background:#222;
-  padding:8px 18px;
-  border-radius:30px;
-}
-
-.detail-box{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:35px;
-  background:#101010;
-  border:1px solid #252525;
-  border-radius:22px;
-  padding:25px;
-}
-
-.detail-image{
-  width:100%;
-  height:450px;
-  object-fit:contain;
-  background:#fff;
-  border-radius:15px;
-}
-
-.detail h1{
-  font-size:27px;
-  margin-bottom:10px;
-}
-
-.detail-description{
-  color:#ddd;
-  margin-top:25px;
-  font-size:15px;
-}
-
-.contact{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:12px;
-  margin-top:35px;
-}
-
-.contact a{
-  background:#151515;
-  border:1px solid #292929;
-  padding:10px 18px;
-  border-radius:30px;
-}
-
-footer{
-  border-top:1px solid #222;
-  text-align:center;
-  padding:30px 20px;
-  color:#888;
-}
-
-@media(max-width:700px){
-  .hero h1{
-    font-size:28px;
-  }
-
-  .detail-box{
-    grid-template-columns:1fr;
-  }
-
-  .detail-image{
-    height:330px;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="nav">
-    <img class="logo"
-         src="file_0000000088e481fdb76b9fde3b01e677.png"
-         alt="7BOX">
-
-    <a href="#products">محصولات</a>
-  </div>
-</header>
-
-<main id="homePage">
-
-<section class="hero">
-  <div class="hero-content">
-    <img src="file_0000000088e481fdb76b9fde3b01e677.png"
-         alt="7BOX">
-
-    <h1>7BOX</h1>
-    <p>انتخاب هوشمندانه، خرید مطمئن</p>
-  </div>
-</section>
-
-<section class="section" id="products">
-  <h2 class="section-title">محصولات 7BOX</h2>
-
-  <div class="products" id="productsGrid"></div>
-</section>
-
-<section class="section">
-  <h2 class="section-title">ارتباط با 7BOX</h2>
-
-  <div class="contact">
-    <a href="https://t.me/i7BOX" target="_blank">📱 تلگرام | @i7BOX</a>
-    <a href="https://instagram.com/7box.1" target="_blank">📸 اینستاگرام | @7box.1</a>
-    <a href="https://rubika.ir/joinc/FGDADAIE0FAZKIRBXVDPBFOQBXLDHUCA"
-       target="_blank">💬 ورود به کانال</a>
-  </div>
-</section>
-
-</main>
-
-<section id="productPage">
-  <div class="detail">
-
-    <a href="#" class="back" onclick="showHome()">← بازگشت به محصولات</a>
-
-    <div class="detail-box">
-
-      <div>
-        <img id="detailImage"
-             class="detail-image"
-             src=""
-             alt="">
-      </div>
-
-      <div>
-        <h1 id="detailName"></h1>
-
-        <div id="detailDescription"
-             class="detail-description"></div>
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<footer>
-  7BOX | انتخاب هوشمندانه، خرید مطمئن
-</footer>
-
-<script>
-
-const products = [
-
-{
- id:"zqs-4273",
- name:"ZQS-4273 | اسپیکر بلوتوثی قابل حمل",
- image:"",
- description:`
-🔊 ۲ عدد بلندگوی ۴ اینچی<br>
-🎶 کیفیت صدای عالی<br>
-🌈 رقص نور جذاب<br>
-📱 اتصال از طریق Bluetooth<br>
-💾 پشتیبانی از کارت حافظه و فلش<br>
-🎵 ورودی AUX<br>
-🎤 میکروفن<br>
-🎛️ کنترل از راه دور<br>
-🔌 درگاه شارژ Type-C<br>
-📏 ارتفاع: ۴۰ سانتی‌متر
-`
-},
-
-{
- id:"samsung-b310e",
- name:"Samsung B310E | گوشی کلاسیک و دکمه‌ای",
- image:"file_00000000980482468609e818921cad4c.png",
- description:`
-📱 دو سیم‌کارت (DUOS)<br>
-🖥️ صفحه‌نمایش رنگی ۲ اینچ<br>
-🔋 باتری ۸۰۰ میلی‌آمپر قابل تعویض<br>
-📻 رادیو FM<br>
-💾 پشتیبانی از MicroSD<br>
-🎵 پخش موسیقی MP3<br>
-🔦 چراغ‌قوه<br>
-🎧 جک هدفون 3.5mm<br>
-🔌 شارژ Micro-USB<br>
-📡 شبکه 2G / GSM<br>
-⚖️ حدود ۷۵ گرم<br>
-🚫 بدون دوربین
-`
-},
-
-{
- id:"gts-1360",
- name:"GTS-1360 | اسپیکر بلوتوثی قابل حمل",
- image:"file_0000000070f081f594186c8b7bfd03ac.png",
- description:`
-🔊 بلندگوی ۳ اینچی<br>
-📱 اتصال از طریق Bluetooth<br>
-💾 پشتیبانی از USB و MicroSD<br>
-📻 رادیو FM<br>
-🔗 قابلیت TWS<br>
-🎵 ورودی AUX<br>
-🔋 باتری قابل شارژ<br>
-💡 نور LED<br>
-🖐️ طراحی قابل حمل
-`
-},
-
-{
- id:"arm-style",
- name:"Arm Style | دستگاه فشارسنج بازویی",
- image:"file_00000000ea5c8243bef44201b6af8110.png",
- description:`
-❤️ اندازه‌گیری فشار خون<br>
-☝️ عملکرد تک‌دکمه‌ای<br>
-💾 حافظه ۲×۹۰ اندازه‌گیری<br>
-🔊 اعلام صوتی به زبان فارسی<br>
-📊 نمایش فشار سیستول، دیاستول و ضربان قلب<br>
-👴 مناسب برای افراد سالخورده
-`
-},
-
-{
- id:"kts-1576",
- name:"KTS-1576 | اسپیکر بلوتوثی قابل حمل",
- image:"file_00000000c61881f4b5045ed01c793b2b.png",
- description:`
-🔊 توان خروجی ۱۰ وات<br>
-📱 اتصال از طریق Bluetooth 5.0<br>
-💾 پشتیبانی از USB و MicroSD<br>
-📻 رادیو FM<br>
-🎤 ورودی میکروفن<br>
-🎵 ورودی AUX<br>
-🔗 قابلیت TWS<br>
-🌈 نورپردازی RGB<br>
-🔋 باتری ۱۵۰۰ میلی‌آمپر<br>
-📱 جایگاه نگهداری موبایل
-`
-},
-
-{
- id:"kts-1579",
- name:"KTS-1579 | اسپیکر بلوتوثی قابل حمل",
- image:"file_00000000e5b48210af39bd972b307b94.png",
- description:`
-🔊 بلندگوی ۸ اینچی<br>
-⚡ توان خروجی ۲۰ وات<br>
-📱 اتصال از طریق Bluetooth 5.0<br>
-💾 پشتیبانی از USB و MicroSD<br>
-📻 رادیو FM<br>
-🎤 ورودی میکروفن<br>
-🎵 ورودی AUX<br>
-🌈 نورپردازی RGB<br>
-🔗 قابلیت TWS<br>
-🔋 باتری ۲۴۰۰ میلی‌آمپر<br>
-🎛️ دارای ریموت کنترل<br>
-📱 جایگاه نگهداری موبایل
-`
-},
-
-{
- id:"zqs-6169",
- name:"ZQS-6169 | اسپیکر بلوتوثی قابل حمل",
- image:"file_00000000b868820c8f72bfd40c201441.png",
- description:`
-🔊 بلندگوی ۶.۵ اینچی<br>
-⚡ توان خروجی ۴۰ وات<br>
-📱 اتصال از طریق Bluetooth 5.0<br>
-💾 پشتیبانی از USB و کارت حافظه<br>
-📻 رادیو FM<br>
-🎤 میکروفن بی‌سیم<br>
-🎵 ورودی AUX<br>
-🎛️ کنترل از راه دور<br>
-🌈 نورپردازی RGB<br>
-🎤 قابلیت کارائوکه<br>
-🔌 درگاه شارژ USB / Micro-USB
-`
-},
-
-{
- id:"zqs-8210",
- name:"ZQS-8210 | اسپیکر بلوتوثی قابل حمل",
- image:"file_000000009298821099bceb4c4e8cf665.png",
- description:`
-🔊 ۲ عدد بلندگوی ۸ اینچی<br>
-⚡ توان خروجی ۴۰ وات<br>
-📱 اتصال از طریق Bluetooth<br>
-💾 پشتیبانی از USB و کارت حافظه TF<br>
-📻 رادیو FM<br>
-🎤 دارای میکروفن<br>
-🎵 ورودی AUX<br>
-🔗 قابلیت TWS<br>
-🌈 نورپردازی و رقص نور LED<br>
-🔋 باتری ۴۵۰۰ میلی‌آمپر<br>
-🎛️ دارای ریموت کنترل
-`
-},
-
-{
- id:"kts-2006",
- name:"KTS-2006 | اسپیکر بلوتوثی قابل حمل",
- image:"file_0000000004e881f48828bdab9ffaf089.png",
- description:`
-🔊 بلندگوی ۳ اینچی<br>
-⚡ توان خروجی ۵ وات<br>
-📱 اتصال از طریق Bluetooth<br>
-💾 پشتیبانی از USB و TF Card<br>
-📻 رادیو FM<br>
-🎵 ورودی AUX<br>
-🔗 قابلیت TWS<br>
-🌈 نورپردازی RGB<br>
-🔋 باتری قابل شارژ<br>
-📏 ابعاد: حدود ۱۰.۹ × ۸.۳ × ۱۴.۸ سانتی‌متر
-`
-},
-
-{
- id:"vgr-v071",
- name:"VGR V-071 | ماشین اصلاح و تریمر",
- image:"file_00000000b7cc8210a154a3902c791fa8.png",
- description:`
-✂️ تیغه‌های استیل با دقت بالا<br>
-🎯 مناسب برای اصلاح و فرم‌دهی ریش و مو<br>
-〰️ قابلیت اصلاح نزدیک به پوست<br>
-📏 دارای ۳ شانه اصلاح ۱، ۲ و ۳ میلی‌متر<br>
-🔋 تا حدود ۱۲۰ دقیقه استفاده با یک شارژ<br>
-⚡ شارژ از طریق Type-C / USB<br>
-🖐️ طراحی جمع‌وجور و خوش‌دست<br>
-🧹 همراه با برس تمیزکننده و روغن نگهداری
-`
-},
-
-{
- id:"kh-740",
- name:"KH-740 | ماساژور تفنگی بدن",
- image:"file_000000008b4881f4afdaca2c40fe0b21.png",
- description:`
-🔹 ماساژ لرزشی و ضربه‌ای<br>
-🔹 ۴ سری قابل تعویض<br>
-🔹 امکان تنظیم شدت ماساژ<br>
-🔹 مناسب برای ماساژ گردن، شانه، کمر، دست‌ها و پاها<br>
-🔹 طراحی دستی و خوش‌دست<br>
-🔹 مناسب برای خانه، محل کار و بعد از ورزش<br>
-🔋 شارژی و قابل استفاده بدون اتصال دائمی به برق
-`
-}
-
-];
-
-const grid = document.getElementById("productsGrid");
-
-products.forEach(product => {
-
-  const card = document.createElement("div");
-
-  card.className = "product";
-
-  card.onclick = () => openProduct(product.id);
-
-  card.innerHTML = `
-    <img src="${product.image}" alt="${product.name}">
-    <div class="product-info">
-      <h3>${product.name}</h3>
-      <p>مشاهده مشخصات محصول</p>
-    </div>
-  `;
-
-  grid.appendChild(card);
-
-});
-
-
-function openProduct(id){
-
-  const product = products.find(p => p.id === id);
-
-  if(!product) return;
-
-  document.getElementById("homePage").style.display = "none";
-
-  document.getElementById("productPage").style.display = "block";
-
-  document.getElementById("detailImage").src = product.image;
-
-  document.getElementById("detailImage").alt = product.name;
-
-  document.getElementById("detailName").textContent = product.name;
-
-  document.getElementById("detailDescription").innerHTML =
-    product.description;
-
-  history.pushState(
-    {product:id},
-    "",
-    "#product-" + id
-  );
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-}
-
-
-function showHome(){
-
-  document.getElementById("productPage").style.display = "none";
-
-  document.getElementById("homePage").style.display = "block";
-
-  history.pushState({}, "", "#products");
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-window.addEventListener("popstate", () => {
-
-  const hash = location.hash;
-
-  if(hash.startsWith("#product-")){
-
-    const id = hash.replace("#product-","");
-
-    openProduct(id);
-
-  }else{
-
-    showHome();
-
-  }
-
-});
-
-
-window.addEventListener("load", () => {
-
-  const hash = location.hash;
-
-  if(hash.startsWith("#product-")){
-
-    const id = hash.replace("#product-","");
-
-    openProduct(id);
-
-  }
-
-});
-
-</script>
-
-</body>
+<!DOCTYPE html>  <html lang="fa" dir="rtl">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>  
+<meta name="description" content="7BOX | فروش اسپیکر، گجت، لوازم جانبی دیجیتال و محصولات کاربردی">  <style>  
+*{  
+  box-sizing:border-box;  
+  margin:0;  
+  padding:0;  
+}  
+  
+html{  
+  scroll-behavior:smooth;  
+}  
+  
+body{  
+  font-family:Tahoma,Arial,sans-serif;  
+  background:#070707;  
+  color:#fff;  
+  line-height:1.8;  
+  overflow-x:hidden;  
+}  
+  
+a{  
+  color:inherit;  
+  text-decoration:none;  
+}  
+  
+/* ---------- HEADER ---------- */  
+  
+header{  
+  position:fixed;  
+  top:0;  
+  right:0;  
+  left:0;  
+  z-index:1000;  
+  background:rgba(5,5,5,.78);  
+  backdrop-filter:blur(14px);  
+  border-bottom:1px solid rgba(255,255,255,.08);  
+}  
+  
+.nav{  
+  max-width:1200px;  
+  margin:auto;  
+  padding:14px 20px;  
+  display:flex;  
+  align-items:center;  
+  justify-content:space-between;  
+}  
+  
+.nav img{  
+  width:75px;  
+  height:auto;  
+}  
+  
+.nav a{  
+  padding:9px 17px;  
+  border:1px solid rgba(255,255,255,.15);  
+  border-radius:30px;  
+  font-size:13px;  
+  transition:.3s;  
+}  
+  
+.nav a:hover{  
+  background:#fff;  
+  color:#000;  
+}  
+  
+/* ---------- HERO ---------- */  
+  
+.hero{  
+  min-height:720px;  
+  position:relative;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  text-align:center;  
+  overflow:hidden;  
+  background:#050505;  
+}  
+  
+.hero-bg{  
+  position:absolute;  
+  inset:0;  
+  background:  
+    linear-gradient(  
+      rgba(0,0,0,.78),  
+      rgba(0,0,0,.88)  
+    ),  
+    url("file_000000000bc881f4b380545386922ec1.png")  
+    center/cover no-repeat;  
+  filter:brightness(.8);  
+  transform:scale(1.04);  
+  animation:heroZoom 12s ease-in-out infinite alternate;  
+}  
+  
+@keyframes heroZoom{  
+  from{transform:scale(1.04);}  
+  to{transform:scale(1.10);}  
+}  
+  
+.hero-content{  
+  position:relative;  
+  z-index:2;  
+  max-width:800px;  
+  padding:130px 20px 70px;  
+}  
+  
+.hero-logo{  
+  width:180px;  
+  max-width:55%;  
+  margin-bottom:25px;  
+  filter:drop-shadow(0 0 25px rgba(255,255,255,.15));  
+  animation:logoFloat 4s ease-in-out infinite;  
+}  
+  
+@keyframes logoFloat{  
+  0%,100%{transform:translateY(0);}  
+  50%{transform:translateY(-7px);}  
+}  
+  
+.hero h1{  
+  font-size:clamp(30px,6vw,58px);  
+  margin-bottom:12px;  
+  letter-spacing:1px;  
+}  
+  
+.hero h1 span{  
+  color:#fff;  
+}  
+  
+.hero p{  
+  color:#cfcfcf;  
+  font-size:17px;  
+  margin-bottom:30px;  
+}  
+  
+.hero-buttons{  
+  display:flex;  
+  justify-content:center;  
+  gap:12px;  
+  flex-wrap:wrap;  
+}  
+  
+.btn{  
+  display:inline-flex;  
+  align-items:center;  
+  justify-content:center;  
+  gap:8px;  
+  padding:13px 25px;  
+  border-radius:35px;  
+  border:1px solid rgba(255,255,255,.22);  
+  transition:.3s;  
+  font-size:14px;  
+}  
+  
+.btn-main{  
+  background:#fff;  
+  color:#000;  
+}  
+  
+.btn:hover{  
+  transform:translateY(-3px);  
+  box-shadow:0 8px 30px rgba(255,255,255,.12);  
+}  
+  
+/* ---------- FLOATING EFFECTS ---------- */  
+  
+.particle{  
+  position:absolute;  
+  width:3px;  
+  height:3px;  
+  background:#fff;  
+  border-radius:50%;  
+  opacity:.25;  
+  animation:floatParticle linear infinite;  
+}  
+  
+.p1{right:12%;top:25%;animation-duration:7s;}  
+.p2{right:75%;top:32%;animation-duration:9s;}  
+.p3{right:30%;top:70%;animation-duration:8s;}  
+.p4{right:88%;top:68%;animation-duration:11s;}  
+.p5{right:55%;top:20%;animation-duration:10s;}  
+  
+@keyframes floatParticle{  
+  0%{transform:translateY(20px);opacity:0;}  
+  30%{opacity:.35;}  
+  70%{opacity:.25;}  
+  100%{transform:translateY(-100px);opacity:0;}  
+}  
+  
+/* ---------- SECTION ---------- */  
+  
+section{  
+  max-width:1200px;  
+  margin:auto;  
+  padding:80px 20px;  
+}  
+  
+.section-title{  
+  text-align:center;  
+  margin-bottom:45px;  
+}  
+  
+.section-title h2{  
+  font-size:30px;  
+  margin-bottom:8px;  
+}  
+  
+.section-title p{  
+  color:#999;  
+  font-size:14px;  
+}  
+  
+/* ---------- PRODUCTS ---------- */  
+  
+.products{  
+  display:grid;  
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));  
+  gap:20px;  
+}  
+  
+.product{  
+  background:#101010;  
+  border:1px solid rgba(255,255,255,.08);  
+  border-radius:20px;  
+  overflow:hidden;  
+  transition:.4s;  
+  opacity:0;  
+  transform:translateY(30px);  
+  animation:productShow .8s forwards;  
+}  
+  
+.product:nth-child(2){animation-delay:.08s}  
+.product:nth-child(3){animation-delay:.16s}  
+.product:nth-child(4){animation-delay:.24s}  
+.product:nth-child(5){animation-delay:.32s}  
+.product:nth-child(6){animation-delay:.40s}  
+.product:nth-child(7){animation-delay:.48s}  
+.product:nth-child(8){animation-delay:.56s}  
+.product:nth-child(9){animation-delay:.64s}  
+.product:nth-child(10){animation-delay:.72s}  
+  
+@keyframes productShow{  
+  to{  
+    opacity:1;  
+    transform:translateY(0);  
+  }  
+}  
+  
+.product:hover{  
+  transform:translateY(-8px);  
+  border-color:rgba(255,255,255,.22);  
+  box-shadow:0 15px 45px rgba(0,0,0,.5);  
+}  
+  
+.product-image{  
+  height:270px;  
+  background:#111;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  padding:15px;  
+  position:relative;  
+  overflow:hidden;  
+}  
+  
+.product-image:after{  
+  content:"";  
+  position:absolute;  
+  width:150px;  
+  height:150px;  
+  background:rgba(255,255,255,.04);  
+  filter:blur(45px);  
+  border-radius:50%;  
+}  
+  
+.product-image img{  
+  width:100%;  
+  height:100%;  
+  object-fit:contain;  
+  position:relative;  
+  z-index:2;  
+  transition:.5s;  
+}  
+  
+.product:hover .product-image img{  
+  transform:scale(1.06);  
+}  
+  
+.product-info{  
+  padding:18px;  
+  text-align:center;  
+}  
+  
+.product-info h3{  
+  font-size:17px;  
+  margin-bottom:5px;  
+}  
+  
+.product-info p{  
+  color:#999;  
+  font-size:13px;  
+}  
+  
+/* ---------- BRAND ---------- */  
+  
+.brand-banner{  
+  margin:30px auto 0;  
+  border-radius:25px;  
+  overflow:hidden;  
+  min-height:250px;  
+  position:relative;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  text-align:center;  
+  background:  
+    linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.8)),  
+    url("file_000000000bc881f4b380545386922ec1.png")  
+    center/cover no-repeat;  
+  border:1px solid rgba(255,255,255,.1);  
+}  
+  
+.brand-banner img{  
+  width:130px;  
+  position:relative;  
+  z-index:2;  
+}  
+  
+.brand-banner:before{  
+  content:"";  
+  position:absolute;  
+  width:250px;  
+  height:250px;  
+  border-radius:50%;  
+  border:1px solid rgba(255,255,255,.08);  
+  animation:pulse 4s infinite;  
+}  
+  
+@keyframes pulse{  
+  0%,100%{transform:scale(.8);opacity:.2}  
+  50%{transform:scale(1.15);opacity:.5}  
+}  
+  
+/* ---------- ABOUT ---------- */  
+  
+.about{  
+  text-align:center;  
+  max-width:800px;  
+}  
+  
+.about p{  
+  color:#aaa;  
+  font-size:15px;  
+}  
+  
+/* ---------- SOCIAL ---------- */  
+  
+.socials{  
+  display:flex;  
+  justify-content:center;  
+  flex-wrap:wrap;  
+  gap:14px;  
+  margin-top:30px;  
+}  
+  
+.social{  
+  min-width:180px;  
+  display:flex;  
+  align-items:center;  
+  justify-content:center;  
+  gap:10px;  
+  padding:13px 18px;  
+  border:1px solid rgba(255,255,255,.12);  
+  background:#0e0e0e;  
+  border-radius:14px;  
+  transition:.3s;  
+}  
+  
+.social:hover{  
+  transform:translateY(-4px);  
+  background:#161616;  
+  border-color:rgba(255,255,255,.3);  
+  box-shadow:0 10px 30px rgba(255,255,255,.05);  
+}  
+  
+.social svg{  
+  width:24px;  
+  height:24px;  
+  fill:currentColor;  
+}  
+  
+.social span{  
+  font-size:13px;  
+}  
+  
+/* ---------- FOOTER ---------- */  
+  
+footer{  
+  border-top:1px solid rgba(255,255,255,.08);  
+  text-align:center;  
+  padding:30px 20px;  
+  color:#777;  
+  font-size:12px;  
+}  
+  
+/* ---------- MOBILE ---------- */  
+  
+@media(max-width:600px){  
+  
+  .hero{  
+    min-height:680px;  
+  }  
+  
+  .hero-content{  
+    padding-top:120px;  
+  }  
+  
+  .hero-logo{  
+    width:145px;  
+  }  
+  
+  .hero p{  
+    font-size:14px;  
+  }  
+  
+  .products{  
+    grid-template-columns:repeat(2,1fr);  
+    gap:12px;  
+  }  
+  
+  .product-image{  
+    height:190px;  
+  }  
+  
+  .product-info{  
+    padding:13px 8px;  
+  }  
+  
+  .product-info h3{  
+    font-size:14px;  
+  }  
+  
+  .product-info p{  
+    font-size:11px;  
+  }  
+  
+  .social{  
+    width:100%;  
+  }  
+}  
+</style>  </head>  <body>  <header>  
+  <div class="nav">  
+    <img src="file_0000000088e481fdb76b9fde3b01e677.png" alt="7BOX">  
+    <a href="#products">محصولات</a>  
+  </div>  
+</header>  <!-- HERO -->  <div class="hero">    <div class="hero-bg"></div>    <div class="particle p1"></div>  
+  <div class="particle p2"></div>  
+  <div class="particle p3"></div>  
+  <div class="particle p4"></div>  
+  <div class="particle p5"></div>    <div class="hero-content">  <img  
+  class="hero-logo"  
+  src="file_0000000088e481fdb76b9fde3b01e677.png"  
+  alt="7BOX Logo"  
+>  
+
+<h1>7BOX</h1>  
+
+<p>  
+  انتخاب هوشمندانه، خرید مطمئن  
+</p>  
+
+<div class="hero-buttons">  
+
+  <a class="btn btn-main" href="#products">  
+    مشاهده محصولات  
+  </a>  
+
+  <a class="btn" href="https://t.me/i7BOX" target="_blank">  
+    Telegram  
+  </a>  
+
+</div>
+
+  </div>  
+</div>  <!-- PRODUCTS -->  <section id="products">    <div class="section-title">  
+    <h2>محصولات 7BOX</h2>  
+    <p>انتخابی از محصولات کاربردی و دیجیتال</p>  
+  </div>    <div class="products">  <div class="product">  
+  <div class="product-image">  
+    <img src="file_0000000004e881f48828bdab9ffaf089.png" alt="KTS 2006">  
+  </div>  
+  <div class="product-info">  
+    <h3>KTS 2006</h3>  
+    <p>اسپیکر بلوتوثی</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_0000000070f081f594186c8b7bfd03ac.png" alt="GTS 1360">  
+  </div>  
+  <div class="product-info">  
+    <h3>GTS 1360</h3>  
+    <p>اسپیکر قابل حمل</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_000000008b4881f4afdaca2c40fe0b21.png" alt="KH-740">  
+  </div>  
+  <div class="product-info">  
+    <h3>KH-740</h3>  
+    <p>ماساژور</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_000000009298821099bceb4c4e8cf665.png" alt="ZQS 8210">  
+  </div>  
+  <div class="product-info">  
+    <h3>ZQS 8210</h3>  
+    <p>اسپیکر بلوتوثی</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000980482468609e818921cad4c.png" alt="Samsung B310e">  
+  </div>  
+  <div class="product-info">  
+    <h3>Samsung B310e</h3>  
+    <p>گوشی موبایل</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000b7cc8210a154a3902c791fa8.png" alt="VGR V-071">  
+  </div>  
+  <div class="product-info">  
+    <h3>VGR V-071</h3>  
+    <p>ماشین اصلاح</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000b868820c8f72bfd40c201441.png" alt="ZQS 6169">  
+  </div>  
+  <div class="product-info">  
+    <h3>ZQS 6169</h3>  
+    <p>اسپیکر بلوتوثی</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000c61881f4b5045ed01c793b2b.png" alt="KTS 1576">  
+  </div>  
+  <div class="product-info">  
+    <h3>KTS 1576</h3>  
+    <p>اسپیکر قابل حمل</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000e5b48210af39bd972b307b94.png" alt="KTS 1579">  
+  </div>  
+  <div class="product-info">  
+    <h3>KTS 1579</h3>  
+    <p>اسپیکر بلوتوثی</p>  
+  </div>  
+</div>  
+
+<div class="product">  
+  <div class="product-image">  
+    <img src="file_00000000ea5c8243bef44201b6af8110.png" alt="Arm Style">  
+  </div>  
+  <div class="product-info">  
+    <h3>Arm Style</h3>  
+    <p>فشارسنج دیجیتال</p>  
+  </div>  
+</div>
+
+  </div>  
+</section>  <!-- BRAND -->  <section>    <div class="brand-banner">  <img  
+  src="file_0000000088e481fdb76b9fde3b01e677.png"  
+  alt="7BOX"  
+>
+
+  </div>  </section>  <!-- ABOUT -->  <section>    <div class="section-title">  
+    <h2>درباره 7BOX</h2>  
+    <p>انتخاب هوشمندانه، خرید مطمئن</p>  
+  </div>    <div class="about">  
+    <p>  
+      7BOX مجموعه‌ای از محصولات دیجیتال، اسپیکر، گجت و لوازم جانبی کاربردی را  
+      با تمرکز بر انتخاب مناسب و خرید مطمئن ارائه می‌کند.  
+    </p>  
+  </div>  </section>  <!-- CONTACT -->  <section>    <div class="section-title">  
+    <h2>ارتباط با 7BOX</h2>  
+    <p>برای مشاهده محصولات و ارتباط با ما</p>  
+  </div>    <div class="socials">  <!-- TELEGRAM -->  
+
+<a class="social" href="https://t.me/i7BOX" target="_blank">  
+
+  <svg viewBox="0 0 24 24">  
+    <path d="M21.4 3.3 2.9 10.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.7c.2.6.1.8.7.8.5 0 .7-.2 1-.4 1.3l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.7-1.4ZM8.1 13l10.8-6.8c.5-.3 1-.1.6.2l-8.8 8-.3 3.5-1.4-4.9-1-.3Z"/>  
+  </svg>  
+
+  <span>Telegram | @i7BOX</span>  
+
+</a>  
+
+
+<!-- INSTAGRAM -->  
+
+<a class="social" href="https://instagram.com/7box.1" target="_blank">  
+
+  <svg viewBox="0 0 24 24">  
+    <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>  
+  </svg>  
+
+  <span>Instagram | @7box.1</span>  
+
+</a>  
+
+
+<!-- RUBIKA -->  
+
+<a  
+  class="social"  
+  href="https://rubika.ir/joinc/FGDADAIE0FAZKIRBXVDPBFOQBXLDHUCA"  
+  target="_blank"  
+>  
+
+  <svg viewBox="0 0 24 24">  
+    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.9 6.3-2.1 8.1c-.2.6-.5.8-1.1.5l-3-2.2-1.4 1.3c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1l-6.9 4.3-3-.9c-.7-.2-.7-.7.1-1l11.7-4.5c.5-.2.9.1.9.8Z"/>  
+  </svg>  
+
+  <span>Rubika | ورود به کانال</span>  
+
+</a>
+
+  </div>  </section>  <footer>  
+  © 2026 7BOX | انتخاب هوشمندانه، خرید مطمئن  
+</footer>  </body>  
 </html>
