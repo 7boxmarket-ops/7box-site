@@ -14,7 +14,7 @@ export default {
               text: "✅ اتصال ربات 7BOX به Cloudflare برقرار است!"
             })
           }
-        );
+        ); 
 
         const result = await response.text();
 
