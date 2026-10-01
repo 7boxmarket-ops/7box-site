@@ -1,5 +1,8 @@
 name = "7box-site"
+main = "worker.js"
 compatibility_date = "2026-10-01"
 
 [assets]
 directory = "."
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
