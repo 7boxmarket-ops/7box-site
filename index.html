@@ -1,197 +1,610 @@
-<script>
-const products = [
-  {
-    id: "zqs-4273",
-    name: "ZQS-4273 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_00000000000000000000000000000000.png",
-    description: `
-      🔊 ۲ عدد بلندگوی ۴ اینچی<br>
-      🎶 کیفیت صدای عالی<br>
-      🌈 رقص نور جذاب<br>
-      📱 اتصال از طریق Bluetooth<br>
-      💾 پشتیبانی از کارت حافظه و فلش<br>
-      🎵 ورودی AUX<br>
-      🎤 میکروفن<br>
-      🎛️ کنترل از راه دور<br>
-      🔌 درگاه شارژ Type-C<br>
-      📏 ارتفاع: ۴۰ سانتی‌متر
-    `
-  },
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>
 
-  {
-    id: "samsung-b310e",
-    name: "Samsung B310E | گوشی کلاسیک و دکمه‌ای",
-    image: "file_00000000980482468609e818921cad4c.png",
-    description: `
-      📱 دو سیم‌کارت (DUOS)<br>
-      🖥️ صفحه‌نمایش رنگی ۲ اینچ<br>
-      🔋 باتری ۸۰۰ میلی‌آمپر قابل تعویض<br>
-      📻 رادیو FM<br>
-      💾 پشتیبانی از MicroSD<br>
-      🎵 پخش موسیقی MP3<br>
-      🔦 چراغ‌قوه<br>
-      🎧 جک هدفون 3.5mm<br>
-      🔌 شارژ Micro-USB<br>
-      📡 شبکه 2G / GSM<br>
-      ⚖️ حدود ۷۵ گرم<br>
-      🚫 بدون دوربین
-    `
-  },
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-  {
-    id: "gts-1360",
-    name: "GTS-1360 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_0000000070f081f594186c8b7bfd03ac.png",
-    description: `
-      🔊 بلندگوی ۳ اینچی<br>
-      📱 اتصال از طریق Bluetooth<br>
-      💾 پشتیبانی از USB و MicroSD<br>
-      📻 رادیو FM<br>
-      🔗 قابلیت TWS<br>
-      🎵 ورودی AUX<br>
-      🔋 باتری قابل شارژ<br>
-      💡 نور LED<br>
-      🖐️ طراحی قابل حمل
-    `
-  },
+body{
+  font-family:Tahoma,Arial,sans-serif;
+  background:#050505;
+  color:#fff;
+  line-height:1.9;
+}
 
-  {
-    id: "arm-style",
-    name: "Arm Style | دستگاه فشارسنج بازویی",
-    image: "file_00000000ea5c8243bef44201b6af8110.png",
-    description: `
-      ❤️ اندازه‌گیری فشار خون<br>
-      ☝️ عملکرد تک‌دکمه‌ای<br>
-      💾 حافظه ۲×۹۰ اندازه‌گیری<br>
-      🔊 اعلام صوتی به زبان فارسی<br>
-      📊 نمایش فشار سیستول، دیاستول و ضربان قلب<br>
-      👴 مناسب برای افراد سالخورده
-    `
-  },
+a{
+  color:inherit;
+  text-decoration:none;
+}
 
-  {
-    id: "kts-1576",
-    name: "KTS-1576 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_00000000c61881f4b5045ed01c793b2b.png",
-    description: `
-      🔊 توان خروجی ۱۰ وات<br>
-      📱 اتصال از طریق Bluetooth 5.0<br>
-      💾 پشتیبانی از USB و MicroSD<br>
-      📻 رادیو FM<br>
-      🎤 ورودی میکروفن<br>
-      🎵 ورودی AUX<br>
-      🔗 قابلیت TWS<br>
-      🌈 نورپردازی RGB<br>
-      🔋 باتری ۱۵۰۰ میلی‌آمپر<br>
-      📱 جایگاه نگهداری موبایل
-    `
-  },
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #222;
+}
 
-  {
-    id: "kts-1579",
-    name: "KTS-1579 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_00000000e5b48210af39bd972b307b94.png",
-    description: `
-      🔊 بلندگوی ۸ اینچی<br>
-      ⚡ توان خروجی ۲۰ وات<br>
-      📱 اتصال از طریق Bluetooth 5.0<br>
-      💾 پشتیبانی از USB و MicroSD<br>
-      📻 رادیو FM<br>
-      🎤 ورودی میکروفن<br>
-      🎵 ورودی AUX<br>
-      🌈 نورپردازی RGB<br>
-      🔗 قابلیت TWS<br>
-      🔋 باتری ۲۴۰۰ میلی‌آمپر<br>
-      🎛️ دارای ریموت کنترل<br>
-      📱 جایگاه نگهداری موبایل
-    `
-  },
+.nav{
+  max-width:1200px;
+  margin:auto;
+  padding:12px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 
-  {
-    id: "zqs-6169",
-    name: "ZQS-6169 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_00000000b868820c8f72bfd40c201441.png",
-    description: `
-      🔊 بلندگوی ۶.۵ اینچی<br>
-      ⚡ توان خروجی ۴۰ وات<br>
-      📱 اتصال از طریق Bluetooth 5.0<br>
-      💾 پشتیبانی از USB و کارت حافظه<br>
-      📻 رادیو FM<br>
-      🎤 میکروفن بی‌سیم<br>
-      🎵 ورودی AUX<br>
-      🎛️ کنترل از راه دور<br>
-      🌈 نورپردازی RGB<br>
-      🎤 قابلیت کارائوکه<br>
-      🔌 درگاه شارژ USB / Micro-USB
-    `
-  },
+.logo{
+  width:58px;
+  height:58px;
+  object-fit:contain;
+}
 
-  {
-    id: "zqs-8210",
-    name: "ZQS-8210 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_000000009298821099bceb4c4e8cf665.png",
-    description: `
-      🔊 ۲ عدد بلندگوی ۸ اینچی<br>
-      ⚡ توان خروجی ۴۰ وات<br>
-      📱 اتصال از طریق Bluetooth<br>
-      💾 پشتیبانی از USB و کارت حافظه TF<br>
-      📻 رادیو FM<br>
-      🎤 دارای میکروفن<br>
-      🎵 ورودی AUX<br>
-      🔗 قابلیت TWS<br>
-      🌈 نورپردازی و رقص نور LED<br>
-      🔋 باتری ۴۵۰۰ میلی‌آمپر<br>
-      🎛️ دارای ریموت کنترل
-    `
-  },
+.nav a{
+  background:#fff;
+  color:#000;
+  padding:7px 18px;
+  border-radius:30px;
+  font-size:14px;
+}
 
-  {
-    id: "kts-2006",
-    name: "KTS-2006 | اسپیکر بلوتوثی قابل حمل",
-    image: "file_0000000004e881f48828bdab9ffaf089.png",
-    description: `
-      🔊 بلندگوی ۳ اینچی<br>
-      ⚡ توان خروجی ۵ وات<br>
-      📱 اتصال از طریق Bluetooth<br>
-      💾 پشتیبانی از USB و TF Card<br>
-      📻 رادیو FM<br>
-      🎵 ورودی AUX<br>
-      🔗 قابلیت TWS<br>
-      🌈 نورپردازی RGB<br>
-      🔋 باتری قابل شارژ<br>
-      📏 ابعاد: حدود ۱۰.۹ × ۸.۳ × ۱۴.۸ سانتی‌متر
-    `
-  },
+.hero{
+  min-height:500px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  position:relative;
+  background:
+    linear-gradient(rgba(0,0,0,.68),rgba(0,0,0,.82)),
+    url("file_000000000bc881f4b380545386922ec1.png")
+    center/cover no-repeat;
+}
 
-  {
-    id: "vgr-v071",
-    name: "VGR V-071 | ماشین اصلاح و تریمر",
-    image: "file_00000000b7cc8210a154a3902c791fa8.png",
-    description: `
-      ✂️ تیغه‌های استیل با دقت بالا<br>
-      🎯 مناسب برای اصلاح و فرم‌دهی ریش و مو<br>
-      〰️ قابلیت اصلاح نزدیک به پوست<br>
-      📏 دارای ۳ شانه اصلاح ۱، ۲ و ۳ میلی‌متر<br>
-      🔋 تا حدود ۱۲۰ دقیقه استفاده با یک شارژ<br>
-      ⚡ شارژ از طریق Type-C / USB<br>
-      🖐️ طراحی جمع‌وجور و خوش‌دست<br>
-      🧹 همراه با برس تمیزکننده و روغن نگهداری
-    `
-  },
+.hero-content{
+  padding:50px 20px;
+}
 
-  {
-    id: "kh-740",
-    name: "KH-740 | ماساژور تفنگی بدن",
-    image: "file_000000008b4881f4afdaca2c40fe0b21.png",
-    description: `
-      🔹 ماساژ لرزشی و ضربه‌ای<br>
-      🔹 ۴ سری قابل تعویض<br>
-      🔹 امکان تنظیم شدت ماساژ<br>
-      🔹 مناسب برای ماساژ گردن، شانه، کمر، دست‌ها و پاها<br>
-      🔹 طراحی دستی و خوش‌دست<br>
-      🔹 مناسب برای خانه، محل کار و بعد از ورزش<br>
-      🔋 شارژی و قابل استفاده بدون اتصال دائمی به برق
-    `
+.hero img{
+  width:130px;
+  max-width:40%;
+  margin-bottom:20px;
+}
+
+.hero h1{
+  font-size:38px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  color:#ccc;
+  font-size:17px;
+}
+
+.section{
+  max-width:1200px;
+  margin:auto;
+  padding:60px 20px;
+}
+
+.section-title{
+  text-align:center;
+  font-size:28px;
+  margin-bottom:35px;
+}
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+
+.product{
+  background:#111;
+  border:1px solid #252525;
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.product:hover{
+  transform:translateY(-5px);
+  border-color:#555;
+}
+
+.product img{
+  width:100%;
+  height:230px;
+  object-fit:contain;
+  background:#fff;
+}
+
+.product-info{
+  padding:18px;
+}
+
+.product-info h3{
+  font-size:16px;
+  margin-bottom:8px;
+}
+
+.product-info p{
+  color:#aaa;
+  font-size:13px;
+}
+
+#productPage{
+  display:none;
+}
+
+.detail{
+  max-width:1000px;
+  margin:auto;
+  padding:50px 20px;
+}
+
+.back{
+  display:inline-block;
+  margin-bottom:25px;
+  background:#222;
+  padding:8px 18px;
+  border-radius:30px;
+}
+
+.detail-box{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:35px;
+  background:#101010;
+  border:1px solid #252525;
+  border-radius:22px;
+  padding:25px;
+}
+
+.detail-image{
+  width:100%;
+  height:450px;
+  object-fit:contain;
+  background:#fff;
+  border-radius:15px;
+}
+
+.detail h1{
+  font-size:27px;
+  margin-bottom:10px;
+}
+
+.detail-description{
+  color:#ddd;
+  margin-top:25px;
+  font-size:15px;
+}
+
+.contact{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+  margin-top:35px;
+}
+
+.contact a{
+  background:#151515;
+  border:1px solid #292929;
+  padding:10px 18px;
+  border-radius:30px;
+}
+
+footer{
+  border-top:1px solid #222;
+  text-align:center;
+  padding:30px 20px;
+  color:#888;
+}
+
+@media(max-width:700px){
+  .hero h1{
+    font-size:28px;
   }
+
+  .detail-box{
+    grid-template-columns:1fr;
+  }
+
+  .detail-image{
+    height:330px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="nav">
+    <img class="logo"
+         src="file_0000000088e481fdb76b9fde3b01e677.png"
+         alt="7BOX">
+
+    <a href="#products">محصولات</a>
+  </div>
+</header>
+
+<main id="homePage">
+
+<section class="hero">
+  <div class="hero-content">
+    <img src="file_0000000088e481fdb76b9fde3b01e677.png"
+         alt="7BOX">
+
+    <h1>7BOX</h1>
+    <p>انتخاب هوشمندانه، خرید مطمئن</p>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <h2 class="section-title">محصولات 7BOX</h2>
+
+  <div class="products" id="productsGrid"></div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">ارتباط با 7BOX</h2>
+
+  <div class="contact">
+    <a href="https://t.me/i7BOX" target="_blank">📱 تلگرام | @i7BOX</a>
+    <a href="https://instagram.com/7box.1" target="_blank">📸 اینستاگرام | @7box.1</a>
+    <a href="https://rubika.ir/joinc/FGDADAIE0FAZKIRBXVDPBFOQBXLDHUCA"
+       target="_blank">💬 ورود به کانال</a>
+  </div>
+</section>
+
+</main>
+
+<section id="productPage">
+  <div class="detail">
+
+    <a href="#" class="back" onclick="showHome()">← بازگشت به محصولات</a>
+
+    <div class="detail-box">
+
+      <div>
+        <img id="detailImage"
+             class="detail-image"
+             src=""
+             alt="">
+      </div>
+
+      <div>
+        <h1 id="detailName"></h1>
+
+        <div id="detailDescription"
+             class="detail-description"></div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  7BOX | انتخاب هوشمندانه، خرید مطمئن
+</footer>
+
+<script>
+
+const products = [
+
+{
+ id:"zqs-4273",
+ name:"ZQS-4273 | اسپیکر بلوتوثی قابل حمل",
+ image:"",
+ description:`
+🔊 ۲ عدد بلندگوی ۴ اینچی<br>
+🎶 کیفیت صدای عالی<br>
+🌈 رقص نور جذاب<br>
+📱 اتصال از طریق Bluetooth<br>
+💾 پشتیبانی از کارت حافظه و فلش<br>
+🎵 ورودی AUX<br>
+🎤 میکروفن<br>
+🎛️ کنترل از راه دور<br>
+🔌 درگاه شارژ Type-C<br>
+📏 ارتفاع: ۴۰ سانتی‌متر
+`
+},
+
+{
+ id:"samsung-b310e",
+ name:"Samsung B310E | گوشی کلاسیک و دکمه‌ای",
+ image:"file_00000000980482468609e818921cad4c.png",
+ description:`
+📱 دو سیم‌کارت (DUOS)<br>
+🖥️ صفحه‌نمایش رنگی ۲ اینچ<br>
+🔋 باتری ۸۰۰ میلی‌آمپر قابل تعویض<br>
+📻 رادیو FM<br>
+💾 پشتیبانی از MicroSD<br>
+🎵 پخش موسیقی MP3<br>
+🔦 چراغ‌قوه<br>
+🎧 جک هدفون 3.5mm<br>
+🔌 شارژ Micro-USB<br>
+📡 شبکه 2G / GSM<br>
+⚖️ حدود ۷۵ گرم<br>
+🚫 بدون دوربین
+`
+},
+
+{
+ id:"gts-1360",
+ name:"GTS-1360 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_0000000070f081f594186c8b7bfd03ac.png",
+ description:`
+🔊 بلندگوی ۳ اینچی<br>
+📱 اتصال از طریق Bluetooth<br>
+💾 پشتیبانی از USB و MicroSD<br>
+📻 رادیو FM<br>
+🔗 قابلیت TWS<br>
+🎵 ورودی AUX<br>
+🔋 باتری قابل شارژ<br>
+💡 نور LED<br>
+🖐️ طراحی قابل حمل
+`
+},
+
+{
+ id:"arm-style",
+ name:"Arm Style | دستگاه فشارسنج بازویی",
+ image:"file_00000000ea5c8243bef44201b6af8110.png",
+ description:`
+❤️ اندازه‌گیری فشار خون<br>
+☝️ عملکرد تک‌دکمه‌ای<br>
+💾 حافظه ۲×۹۰ اندازه‌گیری<br>
+🔊 اعلام صوتی به زبان فارسی<br>
+📊 نمایش فشار سیستول، دیاستول و ضربان قلب<br>
+👴 مناسب برای افراد سالخورده
+`
+},
+
+{
+ id:"kts-1576",
+ name:"KTS-1576 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_00000000c61881f4b5045ed01c793b2b.png",
+ description:`
+🔊 توان خروجی ۱۰ وات<br>
+📱 اتصال از طریق Bluetooth 5.0<br>
+💾 پشتیبانی از USB و MicroSD<br>
+📻 رادیو FM<br>
+🎤 ورودی میکروفن<br>
+🎵 ورودی AUX<br>
+🔗 قابلیت TWS<br>
+🌈 نورپردازی RGB<br>
+🔋 باتری ۱۵۰۰ میلی‌آمپر<br>
+📱 جایگاه نگهداری موبایل
+`
+},
+
+{
+ id:"kts-1579",
+ name:"KTS-1579 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_00000000e5b48210af39bd972b307b94.png",
+ description:`
+🔊 بلندگوی ۸ اینچی<br>
+⚡ توان خروجی ۲۰ وات<br>
+📱 اتصال از طریق Bluetooth 5.0<br>
+💾 پشتیبانی از USB و MicroSD<br>
+📻 رادیو FM<br>
+🎤 ورودی میکروفن<br>
+🎵 ورودی AUX<br>
+🌈 نورپردازی RGB<br>
+🔗 قابلیت TWS<br>
+🔋 باتری ۲۴۰۰ میلی‌آمپر<br>
+🎛️ دارای ریموت کنترل<br>
+📱 جایگاه نگهداری موبایل
+`
+},
+
+{
+ id:"zqs-6169",
+ name:"ZQS-6169 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_00000000b868820c8f72bfd40c201441.png",
+ description:`
+🔊 بلندگوی ۶.۵ اینچی<br>
+⚡ توان خروجی ۴۰ وات<br>
+📱 اتصال از طریق Bluetooth 5.0<br>
+💾 پشتیبانی از USB و کارت حافظه<br>
+📻 رادیو FM<br>
+🎤 میکروفن بی‌سیم<br>
+🎵 ورودی AUX<br>
+🎛️ کنترل از راه دور<br>
+🌈 نورپردازی RGB<br>
+🎤 قابلیت کارائوکه<br>
+🔌 درگاه شارژ USB / Micro-USB
+`
+},
+
+{
+ id:"zqs-8210",
+ name:"ZQS-8210 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_000000009298821099bceb4c4e8cf665.png",
+ description:`
+🔊 ۲ عدد بلندگوی ۸ اینچی<br>
+⚡ توان خروجی ۴۰ وات<br>
+📱 اتصال از طریق Bluetooth<br>
+💾 پشتیبانی از USB و کارت حافظه TF<br>
+📻 رادیو FM<br>
+🎤 دارای میکروفن<br>
+🎵 ورودی AUX<br>
+🔗 قابلیت TWS<br>
+🌈 نورپردازی و رقص نور LED<br>
+🔋 باتری ۴۵۰۰ میلی‌آمپر<br>
+🎛️ دارای ریموت کنترل
+`
+},
+
+{
+ id:"kts-2006",
+ name:"KTS-2006 | اسپیکر بلوتوثی قابل حمل",
+ image:"file_0000000004e881f48828bdab9ffaf089.png",
+ description:`
+🔊 بلندگوی ۳ اینچی<br>
+⚡ توان خروجی ۵ وات<br>
+📱 اتصال از طریق Bluetooth<br>
+💾 پشتیبانی از USB و TF Card<br>
+📻 رادیو FM<br>
+🎵 ورودی AUX<br>
+🔗 قابلیت TWS<br>
+🌈 نورپردازی RGB<br>
+🔋 باتری قابل شارژ<br>
+📏 ابعاد: حدود ۱۰.۹ × ۸.۳ × ۱۴.۸ سانتی‌متر
+`
+},
+
+{
+ id:"vgr-v071",
+ name:"VGR V-071 | ماشین اصلاح و تریمر",
+ image:"file_00000000b7cc8210a154a3902c791fa8.png",
+ description:`
+✂️ تیغه‌های استیل با دقت بالا<br>
+🎯 مناسب برای اصلاح و فرم‌دهی ریش و مو<br>
+〰️ قابلیت اصلاح نزدیک به پوست<br>
+📏 دارای ۳ شانه اصلاح ۱، ۲ و ۳ میلی‌متر<br>
+🔋 تا حدود ۱۲۰ دقیقه استفاده با یک شارژ<br>
+⚡ شارژ از طریق Type-C / USB<br>
+🖐️ طراحی جمع‌وجور و خوش‌دست<br>
+🧹 همراه با برس تمیزکننده و روغن نگهداری
+`
+},
+
+{
+ id:"kh-740",
+ name:"KH-740 | ماساژور تفنگی بدن",
+ image:"file_000000008b4881f4afdaca2c40fe0b21.png",
+ description:`
+🔹 ماساژ لرزشی و ضربه‌ای<br>
+🔹 ۴ سری قابل تعویض<br>
+🔹 امکان تنظیم شدت ماساژ<br>
+🔹 مناسب برای ماساژ گردن، شانه، کمر، دست‌ها و پاها<br>
+🔹 طراحی دستی و خوش‌دست<br>
+🔹 مناسب برای خانه، محل کار و بعد از ورزش<br>
+🔋 شارژی و قابل استفاده بدون اتصال دائمی به برق
+`
+}
+
 ];
+
+const grid = document.getElementById("productsGrid");
+
+products.forEach(product => {
+
+  const card = document.createElement("div");
+
+  card.className = "product";
+
+  card.onclick = () => openProduct(product.id);
+
+  card.innerHTML = `
+    <img src="${product.image}" alt="${product.name}">
+    <div class="product-info">
+      <h3>${product.name}</h3>
+      <p>مشاهده مشخصات محصول</p>
+    </div>
+  `;
+
+  grid.appendChild(card);
+
+});
+
+
+function openProduct(id){
+
+  const product = products.find(p => p.id === id);
+
+  if(!product) return;
+
+  document.getElementById("homePage").style.display = "none";
+
+  document.getElementById("productPage").style.display = "block";
+
+  document.getElementById("detailImage").src = product.image;
+
+  document.getElementById("detailImage").alt = product.name;
+
+  document.getElementById("detailName").textContent = product.name;
+
+  document.getElementById("detailDescription").innerHTML =
+    product.description;
+
+  history.pushState(
+    {product:id},
+    "",
+    "#product-" + id
+  );
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+function showHome(){
+
+  document.getElementById("productPage").style.display = "none";
+
+  document.getElementById("homePage").style.display = "block";
+
+  history.pushState({}, "", "#products");
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+window.addEventListener("popstate", () => {
+
+  const hash = location.hash;
+
+  if(hash.startsWith("#product-")){
+
+    const id = hash.replace("#product-","");
+
+    openProduct(id);
+
+  }else{
+
+    showHome();
+
+  }
+
+});
+
+
+window.addEventListener("load", () => {
+
+  const hash = location.hash;
+
+  if(hash.startsWith("#product-")){
+
+    const id = hash.replace("#product-","");
+
+    openProduct(id);
+
+  }
+
+});
+
 </script>
+
+</body>
+</html>
