@@ -969,6 +969,7 @@ async function createOrder(request, env) {
   ).run();
 
   let telegramSent = false;
+  let receiptSent = false;
 
   if (env.TELEGRAM_BOT_TOKEN) {
     try {
@@ -989,6 +990,10 @@ async function createOrder(request, env) {
         `🧾 رسید: ${receiptFileName || "ارسال شده"}\n\n` +
         `📌 وضعیت: ثبت سفارش`;
 
+      // ========================================
+      // SEND ORDER TEXT
+      // ========================================
+
       const telegramResponse = await telegramRequest(
         env,
         "sendMessage",
@@ -999,6 +1004,205 @@ async function createOrder(request, env) {
       );
 
       telegramSent = telegramResponse.ok;
+
+      // ========================================
+      // SEND RECEIPT
+      // ========================================
+
+      try {
+        let base64Data = receiptBase64;
+        let mimeType = "image/jpeg";
+
+        // اگر Base64 به شکل data:image/...;base64,... باشد
+        if (base64Data.startsWith("data:")) {
+          const commaIndex = base64Data.indexOf(",");
+
+          if (commaIndex !== -1) {
+            const header = base64Data.substring(
+              0,
+              commaIndex
+            );
+
+            const match = header.match(
+              /^data:(image\/[^;]+);base64$/i
+            );
+
+            if (match) {
+              mimeType = match[1].toLowerCase();
+            }
+
+            base64Data = base64Data.substring(
+              commaIndex + 1
+            );
+          }
+        } else {
+          const lowerFileName =
+            receiptFileName.toLowerCase();
+
+          if (
+            lowerFileName.endsWith(".jpg") ||
+            lowerFileName.endsWith(".jpeg")
+          ) {
+            mimeType = "image/jpeg";
+          } else if (
+            lowerFileName.endsWith(".png")
+          ) {
+            mimeType = "image/png";
+          } else if (
+            lowerFileName.endsWith(".webp")
+          ) {
+            mimeType = "image/webp";
+          }
+        }
+
+        // حذف فاصله یا newline احتمالی از Base64
+        base64Data = base64Data
+          .replace(/\s/g, "");
+
+        // تبدیل Base64 به بایت
+        const binaryString = atob(base64Data);
+
+        const bytes = new Uint8Array(
+          binaryString.length
+        );
+
+        for (
+          let i = 0;
+          i < binaryString.length;
+          i++
+        ) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        const fileName =
+          receiptFileName ||
+          `receipt-${trackingCode}`;
+
+        const formData = new FormData();
+
+        formData.append(
+          "chat_id",
+          adminChatId(env)
+        );
+
+        formData.append(
+          "caption",
+          `🧾 فیش واریزی سفارش 7BOX\n` +
+          `🔖 کد رهگیری: ${trackingCode}\n` +
+          `👤 مشتری: ${customerName}\n` +
+          `📦 محصول: ${product.name}`
+        );
+
+        // ========================================
+        // JPG / JPEG → sendPhoto
+        // ========================================
+
+        if (
+          mimeType === "image/jpeg" ||
+          mimeType === "image/jpg" ||
+          fileName.toLowerCase().endsWith(".jpg") ||
+          fileName.toLowerCase().endsWith(".jpeg")
+        ) {
+
+          formData.append(
+            "photo",
+            new Blob(
+              [bytes],
+              {
+                type: "image/jpeg"
+              }
+            ),
+            fileName.toLowerCase().endsWith(".jpeg")
+              ? fileName
+              : fileName.endsWith(".jpg")
+                ? fileName
+                : `${fileName}.jpg`
+          );
+
+          const photoResponse = await fetch(
+            `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
+            {
+              method: "POST",
+              body: formData
+            }
+          );
+
+          let photoData;
+
+          try {
+            photoData = await photoResponse.json();
+          } catch {
+            photoData = {
+              ok: false,
+              error: "Invalid Telegram photo response"
+            };
+          }
+
+          receiptSent =
+            photoResponse.ok &&
+            photoData.ok === true;
+
+          if (!receiptSent) {
+            console.error(
+              "Telegram receipt photo error:",
+              photoData
+            );
+          }
+
+        } else {
+
+          // ========================================
+          // PNG / WEBP / OTHER → sendDocument
+          // ========================================
+
+          formData.append(
+            "document",
+            new Blob(
+              [bytes],
+              {
+                type: mimeType
+              }
+            ),
+            fileName
+          );
+
+          const documentResponse = await fetch(
+            `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`,
+            {
+              method: "POST",
+              body: formData
+            }
+          );
+
+          let documentData;
+
+          try {
+            documentData = await documentResponse.json();
+          } catch {
+            documentData = {
+              ok: false,
+              error: "Invalid Telegram document response"
+            };
+          }
+
+          receiptSent =
+            documentResponse.ok &&
+            documentData.ok === true;
+
+          if (!receiptSent) {
+            console.error(
+              "Telegram receipt document error:",
+              documentData
+            );
+          }
+        }
+
+      } catch (error) {
+        console.error(
+          "Telegram receipt sending error:",
+          error
+        );
+      }
 
     } catch (error) {
       console.error(
@@ -1014,7 +1218,8 @@ async function createOrder(request, env) {
     tracking_code: trackingCode,
     status: "ثبت سفارش",
     total_amount: totalAmount,
-    telegram_sent: telegramSent
+    telegram_sent: telegramSent,
+    receipt_sent: receiptSent
   }, 201);
 }
 
