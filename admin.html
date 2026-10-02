@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>مدیریت 7BOX</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -21,10 +18,7 @@
       font-family: Tahoma, Arial, sans-serif;
     }
 
-    button,
-    input,
-    textarea,
-    select {
+    button, input, textarea, select {
       font-family: inherit;
     }
 
@@ -266,15 +260,6 @@
       border: 1px solid rgba(255,80,80,.15);
     }
 
-    .order-status {
-      display: inline-block;
-      padding: 6px 9px;
-      border-radius: 8px;
-      background: rgba(185,255,208,.06);
-      color: #b9ffd0;
-      font-size: 11px;
-    }
-
     .empty {
       text-align: center;
       padding: 35px;
@@ -300,263 +285,292 @@
 
 <body>
 
-  <!-- LOGIN -->
+<section id="loginSection" class="login">
 
-  <section id="loginSection" class="login">
+  <h1>7BOX</h1>
 
-    <h1>7BOX</h1>
+  <p style="text-align:center;color:#929b95;font-size:13px;">
+    ورود به پنل مدیریت
+  </p>
 
-    <p style="text-align:center;color:#929b95;font-size:13px;">
-      ورود به پنل مدیریت
-    </p>
+  <div id="loginMessage" class="message"></div>
 
-    <div id="loginMessage" class="message"></div>
+  <form id="loginForm">
 
-    <form id="loginForm">
+    <div class="field">
+      <label for="password">رمز مدیریت</label>
 
-      <div class="field">
-        <label for="password">رمز مدیریت</label>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required>
+    </div>
 
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          required>
+    <button class="btn primary" type="submit">
+      ورود به پنل
+    </button>
+
+  </form>
+
+</section>
+
+
+<main id="dashboard" class="page dashboard">
+
+  <div class="topbar">
+
+    <div class="logo">
+      7BOX ADMIN
+    </div>
+
+    <button id="logoutBtn" class="logout">
+      خروج
+    </button>
+
+  </div>
+
+  <h1 class="title">
+    پنل مدیریت
+  </h1>
+
+  <div class="subtitle">
+    مدیریت قیمت محصولات، هزینه ارسال و سفارش‌های ثبت‌شده
+  </div>
+
+  <div id="globalMessage" class="message"></div>
+
+
+  <section class="stats">
+
+    <div class="stat">
+      <div class="stat-label">
+        تعداد محصولات
       </div>
 
-      <button class="btn primary" type="submit">
-        ورود به پنل
-      </button>
+      <div id="statProducts" class="stat-value">
+        ۰
+      </div>
+    </div>
 
-    </form>
+    <div class="stat">
+      <div class="stat-label">
+        تعداد سفارش‌ها
+      </div>
+
+      <div id="statOrders" class="stat-value">
+        ۰
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">
+        در انتظار بررسی
+      </div>
+
+      <div id="statPending" class="stat-value">
+        ۰
+      </div>
+    </div>
 
   </section>
 
 
-  <!-- DASHBOARD -->
+  <section class="panel">
 
-  <main id="dashboard" class="page dashboard">
+    <h2>🚚 هزینه ارسال</h2>
 
-    <div class="topbar">
-      <div class="logo">7BOX ADMIN</div>
+    <div class="shipping">
 
-      <button id="logoutBtn" class="logout">
-        خروج
+      <div class="field">
+
+        <label for="shippingCost">
+          هزینه ارسال به ازای هر واحد
+        </label>
+
+        <input
+          id="shippingCost"
+          type="number"
+          min="0"
+          step="1000">
+
+      </div>
+
+      <button
+        id="saveShipping"
+        class="btn save">
+        ذخیره
       </button>
+
     </div>
 
-    <h1 class="title">پنل مدیریت</h1>
+  </section>
 
-    <div class="subtitle">
-      مدیریت قیمت محصولات، هزینه ارسال و سفارش‌های ثبت‌شده
+
+  <section class="panel">
+
+    <h2>💰 قیمت محصولات</h2>
+
+    <div class="product-table">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>تصویر</th>
+            <th>محصول</th>
+            <th>قیمت</th>
+            <th>عملیات</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="productsBody"></tbody>
+
+      </table>
+
     </div>
 
-    <div id="globalMessage" class="message"></div>
+  </section>
 
 
-    <!-- STATS -->
+  <section class="panel">
 
-    <section class="stats">
+    <h2>📦 سفارش‌ها</h2>
 
-      <div class="stat">
-        <div class="stat-label">تعداد محصولات</div>
-        <div id="statProducts" class="stat-value">۰</div>
-      </div>
+    <div style="margin-bottom:15px;">
 
-      <div class="stat">
-        <div class="stat-label">تعداد سفارش‌ها</div>
-        <div id="statOrders" class="stat-value">۰</div>
-      </div>
+      <button
+        id="refreshOrders"
+        class="btn refresh">
+        بروزرسانی سفارش‌ها
+      </button>
 
-      <div class="stat">
-        <div class="stat-label">در انتظار بررسی</div>
-        <div id="statPending" class="stat-value">۰</div>
-      </div>
+    </div>
 
-    </section>
+    <div class="orders">
 
+      <table>
 
-    <!-- SHIPPING -->
+        <thead>
 
-    <section class="panel">
+          <tr>
+            <th>رهگیری</th>
+            <th>محصول</th>
+            <th>مشتری</th>
+            <th>مبلغ</th>
+            <th>وضعیت</th>
+            <th>یادداشت</th>
+            <th>ثبت</th>
+          </tr>
 
-      <h2>🚚 هزینه ارسال</h2>
+        </thead>
 
-      <div class="shipping">
+        <tbody id="ordersBody"></tbody>
 
-        <div class="field">
-          <label for="shippingCost">
-            هزینه ارسال به ازای هر واحد
-          </label>
+      </table>
 
-          <input
-            id="shippingCost"
-            type="number"
-            min="0"
-            step="1000">
-        </div>
+    </div>
 
-        <button
-          id="saveShipping"
-          class="btn save">
-          ذخیره
-        </button>
+  </section>
 
-      </div>
-
-    </section>
-
-
-    <!-- PRODUCTS -->
-
-    <section class="panel">
-
-      <h2>💰 قیمت محصولات</h2>
-
-      <div class="product-table">
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>تصویر</th>
-              <th>محصول</th>
-              <th>قیمت</th>
-              <th>عملیات</th>
-            </tr>
-          </thead>
-
-          <tbody id="productsBody"></tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-
-    <!-- ORDERS -->
-
-    <section class="panel">
-
-      <h2>📦 سفارش‌ها</h2>
-
-      <div style="margin-bottom:15px;">
-        <button
-          id="refreshOrders"
-          class="btn refresh">
-          بروزرسانی سفارش‌ها
-        </button>
-      </div>
-
-      <div class="orders">
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>رهگیری</th>
-              <th>محصول</th>
-              <th>مشتری</th>
-              <th>مبلغ</th>
-              <th>وضعیت</th>
-              <th>یادداشت</th>
-              <th>ثبت</th>
-            </tr>
-          </thead>
-
-          <tbody id="ordersBody"></tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-  </main>
+</main>
 
 
 <script>
 
-  const STATUSES = [
-    "ثبت سفارش",
-    "تأیید سفارش",
-    "بسته‌بندی",
-    "ارسال",
-    "تحویل"
-  ];
+const STATUSES = [
+  "ثبت سفارش",
+  "تأیید سفارش",
+  "بسته‌بندی",
+  "ارسال",
+  "تحویل",
+  "لغو سفارش"
+];
 
-  const loginSection =
-    document.getElementById("loginSection");
 
-  const dashboard =
-    document.getElementById("dashboard");
+const loginSection =
+  document.getElementById("loginSection");
 
-  const loginForm =
-    document.getElementById("loginForm");
+const dashboard =
+  document.getElementById("dashboard");
 
-  const loginMessage =
-    document.getElementById("loginMessage");
+const loginForm =
+  document.getElementById("loginForm");
 
-  const globalMessage =
-    document.getElementById("globalMessage");
+const loginMessage =
+  document.getElementById("loginMessage");
 
-  function showLoginMessage(text, type) {
-    loginMessage.className =
-      "message " + type;
+const globalMessage =
+  document.getElementById("globalMessage");
 
-    loginMessage.textContent = text;
+
+function showLoginMessage(text, type) {
+
+  loginMessage.className =
+    "message " + type;
+
+  loginMessage.textContent = text;
+}
+
+
+function showMessage(text, type) {
+
+  globalMessage.className =
+    "message " + type;
+
+  globalMessage.textContent = text;
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
+
+
+async function api(url, options = {}) {
+
+  const response = await fetch(
+    url,
+    {
+      credentials: "same-origin",
+      cache: "no-store",
+      ...options
+    }
+  );
+
+  let data = null;
+
+  try {
+    data = await response.json();
+  } catch {}
+
+  if (response.status === 401) {
+
+    showLogin();
+
+    throw new Error("AUTH");
   }
 
-  function showMessage(text, type) {
-    globalMessage.className =
-      "message " + type;
+  if (!response.ok || !data?.ok) {
 
-    globalMessage.textContent = text;
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-  async function api(url, options = {}) {
-
-    const response = await fetch(
-      url,
-      {
-        credentials: "same-origin",
-        cache: "no-store",
-        ...options
-      }
+    throw new Error(
+      data?.error ||
+      "خطا در ارتباط با سرور"
     );
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch {}
-
-    if (response.status === 401) {
-      showLogin();
-      throw new Error("AUTH");
-    }
-
-    if (!response.ok || !data?.ok) {
-      throw new Error(
-        data?.error || "خطا در ارتباط با سرور"
-      );
-    }
-
-    return data;
   }
 
+  return data;
+}
 
-  async function checkLogin() {
 
-    try {
+async function checkLogin() {
 
-      const data = await fetch(
+  try {
+
+    const response =
+      await fetch(
         "/api/admin/me",
         {
           credentials: "same-origin",
@@ -564,538 +578,699 @@
         }
       );
 
-      if (data.ok) {
-        showDashboard();
-      } else {
-        showLogin();
-      }
+    if (response.ok) {
 
-    } catch {
+      showDashboard();
+
+    } else {
+
       showLogin();
+
     }
+
+  } catch {
+
+    showLogin();
+
   }
+}
 
 
-  function showLogin() {
+function showLogin() {
 
-    loginSection.style.display = "block";
-    dashboard.style.display = "none";
-  }
+  loginSection.style.display =
+    "block";
 
-
-  function showDashboard() {
-
-    loginSection.style.display = "none";
-    dashboard.style.display = "block";
-
-    loadDashboard();
-  }
+  dashboard.style.display =
+    "none";
+}
 
 
-  loginForm.addEventListener(
-    "submit",
-    async function(event) {
+function showDashboard() {
 
-      event.preventDefault();
+  loginSection.style.display =
+    "none";
 
-      const password =
-        document.getElementById("password").value;
+  dashboard.style.display =
+    "block";
 
-      try {
+  loadDashboard();
+}
 
-        const response = await fetch(
+
+loginForm.addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    const password =
+      document.getElementById(
+        "password"
+      ).value;
+
+    try {
+
+      const response =
+        await fetch(
           "/api/admin/login",
           {
             method: "POST",
             credentials: "same-origin",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             },
-            body: JSON.stringify({
-              password
-            })
+            body:
+              JSON.stringify({
+                password
+              })
           }
         );
 
-        const data = await response.json();
+      const data =
+        await response.json();
 
-        if (!response.ok || !data.ok) {
-          throw new Error(
-            data?.error || "ورود ناموفق بود."
-          );
+      if (!response.ok || !data.ok) {
+
+        throw new Error(
+          data?.error ||
+          "ورود ناموفق بود."
+        );
+      }
+
+      document.getElementById(
+        "password"
+      ).value = "";
+
+      showDashboard();
+
+    } catch (error) {
+
+      showLoginMessage(
+        error.message,
+        "error"
+      );
+    }
+
+  }
+);
+
+
+document
+  .getElementById("logoutBtn")
+  .addEventListener(
+    "click",
+    async function() {
+
+      await fetch(
+        "/api/admin/logout",
+        {
+          method: "POST",
+          credentials: "same-origin"
         }
+      );
 
-        document.getElementById("password").value = "";
+      showLogin();
 
-        showDashboard();
+    }
+  );
+
+
+async function loadDashboard() {
+
+  try {
+
+    await Promise.all([
+      loadProducts(),
+      loadSettings(),
+      loadOrders()
+    ]);
+
+  } catch (error) {
+
+    if (error.message !== "AUTH") {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+    }
+  }
+}
+
+
+async function loadProducts() {
+
+  const data =
+    await api(
+      "/api/admin/products"
+    );
+
+  const products =
+    data.products || [];
+
+  document.getElementById(
+    "statProducts"
+  ).textContent =
+    products.length.toLocaleString(
+      "fa-IR"
+    );
+
+  const body =
+    document.getElementById(
+      "productsBody"
+    );
+
+  if (!products.length) {
+
+    body.innerHTML =
+      `<tr>
+        <td colspan="4" class="empty">
+          محصولی وجود ندارد.
+        </td>
+      </tr>`;
+
+    return;
+  }
+
+  body.innerHTML =
+    products.map(product => {
+
+      const price =
+        product.price === null ||
+        product.price === undefined
+          ? ""
+          : product.price;
+
+      return `
+        <tr>
+
+          <td>
+            <img
+              class="product-thumb"
+              src="${escapeHtml(product.image)}"
+              alt="">
+          </td>
+
+          <td>
+            ${escapeHtml(product.name)}
+          </td>
+
+          <td>
+
+            <input
+              class="price-input"
+              type="number"
+              min="0"
+              step="1000"
+              value="${price}"
+              data-price-id="${product.id}"
+              placeholder="استعلام">
+
+          </td>
+
+          <td>
+
+            <button
+              class="btn save"
+              onclick="saveProduct(${product.id})">
+
+              ذخیره
+
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+async function saveProduct(id) {
+
+  const input =
+    document.querySelector(
+      `[data-price-id="${id}"]`
+    );
+
+  if (!input) return;
+
+  const value =
+    input.value.trim();
+
+  const price =
+    value === ""
+      ? null
+      : Number(value);
+
+  try {
+
+    await api(
+      "/api/admin/products",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify({
+            id,
+            price
+          })
+      }
+    );
+
+    showMessage(
+      "قیمت محصول با موفقیت ذخیره شد.",
+      "success"
+    );
+
+    await loadProducts();
+
+  } catch (error) {
+
+    if (error.message !== "AUTH") {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+    }
+  }
+}
+
+
+async function loadSettings() {
+
+  const data =
+    await api(
+      "/api/admin/settings"
+    );
+
+  const shipping =
+    Number(
+      data?.settings?.shipping_cost
+    );
+
+  document.getElementById(
+    "shippingCost"
+  ).value =
+    Number.isFinite(shipping)
+      ? shipping
+      : 300000;
+}
+
+
+document
+  .getElementById("saveShipping")
+  .addEventListener(
+    "click",
+    async function() {
+
+      const value =
+        Number(
+          document.getElementById(
+            "shippingCost"
+          ).value
+        );
+
+      if (!Number.isFinite(value) || value < 0) {
+
+        showMessage(
+          "هزینه ارسال نامعتبر است.",
+          "error"
+        );
+
+        return;
+      }
+
+      try {
+
+        await api(
+          "/api/admin/settings",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+            body:
+              JSON.stringify({
+                shipping_cost: value
+              })
+          }
+        );
+
+        showMessage(
+          "هزینه ارسال ذخیره شد.",
+          "success"
+        );
 
       } catch (error) {
 
-        showLoginMessage(
-          error.message,
-          "error"
-        );
+        if (error.message !== "AUTH") {
+
+          showMessage(
+            error.message,
+            "error"
+          );
+        }
       }
 
     }
   );
 
 
-  document
-    .getElementById("logoutBtn")
-    .addEventListener(
-      "click",
-      async function() {
+async function loadOrders() {
 
-        await fetch(
-          "/api/admin/logout",
-          {
-            method: "POST",
-            credentials: "same-origin"
-          }
-        );
-
-        showLogin();
-
-      }
-    );
-
-
-  async function loadDashboard() {
-
-    try {
-
-      await Promise.all([
-        loadProducts(),
-        loadSettings(),
-        loadOrders()
-      ]);
-
-    } catch (error) {
-
-      if (error.message !== "AUTH") {
-        showMessage(
-          error.message,
-          "error"
-        );
-      }
-    }
-  }
-
-
-  async function loadProducts() {
-
-    const data = await api(
-      "/api/admin/products"
-    );
-
-    const products = data.products || [];
-
-    document.getElementById(
-      "statProducts"
-    ).textContent =
-      products.length.toLocaleString("fa-IR");
-
-    const body =
-      document.getElementById("productsBody");
-
-    if (!products.length) {
-
-      body.innerHTML =
-        `<tr>
-          <td colspan="4" class="empty">
-            محصولی وجود ندارد.
-          </td>
-        </tr>`;
-
-      return;
-    }
-
-    body.innerHTML =
-      products.map(product => {
-
-        const price =
-          product.price === null ||
-          product.price === undefined
-            ? ""
-            : product.price;
-
-        return `
-          <tr>
-
-            <td>
-              <img
-                class="product-thumb"
-                src="${escapeHtml(product.image)}"
-                alt="">
-            </td>
-
-            <td>
-              ${escapeHtml(product.name)}
-            </td>
-
-            <td>
-              <input
-                class="price-input"
-                type="number"
-                min="0"
-                step="1000"
-                value="${price}"
-                data-price-id="${product.id}"
-                placeholder="استعلام">
-            </td>
-
-            <td>
-              <button
-                class="btn save"
-                onclick="saveProduct(${product.id})">
-                ذخیره
-              </button>
-            </td>
-
-          </tr>
-        `;
-
-      }).join("");
-  }
-
-
-  async function saveProduct(id) {
-
-    const input =
-      document.querySelector(
-        `[data-price-id="${id}"]`
-      );
-
-    if (!input) return;
-
-    const value =
-      input.value.trim();
-
-    const price =
-      value === ""
-        ? null
-        : Number(value);
-
-    try {
-
-      await api(
-        "/api/admin/products",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            id,
-            price
-          })
-        }
-      );
-
-      showMessage(
-        "قیمت محصول با موفقیت ذخیره شد.",
-        "success"
-      );
-
-      await loadProducts();
-
-    } catch (error) {
-
-      if (error.message !== "AUTH") {
-        showMessage(
-          error.message,
-          "error"
-        );
-      }
-    }
-  }
-
-
-  async function loadSettings() {
-
-    const data = await api(
-      "/api/admin/settings"
-    );
-
-    const shipping =
-      Number(
-        data?.settings?.shipping_cost
-      );
-
-    document.getElementById(
-      "shippingCost"
-    ).value =
-      Number.isFinite(shipping)
-        ? shipping
-        : 300000;
-  }
-
-
-  document
-    .getElementById("saveShipping")
-    .addEventListener(
-      "click",
-      async function() {
-
-        const value =
-          Number(
-            document.getElementById(
-              "shippingCost"
-            ).value
-          );
-
-        try {
-
-          await api(
-            "/api/admin/settings",
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                shipping_cost: value
-              })
-            }
-          );
-
-          showMessage(
-            "هزینه ارسال ذخیره شد.",
-            "success"
-          );
-
-        } catch (error) {
-
-          if (error.message !== "AUTH") {
-            showMessage(
-              error.message,
-              "error"
-            );
-          }
-        }
-      }
-    );
-
-
-  async function loadOrders() {
-
-    const data = await api(
+  const data =
+    await api(
       "/api/admin/orders"
     );
 
-    const orders =
-      data.orders || [];
+  const orders =
+    data.orders || [];
 
-    document.getElementById(
-      "statOrders"
-    ).textContent =
-      orders.length.toLocaleString("fa-IR");
-
-    const pending =
-      orders.filter(
-        order =>
-          order.status === "ثبت سفارش"
-      ).length;
-
-    document.getElementById(
-      "statPending"
-    ).textContent =
-      pending.toLocaleString("fa-IR");
-
-    const body =
-      document.getElementById(
-        "ordersBody"
-      );
-
-    if (!orders.length) {
-
-      body.innerHTML =
-        `<tr>
-          <td colspan="7" class="empty">
-            هنوز سفارشی ثبت نشده است.
-          </td>
-        </tr>`;
-
-      return;
-    }
-
-    body.innerHTML =
-      orders.map(order => {
-
-        const statusOptions =
-          STATUSES.map(status => `
-            <option
-              value="${escapeHtml(status)}"
-              ${status === order.status ? "selected" : ""}>
-              ${escapeHtml(status)}
-            </option>
-          `).join("");
-
-        return `
-          <tr>
-
-            <td dir="ltr">
-              ${escapeHtml(order.tracking_code)}
-            </td>
-
-            <td>
-              ${escapeHtml(order.product_name)}
-              <br>
-              <small>
-                تعداد:
-                ${Number(order.quantity).toLocaleString("fa-IR")}
-              </small>
-            </td>
-
-            <td>
-              ${escapeHtml(order.customer_name)}
-              <br>
-              ${escapeHtml(order.phone)}
-              <br>
-              ${escapeHtml(order.province)}
-              -
-              ${escapeHtml(order.city)}
-            </td>
-
-            <td>
-              ${Number(order.total_amount || 0)
-                .toLocaleString("fa-IR")}
-              تومان
-            </td>
-
-            <td>
-              <select
-                class="status-select"
-                id="status-${cssSafe(order.tracking_code)}">
-                ${statusOptions}
-              </select>
-            </td>
-
-            <td>
-              <input
-                class="note-input"
-                id="note-${cssSafe(order.tracking_code)}"
-                value="${escapeHtml(order.admin_note || "")}"
-                placeholder="یادداشت">
-            </td>
-
-            <td>
-              <button
-                class="btn save"
-                onclick="saveOrder('${escapeJs(order.tracking_code)}')">
-                ذخیره
-              </button>
-            </td>
-
-          </tr>
-        `;
-
-      }).join("");
-  }
-
-
-  async function saveOrder(trackingCode) {
-
-    const safe =
-      cssSafe(trackingCode);
-
-    const status =
-      document.getElementById(
-        `status-${safe}`
-      ).value;
-
-    const note =
-      document.getElementById(
-        `note-${safe}`
-      ).value;
-
-    try {
-
-      await api(
-        "/api/admin/orders/status",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            tracking_code: trackingCode,
-            status
-          })
-        }
-      );
-
-      await api(
-        "/api/admin/orders/note",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            tracking_code: trackingCode,
-            admin_note: note
-          })
-        }
-      );
-
-      showMessage(
-        "سفارش با موفقیت بروزرسانی شد.",
-        "success"
-      );
-
-      await loadOrders();
-
-    } catch (error) {
-
-      if (error.message !== "AUTH") {
-        showMessage(
-          error.message,
-          "error"
-        );
-      }
-    }
-  }
-
-
-  document
-    .getElementById("refreshOrders")
-    .addEventListener(
-      "click",
-      loadOrders
+  document.getElementById(
+    "statOrders"
+  ).textContent =
+    orders.length.toLocaleString(
+      "fa-IR"
     );
 
+  const pending =
+    orders.filter(
+      order =>
+        order.status ===
+        "ثبت سفارش"
+    ).length;
 
-  function escapeHtml(value) {
+  document.getElementById(
+    "statPending"
+  ).textContent =
+    pending.toLocaleString(
+      "fa-IR"
+    );
 
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  const body =
+    document.getElementById(
+      "ordersBody"
+    );
+
+  if (!orders.length) {
+
+    body.innerHTML =
+      `<tr>
+        <td colspan="7" class="empty">
+          هنوز سفارشی ثبت نشده است.
+        </td>
+      </tr>`;
+
+    return;
   }
 
+  body.innerHTML =
+    orders.map(order => {
 
-  function escapeJs(value) {
+      const statusOptions =
+        STATUSES.map(status => `
+          <option
+            value="${escapeHtml(status)}"
+            ${
+              status === order.status
+                ? "selected"
+                : ""
+            }>
+            ${escapeHtml(status)}
+          </option>
+        `).join("");
 
-    return String(value ?? "")
-      .replaceAll("\\", "\\\\")
-      .replaceAll("'", "\\'")
-      .replaceAll("\n", "\\n")
-      .replaceAll("\r", "\\r");
+      const safeCode =
+        cssSafe(
+          order.tracking_code
+        );
+
+      return `
+        <tr>
+
+          <td dir="ltr">
+            ${escapeHtml(
+              order.tracking_code
+            )}
+          </td>
+
+          <td>
+
+            ${escapeHtml(
+              order.product_name
+            )}
+
+            <br>
+
+            <small>
+              تعداد:
+              ${
+                Number(
+                  order.quantity
+                ).toLocaleString(
+                  "fa-IR"
+                )
+              }
+            </small>
+
+          </td>
+
+          <td>
+
+            ${escapeHtml(
+              order.customer_name
+            )}
+
+            <br>
+
+            ${escapeHtml(
+              order.phone
+            )}
+
+            <br>
+
+            ${escapeHtml(
+              order.province
+            )}
+            -
+            ${escapeHtml(
+              order.city
+            )}
+
+          </td>
+
+          <td>
+
+            ${
+              Number(
+                order.total_amount || 0
+              ).toLocaleString(
+                "fa-IR"
+              )
+            }
+
+            تومان
+
+          </td>
+
+          <td>
+
+            <select
+              class="status-select"
+              id="status-${safeCode}">
+
+              ${statusOptions}
+
+            </select>
+
+          </td>
+
+          <td>
+
+            <input
+              class="note-input"
+              id="note-${safeCode}"
+              value="${escapeHtml(
+                order.admin_note || ""
+              )}"
+              placeholder="یادداشت">
+
+          </td>
+
+          <td>
+
+            <button
+              class="btn save"
+              onclick="saveOrder('${escapeJs(
+                order.tracking_code
+              )}')">
+
+              ذخیره
+
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+async function saveOrder(trackingCode) {
+
+  const safe =
+    cssSafe(trackingCode);
+
+  const statusElement =
+    document.getElementById(
+      `status-${safe}`
+    );
+
+  const noteElement =
+    document.getElementById(
+      `note-${safe}`
+    );
+
+  if (!statusElement || !noteElement) {
+    return;
   }
 
+  const status =
+    statusElement.value;
 
-  function cssSafe(value) {
+  const note =
+    noteElement.value;
 
-    return String(value ?? "")
-      .replace(/[^a-zA-Z0-9_-]/g, "_");
+  try {
+
+    await api(
+      "/api/admin/orders/status",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify({
+            tracking_code:
+              trackingCode,
+            status
+          })
+      }
+    );
+
+    await api(
+      "/api/admin/orders/note",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify({
+            tracking_code:
+              trackingCode,
+            admin_note:
+              note
+          })
+      }
+    );
+
+    showMessage(
+      "سفارش با موفقیت بروزرسانی شد.",
+      "success"
+    );
+
+    await loadOrders();
+
+  } catch (error) {
+
+    if (error.message !== "AUTH") {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+    }
   }
+}
 
 
-  checkLogin();
+document
+  .getElementById("refreshOrders")
+  .addEventListener(
+    "click",
+    async function() {
+
+      try {
+
+        await loadOrders();
+
+        showMessage(
+          "سفارش‌ها بروزرسانی شدند.",
+          "success"
+        );
+
+      } catch (error) {
+
+        if (error.message !== "AUTH") {
+
+          showMessage(
+            error.message,
+            "error"
+          );
+        }
+      }
+
+    }
+  );
+
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function escapeJs(value) {
+
+  return String(value ?? "")
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r");
+}
+
+
+function cssSafe(value) {
+
+  return String(value ?? "")
+    .replace(
+      /[^a-zA-Z0-9_-]/g,
+      "_"
+    );
+}
+
+
+checkLogin();
 
 </script>
 
