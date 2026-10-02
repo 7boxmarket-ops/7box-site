@@ -2,9 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // =========================================
     // تست خود Worker
-    // =========================================
     if (url.pathname === "/api/test-worker") {
       return new Response(
         JSON.stringify({
@@ -20,16 +18,14 @@ export default {
       );
     }
 
-    // =========================================
-    // تست اتصال Worker به Rubika
-    // =========================================
-    if (url.pathname === "/api/test-rubika") {
+    // تست اتصال به تلگرام
+    if (url.pathname === "/api/test-telegram") {
       try {
-        if (!env.RUBIKA_BOT_TOKEN) {
+        if (!env.TELEGRAM_BOT_TOKEN) {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: "RUBIKA_BOT_TOKEN is missing"
+              error: "TELEGRAM_BOT_TOKEN is missing"
             }),
             {
               status: 500,
@@ -41,7 +37,7 @@ export default {
         }
 
         const response = await fetch(
-          `https://botapi.rubika.ir/v3/${env.RUBIKA_BOT_TOKEN}/getMe`,
+          `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getMe`,
           {
             method: "POST"
           }
@@ -52,8 +48,8 @@ export default {
         return new Response(
           JSON.stringify({
             ok: response.ok,
-            rubika_status: response.status,
-            rubika_response: result
+            telegram_status: response.status,
+            telegram_response: result
           }),
           {
             status: 200,
@@ -79,43 +75,6 @@ export default {
       }
     }
 
-    // =========================================
-    // Webhook روبیکا
-    // =========================================
-    if (url.pathname === "/api/rubika/webhook") {
-      if (request.method !== "POST") {
-        return new Response("OK", {
-          status: 200
-        });
-      }
-
-      try {
-        const update = await request.json();
-
-        console.log(
-          "Rubika Update:",
-          JSON.stringify(update)
-        );
-
-        return new Response("OK", {
-          status: 200
-        });
-
-      } catch (error) {
-        console.log(
-          "Webhook Error:",
-          String(error)
-        );
-
-        return new Response("OK", {
-          status: 200
-        });
-      }
-    }
-
-    // =========================================
-    // سایت اصلی
-    // =========================================
     return env.ASSETS.fetch(request);
   }
 };
