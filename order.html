@@ -106,7 +106,7 @@
 
     .product-box {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 16px;
       padding: 14px;
       border-radius: 16px;
@@ -141,6 +141,13 @@
       font-size: 19px;
       font-weight: 900;
       margin-bottom: 9px;
+    }
+
+    .product-description {
+      color: #aeb8b1;
+      font-size: 13px;
+      line-height: 1.9;
+      margin-bottom: 10px;
     }
 
     .product-price {
@@ -604,12 +611,14 @@
     </div>
 
     <h1 class="title">ثبت سفارش</h1>
+
     <p class="subtitle">
       اطلاعات سفارش را با دقت وارد کنید و پس از پرداخت، تصویر رسید را ارسال کنید.
     </p>
 
     <!-- PRODUCT -->
     <section class="card">
+
       <h2 class="section-title">📦 محصول انتخاب‌شده</h2>
 
       <div id="productLoading" class="loading">
@@ -619,40 +628,101 @@
       <div id="productArea" style="display:none;">
 
         <div class="product-box">
+
           <div class="product-image-wrap">
-            <img id="productImage" class="product-image" alt="محصول">
+            <img
+              id="productImage"
+              class="product-image"
+              alt="محصول"
+            >
           </div>
 
           <div class="product-info">
-            <div id="productName" class="product-name"></div>
-            <div id="productPrice" class="product-price"></div>
+
+            <div
+              id="productName"
+              class="product-name"
+            ></div>
+
+            <div
+              id="productDescription"
+              class="product-description"
+            ></div>
+
+            <div
+              id="productPrice"
+              class="product-price"
+            ></div>
+
           </div>
+
         </div>
 
         <div class="quantity-row">
-          <div class="quantity-label">تعداد:</div>
+
+          <div class="quantity-label">
+            تعداد:
+          </div>
 
           <div class="quantity-control">
-            <button type="button" class="quantity-btn" id="minusBtn">−</button>
-            <div class="quantity-value" id="quantityValue">1</div>
-            <button type="button" class="quantity-btn" id="plusBtn">+</button>
+
+            <button
+              type="button"
+              class="quantity-btn"
+              id="minusBtn"
+            >
+              −
+            </button>
+
+            <div
+              class="quantity-value"
+              id="quantityValue"
+            >
+              1
+            </div>
+
+            <button
+              type="button"
+              class="quantity-btn"
+              id="plusBtn"
+            >
+              +
+            </button>
+
           </div>
+
         </div>
 
       </div>
 
-      <div id="productError" class="product-error" style="display:none;"></div>
+      <div
+        id="productError"
+        class="product-error"
+        style="display:none;"
+      ></div>
+
     </section>
+
 
     <!-- PAYMENT -->
     <section class="card">
-      <h2 class="section-title">💳 اطلاعات پرداخت</h2>
+
+      <h2 class="section-title">
+        💳 اطلاعات پرداخت
+      </h2>
 
       <div class="bank-card">
 
         <div class="bank-top">
-          <div class="bank-name">بانک رفاه کارگران</div>
-          <div class="sevenbox-mini">7BOX</div>
+
+          <div class="bank-name">
+            بانک رفاه کارگران
+          </div>
+
+          <div class="sevenbox-mini">
+            7BOX
+          </div>
+
         </div>
 
         <div class="chip"></div>
@@ -662,53 +732,94 @@
         </div>
 
         <div class="card-bottom">
+
           <div>
-            <div class="card-holder-label">نام دارنده کارت</div>
-            <div class="card-holder">حسین دانشمند</div>
+
+            <div class="card-holder-label">
+              نام دارنده کارت
+            </div>
+
+            <div class="card-holder">
+              حسین دانشمند
+            </div>
+
           </div>
 
           <div style="text-align:left;">
-            <div class="card-holder-label">BANK</div>
-            <div class="card-holder">REFAH</div>
+
+            <div class="card-holder-label">
+              BANK
+            </div>
+
+            <div class="card-holder">
+              REFAH
+            </div>
+
           </div>
+
         </div>
 
       </div>
 
       <div class="iban-box">
-        <div class="iban-title">شماره شبا برای پایا یا پل</div>
+
+        <div class="iban-title">
+          شماره شبا برای پایا یا پل
+        </div>
+
         <div class="iban">
           IR530130100000000333291281
         </div>
+
       </div>
 
       <div class="notice">
-        ⚠️ توجه: با توجه به سقف کارت‌به‌کارت، در صورت کافی نبودن سقف
-        کارت‌به‌کارت، می‌توانید از شماره شبا برای انتقال وجه از طریق پایا یا پل استفاده کنید.
+
+        ⚠️ توجه: با توجه به سقف کارت‌به‌کارت،
+        در صورت کافی نبودن سقف کارت‌به‌کارت،
+        می‌توانید از شماره شبا برای انتقال وجه
+        از طریق پایا یا پل استفاده کنید.
+
       </div>
+
     </section>
+
 
     <!-- CUSTOMER -->
     <section class="card">
-      <h2 class="section-title">👤 اطلاعات گیرنده</h2>
+
+      <h2 class="section-title">
+        👤 اطلاعات گیرنده
+      </h2>
 
       <form id="orderForm">
 
         <div class="form-grid">
 
           <div class="field">
-            <label for="customerName">نام و نام خانوادگی *</label>
+
+            <label for="customerName">
+              نام و نام خانوادگی *
+            </label>
+
             <input
               id="customerName"
               name="customer_name"
               type="text"
               placeholder="مثلاً حسین دانشمند"
               autocomplete="name"
-              required>
+              required
+            >
+
           </div>
 
+
           <div class="field">
-            <label for="phone">شماره موبایل *</label>
+
+            <label for="phone">
+              شماره موبایل *
+            </label>
+
             <input
               id="phone"
               name="phone"
@@ -716,40 +827,68 @@
               inputmode="tel"
               placeholder="مثلاً 09121234567"
               autocomplete="tel"
-              required>
+              required
+            >
+
           </div>
 
+
           <div class="field">
-            <label for="province">استان *</label>
+
+            <label for="province">
+              استان *
+            </label>
+
             <input
               id="province"
               name="province"
               type="text"
               placeholder="مثلاً تهران"
-              required>
+              required
+            >
+
           </div>
 
+
           <div class="field">
-            <label for="city">شهر *</label>
+
+            <label for="city">
+              شهر *
+            </label>
+
             <input
               id="city"
               name="city"
               type="text"
               placeholder="مثلاً تهران"
-              required>
+              required
+            >
+
           </div>
 
+
           <div class="field full">
-            <label for="address">آدرس کامل *</label>
+
+            <label for="address">
+              آدرس کامل *
+            </label>
+
             <textarea
               id="address"
               name="address"
               placeholder="استان، شهر، خیابان، کوچه، پلاک، واحد و..."
-              required></textarea>
+              required
+            ></textarea>
+
           </div>
 
+
           <div class="field">
-            <label for="postalCode">کد پستی *</label>
+
+            <label for="postalCode">
+              کد پستی *
+            </label>
+
             <input
               id="postalCode"
               name="postal_code"
@@ -757,14 +896,21 @@
               inputmode="numeric"
               maxlength="10"
               placeholder="۱۰ رقم"
-              required>
+              required
+            >
+
           </div>
 
         </div>
 
+
         <!-- RECEIPT -->
+
         <div style="margin-top:22px;">
-          <h2 class="section-title">🧾 تصویر رسید پرداخت</h2>
+
+          <h2 class="section-title">
+            🧾 تصویر رسید پرداخت
+          </h2>
 
           <div class="upload-box">
 
@@ -776,432 +922,1198 @@
               id="receipt"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              required>
+              required
+            >
 
             <div class="upload-help">
+
               فرمت‌های مجاز: JPG، PNG، WEBP
+
               <br>
+
               حداکثر حجم پیشنهادی: 5 مگابایت
+
             </div>
 
-            <div id="receiptPreview" class="receipt-preview">
-              <img id="receiptPreviewImage" alt="پیش‌نمایش رسید">
+
+            <div
+              id="receiptPreview"
+              class="receipt-preview"
+            >
+
+              <img
+                id="receiptPreviewImage"
+                alt="پیش‌نمایش رسید"
+              >
+
             </div>
 
           </div>
+
         </div>
 
+
         <!-- SUMMARY -->
+
         <div style="margin-top:22px;">
-          <h2 class="section-title">🧮 خلاصه سفارش</h2>
+
+          <h2 class="section-title">
+            🧮 خلاصه سفارش
+          </h2>
 
           <div class="summary">
 
             <div class="summary-row">
-              <span>محصول</span>
-              <strong id="summaryProduct">—</strong>
+
+              <span>
+                محصول
+              </span>
+
+              <strong id="summaryProduct">
+                —
+              </strong>
+
             </div>
 
-            <div class="summary-row">
-              <span>تعداد</span>
-              <strong id="summaryQuantity">۱</strong>
-            </div>
 
             <div class="summary-row">
-              <span>قیمت محصولات</span>
-              <strong id="summaryProductsPrice">—</strong>
+
+              <span>
+                تعداد
+              </span>
+
+              <strong id="summaryQuantity">
+                ۱
+              </strong>
+
             </div>
 
+
             <div class="summary-row">
-              <span>هزینه ارسال</span>
-              <strong id="summaryShipping">—</strong>
+
+              <span>
+                قیمت محصولات
+              </span>
+
+              <strong id="summaryProductsPrice">
+                —
+              </strong>
+
             </div>
+
+
+            <div class="summary-row">
+
+              <span>
+                هزینه ارسال
+              </span>
+
+              <strong id="summaryShipping">
+                —
+              </strong>
+
+            </div>
+
 
             <div class="summary-row summary-total">
-              <span>مبلغ کل</span>
-              <strong id="summaryTotal">—</strong>
+
+              <span>
+                مبلغ کل
+              </span>
+
+              <strong id="summaryTotal">
+                —
+              </strong>
+
             </div>
 
           </div>
+
         </div>
 
-        <div id="message" class="message"></div>
 
-        <div id="trackingBox" class="tracking-box">
+        <div
+          id="message"
+          class="message"
+        ></div>
+
+
+        <div
+          id="trackingBox"
+          class="tracking-box"
+        >
+
           <div class="tracking-title">
             سفارش شما با موفقیت ثبت شد.
           </div>
 
-          <div id="trackingCode" class="tracking-code"></div>
+          <div
+            id="trackingCode"
+            class="tracking-code"
+          ></div>
 
           <div class="tracking-help">
+
             این کد رهگیری را نزد خود نگه دارید.
             برای پیگیری وضعیت سفارش به آن نیاز خواهید داشت.
+
           </div>
+
         </div>
 
+
         <div style="margin-top:20px;">
+
           <button
             id="submitBtn"
             class="submit-btn"
             type="submit"
-            disabled>
+            disabled
+          >
             ثبت نهایی سفارش
           </button>
+
         </div>
 
       </form>
+
     </section>
 
   </main>
 
+
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const productId = Number(params.get("product"));
+
+    /* =========================================
+       URL / PRODUCT
+    ========================================= */
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const productId =
+      Number(
+        params.get("product")
+      );
+
 
     let selectedProduct = null;
+
     let quantity = 1;
+
     let shippingCost = 300000;
 
-    const productLoading = document.getElementById("productLoading");
-    const productArea = document.getElementById("productArea");
-    const productError = document.getElementById("productError");
 
-    const productImage = document.getElementById("productImage");
-    const productName = document.getElementById("productName");
-    const productPrice = document.getElementById("productPrice");
+    /* =========================================
+       ELEMENTS
+    ========================================= */
 
-    const quantityValue = document.getElementById("quantityValue");
-    const minusBtn = document.getElementById("minusBtn");
-    const plusBtn = document.getElementById("plusBtn");
+    const productLoading =
+      document.getElementById(
+        "productLoading"
+      );
 
-    const summaryProduct = document.getElementById("summaryProduct");
-    const summaryQuantity = document.getElementById("summaryQuantity");
-    const summaryProductsPrice = document.getElementById("summaryProductsPrice");
-    const summaryShipping = document.getElementById("summaryShipping");
-    const summaryTotal = document.getElementById("summaryTotal");
+    const productArea =
+      document.getElementById(
+        "productArea"
+      );
 
-    const receiptInput = document.getElementById("receipt");
-    const receiptPreview = document.getElementById("receiptPreview");
-    const receiptPreviewImage = document.getElementById("receiptPreviewImage");
+    const productError =
+      document.getElementById(
+        "productError"
+      );
 
-    const orderForm = document.getElementById("orderForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const messageBox = document.getElementById("message");
+
+    const productImage =
+      document.getElementById(
+        "productImage"
+      );
+
+    const productName =
+      document.getElementById(
+        "productName"
+      );
+
+    const productDescription =
+      document.getElementById(
+        "productDescription"
+      );
+
+    const productPrice =
+      document.getElementById(
+        "productPrice"
+      );
+
+
+    const quantityValue =
+      document.getElementById(
+        "quantityValue"
+      );
+
+    const minusBtn =
+      document.getElementById(
+        "minusBtn"
+      );
+
+    const plusBtn =
+      document.getElementById(
+        "plusBtn"
+      );
+
+
+    const summaryProduct =
+      document.getElementById(
+        "summaryProduct"
+      );
+
+    const summaryQuantity =
+      document.getElementById(
+        "summaryQuantity"
+      );
+
+    const summaryProductsPrice =
+      document.getElementById(
+        "summaryProductsPrice"
+      );
+
+    const summaryShipping =
+      document.getElementById(
+        "summaryShipping"
+      );
+
+    const summaryTotal =
+      document.getElementById(
+        "summaryTotal"
+      );
+
+
+    const receiptInput =
+      document.getElementById(
+        "receipt"
+      );
+
+    const receiptPreview =
+      document.getElementById(
+        "receiptPreview"
+      );
+
+    const receiptPreviewImage =
+      document.getElementById(
+        "receiptPreviewImage"
+      );
+
+
+    const orderForm =
+      document.getElementById(
+        "orderForm"
+      );
+
+    const submitBtn =
+      document.getElementById(
+        "submitBtn"
+      );
+
+    const messageBox =
+      document.getElementById(
+        "message"
+      );
+
+
+    /* =========================================
+       FORMAT PRICE
+    ========================================= */
 
     function formatToman(value) {
-      return Number(value).toLocaleString("fa-IR") + " تومان";
+
+      return (
+        Number(value)
+          .toLocaleString("fa-IR")
+        + " تومان"
+      );
+
     }
 
-    function showMessage(text, type) {
-      messageBox.className = "message " + type;
-      messageBox.textContent = text;
-      messageBox.style.display = "block";
+
+    /* =========================================
+       MESSAGE
+    ========================================= */
+
+    function showMessage(
+      text,
+      type
+    ) {
+
+      messageBox.className =
+        "message " + type;
+
+      messageBox.textContent =
+        text;
+
+      messageBox.style.display =
+        "block";
+
     }
+
 
     function hideMessage() {
-      messageBox.style.display = "none";
-      messageBox.textContent = "";
-      messageBox.className = "message";
+
+      messageBox.style.display =
+        "none";
+
+      messageBox.textContent =
+        "";
+
+      messageBox.className =
+        "message";
+
     }
+
+
+    /* =========================================
+       SUMMARY
+    ========================================= */
 
     function updateSummary() {
-      if (!selectedProduct) return;
 
-      const price = Number(selectedProduct.price);
-
-      summaryProduct.textContent = selectedProduct.name;
-      summaryQuantity.textContent = quantity.toLocaleString("fa-IR");
-
-      if (!Number.isFinite(price) || price <= 0) {
-        summaryProductsPrice.textContent = "استعلام بگیرید";
-        summaryShipping.textContent = formatToman(shippingCost * quantity);
-        summaryTotal.textContent = "استعلام بگیرید";
-        submitBtn.disabled = true;
+      if (!selectedProduct) {
         return;
       }
 
-      const productsTotal = price * quantity;
-      const shippingTotal = shippingCost * quantity;
-      const total = productsTotal + shippingTotal;
 
-      summaryProductsPrice.textContent = formatToman(productsTotal);
-      summaryShipping.textContent = formatToman(shippingTotal);
-      summaryTotal.textContent = formatToman(total);
-
-      submitBtn.disabled = false;
-    }
-
-    async function loadProduct() {
-      if (!Number.isInteger(productId) || productId <= 0) {
-        productLoading.style.display = "none";
-        productError.style.display = "block";
-        productError.textContent =
-          "محصول مشخص نشده است. لطفاً از صفحه محصولات دوباره روی ثبت سفارش بزنید.";
-        return;
-      }
-
-      try {
-        const [productsResponse, settingsResponse] = await Promise.all([
-          fetch("/api/products", { cache: "no-store" }),
-          fetch("/api/settings", { cache: "no-store" })
-        ]);
-
-        if (!productsResponse.ok) {
-          throw new Error("products");
-        }
-
-        const productsData = await productsResponse.json();
-
-        if (!productsData.ok || !Array.isArray(productsData.products)) {
-          throw new Error("products_data");
-        }
-
-        selectedProduct = productsData.products.find(
-          item => Number(item.id) === productId
+      const price =
+        Number(
+          selectedProduct.price
         );
 
+
+      summaryProduct.textContent =
+        selectedProduct.name;
+
+
+      summaryQuantity.textContent =
+        quantity.toLocaleString(
+          "fa-IR"
+        );
+
+
+      if (
+        !Number.isFinite(price) ||
+        price <= 0
+      ) {
+
+        summaryProductsPrice.textContent =
+          "استعلام بگیرید";
+
+        summaryShipping.textContent =
+          formatToman(
+            shippingCost * quantity
+          );
+
+        summaryTotal.textContent =
+          "استعلام بگیرید";
+
+        submitBtn.disabled =
+          true;
+
+        return;
+
+      }
+
+
+      const productsTotal =
+        price * quantity;
+
+
+      const shippingTotal =
+        shippingCost * quantity;
+
+
+      const total =
+        productsTotal +
+        shippingTotal;
+
+
+      summaryProductsPrice.textContent =
+        formatToman(
+          productsTotal
+        );
+
+
+      summaryShipping.textContent =
+        formatToman(
+          shippingTotal
+        );
+
+
+      summaryTotal.textContent =
+        formatToman(
+          total
+        );
+
+
+      submitBtn.disabled =
+        false;
+
+    }
+
+
+    /* =========================================
+       LOAD PRODUCT
+    ========================================= */
+
+    async function loadProduct() {
+
+      if (
+        !Number.isInteger(productId) ||
+        productId <= 0
+      ) {
+
+        productLoading.style.display =
+          "none";
+
+        productError.style.display =
+          "block";
+
+        productError.textContent =
+          "محصول مشخص نشده است. لطفاً از صفحه محصولات دوباره روی ثبت سفارش بزنید.";
+
+        return;
+
+      }
+
+
+      try {
+
+        const [
+          productsResponse,
+          settingsResponse
+        ] = await Promise.all([
+
+          fetch(
+            "/api/products",
+            {
+              cache: "no-store"
+            }
+          ),
+
+          fetch(
+            "/api/settings",
+            {
+              cache: "no-store"
+            }
+          )
+
+        ]);
+
+
+        if (
+          !productsResponse.ok
+        ) {
+
+          throw new Error(
+            "products"
+          );
+
+        }
+
+
+        const productsData =
+          await productsResponse.json();
+
+
+        /*
+          /api/products currently
+          returns the array directly.
+          
+          Example:
+          [
+            {
+              id: 1,
+              name: "...",
+              description: "...",
+              price: 1500000
+            }
+          ]
+        */
+
+
+        const products =
+          Array.isArray(
+            productsData
+          )
+          ? productsData
+          : (
+              productsData &&
+              Array.isArray(
+                productsData.products
+              )
+                ? productsData.products
+                : []
+            );
+
+
+        if (
+          !Array.isArray(products)
+        ) {
+
+          throw new Error(
+            "products_data"
+          );
+
+        }
+
+
+        selectedProduct =
+          products.find(
+            item =>
+              Number(item.id) ===
+              productId
+          );
+
+
         if (!selectedProduct) {
-          productLoading.style.display = "none";
-          productError.style.display = "block";
-          productError.textContent = "این محصول پیدا نشد یا دیگر فعال نیست.";
+
+          productLoading.style.display =
+            "none";
+
+          productError.style.display =
+            "block";
+
+          productError.textContent =
+            "این محصول پیدا نشد یا دیگر فعال نیست.";
+
+          return;
+
+        }
+
+
+        /* SHIPPING */
+
+        if (
+          settingsResponse.ok
+        ) {
+
+          const settingsData =
+            await settingsResponse.json();
+
+
+          /*
+            Supports both:
+
+            {
+              settings: {
+                shipping_cost: "300000"
+              }
+            }
+
+            and:
+
+            {
+              shipping_cost: "300000"
+            }
+          */
+
+
+          let value;
+
+
+          if (
+            settingsData &&
+            settingsData.settings
+          ) {
+
+            value =
+              Number(
+                settingsData
+                  .settings
+                  .shipping_cost
+              );
+
+          } else {
+
+            value =
+              Number(
+                settingsData &&
+                settingsData.shipping_cost
+              );
+
+          }
+
+
+          if (
+            Number.isFinite(value) &&
+            value >= 0
+          ) {
+
+            shippingCost =
+              value;
+
+          }
+
+        }
+
+
+        /* PRODUCT IMAGE */
+
+        productImage.src =
+          selectedProduct.image;
+
+        productImage.alt =
+          selectedProduct.name;
+
+
+        /* PRODUCT NAME */
+
+        productName.textContent =
+          selectedProduct.name;
+
+
+        /* PRODUCT DESCRIPTION */
+
+        productDescription.textContent =
+          selectedProduct.description ||
+          "توضیحاتی برای این محصول ثبت نشده است.";
+
+
+        /* PRODUCT PRICE */
+
+        const price =
+          Number(
+            selectedProduct.price
+          );
+
+
+        if (
+          Number.isFinite(price) &&
+          price > 0
+        ) {
+
+          productPrice.textContent =
+            formatToman(price);
+
+        } else {
+
+          productPrice.textContent =
+            "استعلام بگیرید";
+
+        }
+
+
+        /* SHOW PRODUCT */
+
+        productLoading.style.display =
+          "none";
+
+        productArea.style.display =
+          "block";
+
+
+        /* SUMMARY */
+
+        updateSummary();
+
+
+      } catch (error) {
+
+        console.error(
+          "7BOX order product error:",
+          error
+        );
+
+
+        productLoading.style.display =
+          "none";
+
+        productError.style.display =
+          "block";
+
+        productError.textContent =
+          "دریافت اطلاعات محصول با خطا مواجه شد. لطفاً دوباره تلاش کنید.";
+
+      }
+
+    }
+
+
+    /* =========================================
+       QUANTITY
+    ========================================= */
+
+    minusBtn.addEventListener(
+      "click",
+      function () {
+
+        if (
+          quantity > 1
+        ) {
+
+          quantity--;
+
+          quantityValue.textContent =
+            quantity.toLocaleString(
+              "fa-IR"
+            );
+
+          updateSummary();
+
+        }
+
+      }
+    );
+
+
+    plusBtn.addEventListener(
+      "click",
+      function () {
+
+        if (
+          quantity < 50
+        ) {
+
+          quantity++;
+
+          quantityValue.textContent =
+            quantity.toLocaleString(
+              "fa-IR"
+            );
+
+          updateSummary();
+
+        }
+
+      }
+    );
+
+
+    /* =========================================
+       RECEIPT PREVIEW
+    ========================================= */
+
+    receiptInput.addEventListener(
+      "change",
+      function () {
+
+        const file =
+          this.files &&
+          this.files[0];
+
+
+        receiptPreview.style.display =
+          "none";
+
+        receiptPreviewImage.removeAttribute(
+          "src"
+        );
+
+
+        if (!file) {
           return;
         }
 
-        if (settingsResponse.ok) {
-          const settingsData = await settingsResponse.json();
 
-          const value = Number(
-            settingsData?.settings?.shipping_cost
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp"
+        ];
+
+
+        if (
+          !allowedTypes.includes(
+            file.type
+          )
+        ) {
+
+          this.value = "";
+
+
+          showMessage(
+            "فرمت رسید باید JPG، PNG یا WEBP باشد.",
+            "error"
           );
 
-          if (Number.isFinite(value) && value >= 0) {
-            shippingCost = value;
-          }
+
+          return;
+
         }
 
-        productImage.src = selectedProduct.image;
-        productImage.alt = selectedProduct.name;
 
-        productName.textContent = selectedProduct.name;
+        if (
+          file.size >
+          5 * 1024 * 1024
+        ) {
 
-        const price = Number(selectedProduct.price);
+          this.value = "";
 
-        if (Number.isFinite(price) && price > 0) {
-          productPrice.textContent = formatToman(price);
-        } else {
-          productPrice.textContent = "استعلام بگیرید";
+
+          showMessage(
+            "حجم تصویر رسید نباید بیشتر از ۵ مگابایت باشد.",
+            "error"
+          );
+
+
+          return;
+
         }
 
-        productLoading.style.display = "none";
-        productArea.style.display = "block";
 
-        updateSummary();
+        const reader =
+          new FileReader();
 
-      } catch (error) {
-        console.error(error);
 
-        productLoading.style.display = "none";
-        productError.style.display = "block";
-        productError.textContent =
-          "دریافت اطلاعات محصول با خطا مواجه شد. لطفاً دوباره تلاش کنید.";
-      }
-    }
+        reader.onload =
+          function (event) {
 
-    minusBtn.addEventListener("click", function () {
-      if (quantity > 1) {
-        quantity--;
-        quantityValue.textContent = quantity.toLocaleString("fa-IR");
-        updateSummary();
-      }
-    });
+            receiptPreviewImage.src =
+              event.target.result;
 
-    plusBtn.addEventListener("click", function () {
-      if (quantity < 50) {
-        quantity++;
-        quantityValue.textContent = quantity.toLocaleString("fa-IR");
-        updateSummary();
-      }
-    });
+            receiptPreview.style.display =
+              "block";
 
-    receiptInput.addEventListener("change", function () {
-      const file = this.files && this.files[0];
+          };
 
-      receiptPreview.style.display = "none";
-      receiptPreviewImage.removeAttribute("src");
 
-      if (!file) return;
-
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        this.value = "";
-        showMessage(
-          "فرمت رسید باید JPG، PNG یا WEBP باشد.",
-          "error"
+        reader.readAsDataURL(
+          file
         );
-        return;
+
       }
+    );
 
-      if (file.size > 5 * 1024 * 1024) {
-        this.value = "";
-        showMessage(
-          "حجم تصویر رسید نباید بیشتر از ۵ مگابایت باشد.",
-          "error"
-        );
-        return;
-      }
 
-      const reader = new FileReader();
-
-      reader.onload = function (event) {
-        receiptPreviewImage.src = event.target.result;
-        receiptPreview.style.display = "block";
-      };
-
-      reader.readAsDataURL(file);
-    });
+    /* =========================================
+       FILE TO BASE64
+    ========================================= */
 
     function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
 
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
+      return new Promise(
+        (
+          resolve,
+          reject
+        ) => {
 
-        reader.readAsDataURL(file);
-      });
+          const reader =
+            new FileReader();
+
+
+          reader.onload =
+            () =>
+              resolve(
+                reader.result
+              );
+
+
+          reader.onerror =
+            reject;
+
+
+          reader.readAsDataURL(
+            file
+          );
+
+        }
+      );
+
     }
 
-    orderForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
 
-      hideMessage();
+    /* =========================================
+       SUBMIT ORDER
+    ========================================= */
 
-      if (!selectedProduct) {
-        showMessage(
-          "محصول انتخاب نشده است.",
-          "error"
-        );
-        return;
-      }
+    orderForm.addEventListener(
+      "submit",
+      async function (event) {
 
-      const price = Number(selectedProduct.price);
+        event.preventDefault();
 
-      if (!Number.isFinite(price) || price <= 0) {
-        showMessage(
-          "قیمت این محصول هنوز توسط مدیریت تعیین نشده است.",
-          "error"
-        );
-        return;
-      }
 
-      const receiptFile = receiptInput.files && receiptInput.files[0];
+        hideMessage();
 
-      if (!receiptFile) {
-        showMessage(
-          "لطفاً تصویر رسید پرداخت را انتخاب کنید.",
-          "error"
-        );
-        receiptInput.focus();
-        return;
-      }
 
-      if (receiptFile.size > 5 * 1024 * 1024) {
-        showMessage(
-          "حجم رسید نباید بیشتر از ۵ مگابایت باشد.",
-          "error"
-        );
-        return;
-      }
+        if (!selectedProduct) {
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "در حال ثبت سفارش...";
+          showMessage(
+            "محصول انتخاب نشده است.",
+            "error"
+          );
 
-      try {
-        const receiptBase64 = await fileToBase64(receiptFile);
+          return;
 
-        const formData = new FormData(orderForm);
+        }
 
-        const payload = {
-          product_id: productId,
-          quantity: quantity,
-          customer_name: formData.get("customer_name"),
-          phone: formData.get("phone"),
-          province: formData.get("province"),
-          city: formData.get("city"),
-          address: formData.get("address"),
-          postal_code: formData.get("postal_code"),
-          receipt_base64: receiptBase64,
-          receipt_file_name: receiptFile.name
-        };
 
-        const response = await fetch("/api/orders", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+        const price =
+          Number(
+            selectedProduct.price
+          );
 
-        let data;
+
+        if (
+          !Number.isFinite(price) ||
+          price <= 0
+        ) {
+
+          showMessage(
+            "قیمت این محصول هنوز توسط مدیریت تعیین نشده است.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const receiptFile =
+          receiptInput.files &&
+          receiptInput.files[0];
+
+
+        if (!receiptFile) {
+
+          showMessage(
+            "لطفاً تصویر رسید پرداخت را انتخاب کنید.",
+            "error"
+          );
+
+          receiptInput.focus();
+
+          return;
+
+        }
+
+
+        if (
+          receiptFile.size >
+          5 * 1024 * 1024
+        ) {
+
+          showMessage(
+            "حجم رسید نباید بیشتر از ۵ مگابایت باشد.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        submitBtn.disabled =
+          true;
+
+        submitBtn.textContent =
+          "در حال ثبت سفارش...";
+
 
         try {
-          data = await response.json();
-        } catch {
-          throw new Error("پاسخ نامعتبر از سرور دریافت شد.");
-        }
 
-        if (!response.ok || !data.ok) {
-          throw new Error(
-            data?.error || "ثبت سفارش انجام نشد."
-          );
-        }
+          const receiptBase64 =
+            await fileToBase64(
+              receiptFile
+            );
 
-        showMessage(
-          "سفارش شما با موفقیت ثبت شد.",
-          "success"
-        );
 
-        document.getElementById("trackingCode").textContent =
-          data.tracking_code || "—";
+          const formData =
+            new FormData(
+              orderForm
+            );
 
-        document.getElementById("trackingBox").style.display = "block";
 
-        submitBtn.textContent = "سفارش با موفقیت ثبت شد";
-        submitBtn.disabled = true;
+          const payload = {
 
-        orderForm.querySelectorAll(
-          "input, select, textarea, button"
-        ).forEach(element => {
-          if (element !== submitBtn) {
-            element.disabled = true;
+            product_id:
+              productId,
+
+            quantity:
+              quantity,
+
+            customer_name:
+              formData.get(
+                "customer_name"
+              ),
+
+            phone:
+              formData.get(
+                "phone"
+              ),
+
+            province:
+              formData.get(
+                "province"
+              ),
+
+            city:
+              formData.get(
+                "city"
+              ),
+
+            address:
+              formData.get(
+                "address"
+              ),
+
+            postal_code:
+              formData.get(
+                "postal_code"
+              ),
+
+            receipt_base64:
+              receiptBase64,
+
+            receipt_file_name:
+              receiptFile.name
+
+          };
+
+
+          const response =
+            await fetch(
+              "/api/orders",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+
+              }
+            );
+
+
+          let data;
+
+
+          try {
+
+            data =
+              await response.json();
+
+          } catch {
+
+            throw new Error(
+              "پاسخ نامعتبر از سرور دریافت شد."
+            );
+
           }
-        });
 
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: "smooth"
-        });
 
-      } catch (error) {
-        console.error(error);
+          if (
+            !response.ok ||
+            !data.ok
+          ) {
 
-        showMessage(
-          error.message || "خطایی هنگام ثبت سفارش رخ داد.",
-          "error"
-        );
+            throw new Error(
+              data?.error ||
+              "ثبت سفارش انجام نشد."
+            );
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = "ثبت نهایی سفارش";
+          }
+
+
+          /* SUCCESS */
+
+          showMessage(
+            "سفارش شما با موفقیت ثبت شد.",
+            "success"
+          );
+
+
+          document.getElementById(
+            "trackingCode"
+          ).textContent =
+            data.tracking_code ||
+            "—";
+
+
+          document.getElementById(
+            "trackingBox"
+          ).style.display =
+            "block";
+
+
+          submitBtn.textContent =
+            "سفارش با موفقیت ثبت شد";
+
+
+          submitBtn.disabled =
+            true;
+
+
+          orderForm
+            .querySelectorAll(
+              "input, select, textarea, button"
+            )
+            .forEach(
+              element => {
+
+                if (
+                  element !==
+                  submitBtn
+                ) {
+
+                  element.disabled =
+                    true;
+
+                }
+
+              }
+            );
+
+
+          window.scrollTo({
+
+            top:
+              document.body.scrollHeight,
+
+            behavior:
+              "smooth"
+
+          });
+
+
+        } catch (error) {
+
+          console.error(
+            "7BOX order submit error:",
+            error
+          );
+
+
+          showMessage(
+            error.message ||
+            "خطایی هنگام ثبت سفارش رخ داد.",
+            "error"
+          );
+
+
+          submitBtn.disabled =
+            false;
+
+
+          submitBtn.textContent =
+            "ثبت نهایی سفارش";
+
+        }
+
       }
-    });
+    );
+
+
+    /* =========================================
+       START
+    ========================================= */
 
     loadProduct();
+
   </script>
 
 </body>
