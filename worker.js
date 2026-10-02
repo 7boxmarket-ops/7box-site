@@ -34,11 +34,58 @@ export default {
           worker: "ok",
           database,
           telegram_configured: !!env.TELEGRAM_BOT_TOKEN,
+          telegram_admin_chat_configured: !!env.TELEGRAM_ADMIN_CHAT_ID,
           time: new Date().toISOString()
         });
       }
 
-      if (url.pathname === "/api/test-telegram" && request.method === "POST") {
+      // =========================
+      // TELEGRAM TEST - GET
+      // =========================
+      // این مسیر را می‌توان با مرورگر گوشی تست کرد.
+      // مثال:
+      // /api/test-telegram
+
+      if (
+        url.pathname === "/api/test-telegram" &&
+        request.method === "GET"
+      ) {
+        if (!env.TELEGRAM_BOT_TOKEN) {
+          return json({
+            ok: false,
+            error: "TELEGRAM_BOT_TOKEN is not configured"
+          }, 500);
+        }
+
+        const response = await telegramRequest(
+          env,
+          "sendMessage",
+          {
+            chat_id: adminChatId(env),
+            text:
+              "✅ تست Telegram از Worker موفق بود.\n\n" +
+              "Worker → Telegram\n" +
+              "زمان: " +
+              new Date().toISOString()
+          }
+        );
+
+        return json({
+          ok: response.ok,
+          telegram_request_ok: response.ok,
+          admin_chat_id_configured: !!adminChatId(env),
+          telegram: response.data
+        }, response.ok ? 200 : 500);
+      }
+
+      // =========================
+      // TELEGRAM TEST - POST
+      // =========================
+
+      if (
+        url.pathname === "/api/test-telegram" &&
+        request.method === "POST"
+      ) {
         if (!env.TELEGRAM_BOT_TOKEN) {
           return json({
             ok: false,
@@ -59,20 +106,17 @@ export default {
           }
         );
 
-        if (!response.ok) {
-          return json({
-            ok: false,
-            telegram: response.data
-          }, 500);
-        }
-
         return json({
-          ok: true,
-          message: "Telegram message sent successfully"
-        });
+          ok: response.ok,
+          telegram_request_ok: response.ok,
+          telegram: response.data
+        }, response.ok ? 200 : 500);
       }
 
-      if (url.pathname === "/api/test-db" && request.method === "GET") {
+      if (
+        url.pathname === "/api/test-db" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(
           `SELECT name
            FROM sqlite_master
@@ -86,7 +130,10 @@ export default {
         });
       }
 
-      if (url.pathname === "/api/products" && request.method === "GET") {
+      if (
+        url.pathname === "/api/products" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(
           `SELECT id,name,image,category,description,price,active
            FROM products
@@ -100,7 +147,10 @@ export default {
         });
       }
 
-      if (url.pathname === "/api/settings" && request.method === "GET") {
+      if (
+        url.pathname === "/api/settings" &&
+        request.method === "GET"
+      ) {
         const result = await env.DB.prepare(
           `SELECT key,value
            FROM settings
@@ -123,15 +173,24 @@ export default {
       // ADMIN AUTH
       // =========================
 
-      if (url.pathname === "/api/admin/login" && request.method === "POST") {
+      if (
+        url.pathname === "/api/admin/login" &&
+        request.method === "POST"
+      ) {
         return await adminLogin(request, env);
       }
 
-      if (url.pathname === "/api/admin/logout" && request.method === "POST") {
+      if (
+        url.pathname === "/api/admin/logout" &&
+        request.method === "POST"
+      ) {
         return await adminLogout(request);
       }
 
-      if (url.pathname === "/api/admin/me" && request.method === "GET") {
+      if (
+        url.pathname === "/api/admin/me" &&
+        request.method === "GET"
+      ) {
         if (!await isAdmin(request, env)) {
           return json({
             ok: false,
@@ -301,7 +360,10 @@ export default {
       // PUBLIC ORDER
       // =========================
 
-      if (url.pathname === "/api/orders" && request.method === "POST") {
+      if (
+        url.pathname === "/api/orders" &&
+        request.method === "POST"
+      ) {
         return await createOrder(request, env);
       }
 
@@ -464,7 +526,8 @@ async function isAdmin(request, env) {
     return false;
   }
 
-  const cookieHeader = request.headers.get("Cookie") || "";
+  const cookieHeader =
+    request.headers.get("Cookie") || "";
 
   const cookies = {};
 
@@ -473,45 +536,61 @@ async function isAdmin(request, env) {
 
     if (index === -1) return;
 
-    const key = part.slice(0, index).trim();
-    const value = part.slice(index + 1).trim();
+    const key =
+      part.slice(0, index).trim();
+
+    const value =
+      part.slice(index + 1).trim();
 
     cookies[key] = value;
   });
 
-  const token = cookies[ADMIN_COOKIE];
+  const token =
+    cookies[ADMIN_COOKIE];
 
   if (!token) {
     return false;
   }
 
-  const parts = token.split(".");
+  const parts =
+    token.split(".");
 
   if (parts.length !== 2) {
     return false;
   }
 
-  const timestamp = parts[0];
-  const providedSignature = parts[1];
+  const timestamp =
+    parts[0];
 
-  const time = Number(timestamp);
+  const providedSignature =
+    parts[1];
+
+  const time =
+    Number(timestamp);
 
   if (!Number.isFinite(time)) {
     return false;
   }
 
-  if (Date.now() - time > 8 * 60 * 60 * 1000) {
+  if (
+    Date.now() - time >
+    8 * 60 * 60 * 1000
+  ) {
     return false;
   }
 
-  if (time > Date.now() + 60 * 1000) {
+  if (
+    time >
+    Date.now() + 60 * 1000
+  ) {
     return false;
   }
 
-  const expectedSignature = await sign(
-    timestamp,
-    env.ADMIN_SESSION_SECRET
-  );
+  const expectedSignature =
+    await sign(
+      timestamp,
+      env.ADMIN_SESSION_SECRET
+    );
 
   return safeEqual(
     providedSignature,
@@ -536,7 +615,8 @@ async function updateProduct(request, env) {
     }, 400);
   }
 
-  const id = Number(body.id);
+  const id =
+    Number(body.id);
 
   const price =
     body.price === null ||
@@ -545,7 +625,10 @@ async function updateProduct(request, env) {
       ? null
       : Number(body.price);
 
-  if (!Number.isInteger(id) || id <= 0) {
+  if (
+    !Number.isInteger(id) ||
+    id <= 0
+  ) {
     return json({
       ok: false,
       error: "Invalid product ID"
@@ -554,7 +637,8 @@ async function updateProduct(request, env) {
 
   if (
     price !== null &&
-    (!Number.isInteger(price) || price < 0)
+    (!Number.isInteger(price) ||
+      price < 0)
   ) {
     return json({
       ok: false,
@@ -562,9 +646,14 @@ async function updateProduct(request, env) {
     }, 400);
   }
 
-  const product = await env.DB.prepare(
-    `SELECT id,name FROM products WHERE id = ?`
-  ).bind(id).first();
+  const product =
+    await env.DB.prepare(
+      `SELECT id,name
+       FROM products
+       WHERE id = ?`
+    )
+    .bind(id)
+    .first();
 
   if (!product) {
     return json({
@@ -577,7 +666,9 @@ async function updateProduct(request, env) {
     `UPDATE products
      SET price = ?
      WHERE id = ?`
-  ).bind(price, id).run();
+  )
+  .bind(price, id)
+  .run();
 
   return json({
     ok: true,
@@ -604,7 +695,8 @@ async function updateSettings(request, env) {
     }, 400);
   }
 
-  const shippingCost = Number(body.shipping_cost);
+  const shippingCost =
+    Number(body.shipping_cost);
 
   if (
     !Number.isInteger(shippingCost) ||
@@ -621,7 +713,9 @@ async function updateSettings(request, env) {
      VALUES ('shipping_cost',?)
      ON CONFLICT(key)
      DO UPDATE SET value = excluded.value`
-  ).bind(String(shippingCost)).run();
+  )
+  .bind(String(shippingCost))
+  .run();
 
   return json({
     ok: true,
@@ -647,8 +741,11 @@ async function updateOrderStatus(request, env) {
     }, 400);
   }
 
-  const trackingCode = clean(body.tracking_code);
-  const status = clean(body.status);
+  const trackingCode =
+    clean(body.tracking_code);
+
+  const status =
+    clean(body.status);
 
   if (!trackingCode) {
     return json({
@@ -664,15 +761,18 @@ async function updateOrderStatus(request, env) {
     }, 400);
   }
 
-  const order = await env.DB.prepare(
-    `SELECT
-      tracking_code,
-      product_name,
-      status,
-      customer_name
-     FROM orders
-     WHERE tracking_code = ?`
-  ).bind(trackingCode).first();
+  const order =
+    await env.DB.prepare(
+      `SELECT
+        tracking_code,
+        product_name,
+        status,
+        customer_name
+       FROM orders
+       WHERE tracking_code = ?`
+    )
+    .bind(trackingCode)
+    .first();
 
   if (!order) {
     return json({
@@ -681,29 +781,40 @@ async function updateOrderStatus(request, env) {
     }, 404);
   }
 
-  const now = new Date().toISOString();
+  const now =
+    new Date().toISOString();
 
   await env.DB.prepare(
     `UPDATE orders
      SET status = ?, updated_at = ?
      WHERE tracking_code = ?`
-  ).bind(status, now, trackingCode).run();
+  )
+  .bind(
+    status,
+    now,
+    trackingCode
+  )
+  .run();
+
+  let telegramStatusNotification = null;
 
   if (env.TELEGRAM_BOT_TOKEN) {
     try {
-      await telegramRequest(
-        env,
-        "sendMessage",
-        {
-          chat_id: adminChatId(env),
-          text:
-            `🔄 تغییر وضعیت سفارش 7BOX\n\n` +
-            `🔖 کد رهگیری: ${trackingCode}\n` +
-            `📦 محصول: ${order.product_name}\n` +
-            `👤 مشتری: ${order.customer_name}\n\n` +
-            `📌 وضعیت جدید: ${status}`
-        }
-      );
+      telegramStatusNotification =
+        await telegramRequest(
+          env,
+          "sendMessage",
+          {
+            chat_id: adminChatId(env),
+            text:
+              `🔄 تغییر وضعیت سفارش 7BOX\n\n` +
+              `🔖 کد رهگیری: ${trackingCode}\n` +
+              `📦 محصول: ${order.product_name}\n` +
+              `👤 مشتری: ${order.customer_name}\n\n` +
+              `📌 وضعیت جدید: ${status}`
+          }
+        );
+
     } catch (error) {
       console.error(
         "Telegram status notification:",
@@ -715,7 +826,9 @@ async function updateOrderStatus(request, env) {
   return json({
     ok: true,
     tracking_code: trackingCode,
-    status
+    status,
+    telegram_notification:
+      telegramStatusNotification
   });
 }
 
@@ -736,8 +849,11 @@ async function updateOrderNote(request, env) {
     }, 400);
   }
 
-  const trackingCode = clean(body.tracking_code);
-  const note = clean(body.admin_note);
+  const trackingCode =
+    clean(body.tracking_code);
+
+  const note =
+    clean(body.admin_note);
 
   if (!trackingCode) {
     return json({
@@ -746,11 +862,14 @@ async function updateOrderNote(request, env) {
     }, 400);
   }
 
-  const order = await env.DB.prepare(
-    `SELECT tracking_code
-     FROM orders
-     WHERE tracking_code = ?`
-  ).bind(trackingCode).first();
+  const order =
+    await env.DB.prepare(
+      `SELECT tracking_code
+       FROM orders
+       WHERE tracking_code = ?`
+    )
+    .bind(trackingCode)
+    .first();
 
   if (!order) {
     return json({
@@ -759,17 +878,20 @@ async function updateOrderNote(request, env) {
     }, 404);
   }
 
-  const now = new Date().toISOString();
+  const now =
+    new Date().toISOString();
 
   await env.DB.prepare(
     `UPDATE orders
      SET admin_note = ?, updated_at = ?
      WHERE tracking_code = ?`
-  ).bind(
+  )
+  .bind(
     note || null,
     now,
     trackingCode
-  ).run();
+  )
+  .run();
 
   return json({
     ok: true,
@@ -795,15 +917,29 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  const productId = Number(body.product_id);
-  const quantity = Number(body.quantity);
+  const productId =
+    Number(body.product_id);
 
-  const customerName = clean(body.customer_name);
-  const phone = clean(body.phone);
-  const province = clean(body.province);
-  const city = clean(body.city);
-  const address = clean(body.address);
-  const postalCode = clean(body.postal_code);
+  const quantity =
+    Number(body.quantity);
+
+  const customerName =
+    clean(body.customer_name);
+
+  const phone =
+    clean(body.phone);
+
+  const province =
+    clean(body.province);
+
+  const city =
+    clean(body.city);
+
+  const address =
+    clean(body.address);
+
+  const postalCode =
+    clean(body.postal_code);
 
   const receiptBase64 =
     body.receipt_base64 || null;
@@ -811,7 +947,10 @@ async function createOrder(request, env) {
   const receiptFileName =
     clean(body.receipt_file_name);
 
-  if (!Number.isInteger(productId) || productId <= 0) {
+  if (
+    !Number.isInteger(productId) ||
+    productId <= 0
+  ) {
     return json({
       ok: false,
       error: "Invalid product"
@@ -829,14 +968,20 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  if (!customerName || customerName.length < 2) {
+  if (
+    !customerName ||
+    customerName.length < 2
+  ) {
     return json({
       ok: false,
       error: "Customer name is required"
     }, 400);
   }
 
-  if (!phone || phone.length < 8) {
+  if (
+    !phone ||
+    phone.length < 8
+  ) {
     return json({
       ok: false,
       error: "Phone number is required"
@@ -857,14 +1002,20 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  if (!address || address.length < 5) {
+  if (
+    !address ||
+    address.length < 5
+  ) {
     return json({
       ok: false,
       error: "Address is required"
     }, 400);
   }
 
-  if (!postalCode || postalCode.length < 5) {
+  if (
+    !postalCode ||
+    postalCode.length < 5
+  ) {
     return json({
       ok: false,
       error: "Postal code is required"
@@ -878,12 +1029,15 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  const product = await env.DB.prepare(
-    `SELECT id,name,price,active
-     FROM products
-     WHERE id = ?
-     LIMIT 1`
-  ).bind(productId).first();
+  const product =
+    await env.DB.prepare(
+      `SELECT id,name,price,active
+       FROM products
+       WHERE id = ?
+       LIMIT 1`
+    )
+    .bind(productId)
+    .first();
 
   if (!product) {
     return json({
@@ -899,7 +1053,8 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  const unitPrice = Number(product.price);
+  const unitPrice =
+    Number(product.price);
 
   if (
     !Number.isFinite(unitPrice) ||
@@ -911,16 +1066,19 @@ async function createOrder(request, env) {
     }, 400);
   }
 
-  const shippingSetting = await env.DB.prepare(
-    `SELECT value
-     FROM settings
-     WHERE key = 'shipping_cost'
-     LIMIT 1`
-  ).first();
+  const shippingSetting =
+    await env.DB.prepare(
+      `SELECT value
+       FROM settings
+       WHERE key = 'shipping_cost'
+       LIMIT 1`
+    )
+    .first();
 
-  const shippingCost = Number(
-    shippingSetting?.value || 300000
-  );
+  const shippingCost =
+    Number(
+      shippingSetting?.value || 300000
+    );
 
   if (
     !Number.isFinite(shippingCost) ||
@@ -972,7 +1130,8 @@ async function createOrder(request, env) {
     VALUES (
       ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
     )`
-  ).bind(
+  )
+  .bind(
     trackingCode,
     product.id,
     product.name,
@@ -992,18 +1151,22 @@ async function createOrder(request, env) {
     null,
     now,
     now
-  ).run();
+  )
+  .run();
 
   let telegramSent = false;
   let receiptSent = false;
 
+  let telegramMessageResult = null;
+  let telegramReceiptResult = null;
+
   if (env.TELEGRAM_BOT_TOKEN) {
+
+    // =========================
+    // ORDER MESSAGE
+    // =========================
+
     try {
-
-      // =========================
-      // ORDER MESSAGE
-      // =========================
-
       const telegramMessage =
         `🛒 سفارش جدید 7BOX\n\n` +
         `🔖 کد رهگیری: ${trackingCode}\n` +
@@ -1021,7 +1184,7 @@ async function createOrder(request, env) {
         `🧾 رسید: ${receiptFileName || "ارسال شده"}\n\n` +
         `📌 وضعیت: ثبت سفارش`;
 
-      const telegramResponse =
+      telegramMessageResult =
         await telegramRequest(
           env,
           "sendMessage",
@@ -1037,225 +1200,264 @@ async function createOrder(request, env) {
         );
 
       telegramSent =
-        telegramResponse.ok;
+        telegramMessageResult.ok;
 
-      // =========================
-      // SEND RECEIPT
-      // =========================
+    } catch (error) {
+      telegramMessageResult = {
+        ok: false,
+        exception:
+          String(error?.message || error)
+      };
 
-      try {
-        let base64Data =
-          receiptBase64;
+      console.error(
+        "Telegram order message error:",
+        error
+      );
+    }
 
-        let mimeType =
-          "image/jpeg";
+    // =========================
+    // SEND RECEIPT
+    // =========================
 
-        if (base64Data.startsWith("data:")) {
-          const commaIndex =
-            base64Data.indexOf(",");
+    try {
 
-          if (commaIndex !== -1) {
-            const header =
-              base64Data.substring(
-                0,
-                commaIndex
-              );
+      let base64Data =
+        receiptBase64;
 
-            const match =
-              header.match(
-                /^data:(image\/[^;]+);base64$/i
-              );
+      let mimeType =
+        "image/jpeg";
 
-            if (match) {
-              mimeType =
-                match[1].toLowerCase();
-            }
+      if (
+        base64Data.startsWith("data:")
+      ) {
+        const commaIndex =
+          base64Data.indexOf(",");
 
-            base64Data =
-              base64Data.substring(
-                commaIndex + 1
-              );
+        if (commaIndex !== -1) {
+
+          const header =
+            base64Data.substring(
+              0,
+              commaIndex
+            );
+
+          const match =
+            header.match(
+              /^data:(image\/[^;]+);base64$/i
+            );
+
+          if (match) {
+            mimeType =
+              match[1].toLowerCase();
           }
-        } else {
-          const lowerFileName =
-            receiptFileName.toLowerCase();
 
-          if (
-            lowerFileName.endsWith(".jpg") ||
-            lowerFileName.endsWith(".jpeg")
-          ) {
-            mimeType =
-              "image/jpeg";
-          } else if (
-            lowerFileName.endsWith(".png")
-          ) {
-            mimeType =
-              "image/png";
-          } else if (
-            lowerFileName.endsWith(".webp")
-          ) {
-            mimeType =
-              "image/webp";
-          }
+          base64Data =
+            base64Data.substring(
+              commaIndex + 1
+            );
         }
+      } else {
 
-        base64Data =
-          base64Data.replace(
-            /\s/g,
-            ""
-          );
+        const lowerFileName =
+          receiptFileName.toLowerCase();
 
-        const binaryString =
-          atob(base64Data);
-
-        const bytes =
-          new Uint8Array(
-            binaryString.length
-          );
-
-        for (
-          let i = 0;
-          i < binaryString.length;
-          i++
-        ) {
-          bytes[i] =
-            binaryString.charCodeAt(i);
-        }
-
-        const fileName =
-          receiptFileName ||
-          `receipt-${trackingCode}`;
-
-        const formData =
-          new FormData();
-
-        formData.append(
-          "chat_id",
-          adminChatId(env)
-        );
-
-        formData.append(
-          "caption",
-          `🧾 فیش واریزی سفارش 7BOX\n` +
-          `🔖 کد رهگیری: ${trackingCode}\n` +
-          `👤 مشتری: ${customerName}\n` +
-          `📦 محصول: ${product.name}`
-        );
-
-        // JPG / JPEG
         if (
-          mimeType === "image/jpeg" ||
-          mimeType === "image/jpg" ||
-          fileName.toLowerCase().endsWith(".jpg") ||
-          fileName.toLowerCase().endsWith(".jpeg")
+          lowerFileName.endsWith(".jpg") ||
+          lowerFileName.endsWith(".jpeg")
         ) {
+          mimeType =
+            "image/jpeg";
 
-          formData.append(
-            "photo",
-            new Blob(
-              [bytes],
-              {
-                type: "image/jpeg"
-              }
-            ),
-            fileName.toLowerCase().endsWith(".jpeg")
+        } else if (
+          lowerFileName.endsWith(".png")
+        ) {
+          mimeType =
+            "image/png";
+
+        } else if (
+          lowerFileName.endsWith(".webp")
+        ) {
+          mimeType =
+            "image/webp";
+        }
+      }
+
+      base64Data =
+        base64Data.replace(
+          /\s/g,
+          ""
+        );
+
+      const binaryString =
+        atob(base64Data);
+
+      const bytes =
+        new Uint8Array(
+          binaryString.length
+        );
+
+      for (
+        let i = 0;
+        i < binaryString.length;
+        i++
+      ) {
+        bytes[i] =
+          binaryString.charCodeAt(i);
+      }
+
+      const fileName =
+        receiptFileName ||
+        `receipt-${trackingCode}`;
+
+      const formData =
+        new FormData();
+
+      formData.append(
+        "chat_id",
+        adminChatId(env)
+      );
+
+      formData.append(
+        "caption",
+        `🧾 فیش واریزی سفارش 7BOX\n` +
+        `🔖 کد رهگیری: ${trackingCode}\n` +
+        `👤 مشتری: ${customerName}\n` +
+        `📦 محصول: ${product.name}`
+      );
+
+      // =========================
+      // JPG / JPEG
+      // =========================
+
+      if (
+        mimeType === "image/jpeg" ||
+        mimeType === "image/jpg" ||
+        fileName.toLowerCase().endsWith(".jpg") ||
+        fileName.toLowerCase().endsWith(".jpeg")
+      ) {
+
+        const uploadName =
+          fileName
+            .toLowerCase()
+            .endsWith(".jpeg")
+            ? fileName
+            : fileName
+                .toLowerCase()
+                .endsWith(".jpg")
               ? fileName
-              : fileName.endsWith(".jpg")
-                ? fileName
-                : `${fileName}.jpg`
+              : `${fileName}.jpg`;
+
+        formData.append(
+          "photo",
+          new Blob(
+            [bytes],
+            {
+              type: "image/jpeg"
+            }
+          ),
+          uploadName
+        );
+
+        const photoResponse =
+          await fetch(
+            `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
+            {
+              method: "POST",
+              body: formData
+            }
           );
 
-          const photoResponse =
-            await fetch(
-              `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
-              {
-                method: "POST",
-                body: formData
-              }
-            );
+        let photoData;
 
-          let photoData;
-
-          try {
-            photoData =
-              await photoResponse.json();
-          } catch {
-            photoData = {
-              ok: false,
-              error:
-                "Invalid Telegram photo response"
-            };
-          }
-
-          receiptSent =
-            photoResponse.ok &&
-            photoData.ok === true;
-
-          if (!receiptSent) {
-            console.error(
-              "Telegram receipt photo error:",
-              photoData
-            );
-          }
-
-        } else {
-
-          // PNG / WEBP / OTHER
-          formData.append(
-            "document",
-            new Blob(
-              [bytes],
-              {
-                type: mimeType
-              }
-            ),
-            fileName
-          );
-
-          const documentResponse =
-            await fetch(
-              `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`,
-              {
-                method: "POST",
-                body: formData
-              }
-            );
-
-          let documentData;
-
-          try {
-            documentData =
-              await documentResponse.json();
-          } catch {
-            documentData = {
-              ok: false,
-              error:
-                "Invalid Telegram document response"
-            };
-          }
-
-          receiptSent =
-            documentResponse.ok &&
-            documentData.ok === true;
-
-          if (!receiptSent) {
-            console.error(
-              "Telegram receipt document error:",
-              documentData
-            );
-          }
+        try {
+          photoData =
+            await photoResponse.json();
+        } catch {
+          photoData = {
+            ok: false,
+            error:
+              "Invalid Telegram photo response"
+          };
         }
 
-      } catch (error) {
-        console.error(
-          "Telegram receipt sending error:",
-          error
+        telegramReceiptResult =
+          photoData;
+
+        receiptSent =
+          photoResponse.ok &&
+          photoData.ok === true;
+
+        if (!receiptSent) {
+          console.error(
+            "Telegram receipt photo error:",
+            photoData
+          );
+        }
+
+      } else {
+
+        // =========================
+        // PNG / WEBP / OTHER
+        // =========================
+
+        formData.append(
+          "document",
+          new Blob(
+            [bytes],
+            {
+              type: mimeType
+            }
+          ),
+          fileName
         );
+
+        const documentResponse =
+          await fetch(
+            `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`,
+            {
+              method: "POST",
+              body: formData
+            }
+          );
+
+        let documentData;
+
+        try {
+          documentData =
+            await documentResponse.json();
+        } catch {
+          documentData = {
+            ok: false,
+            error:
+              "Invalid Telegram document response"
+          };
+        }
+
+        telegramReceiptResult =
+          documentData;
+
+        receiptSent =
+          documentResponse.ok &&
+          documentData.ok === true;
+
+        if (!receiptSent) {
+          console.error(
+            "Telegram receipt document error:",
+            documentData
+          );
+        }
       }
 
     } catch (error) {
+
+      telegramReceiptResult = {
+        ok: false,
+        exception:
+          String(error?.message || error)
+      };
+
       console.error(
-        "Telegram notification error:",
+        "Telegram receipt sending error:",
         error
       );
     }
@@ -1267,8 +1469,19 @@ async function createOrder(request, env) {
     tracking_code: trackingCode,
     status: "ثبت سفارش",
     total_amount: totalAmount,
-    telegram_sent: telegramSent,
-    receipt_sent: receiptSent
+
+    telegram_sent:
+      telegramSent,
+
+    receipt_sent:
+      receiptSent,
+
+    // فقط برای تشخیص خطا
+    telegram_message_result:
+      telegramMessageResult,
+
+    telegram_receipt_result:
+      telegramReceiptResult
   }, 201);
 }
 
@@ -1277,22 +1490,28 @@ async function createOrder(request, env) {
 // TELEGRAM WEBHOOK
 // ========================================
 
-async function handleTelegramWebhook(request, env) {
+async function handleTelegramWebhook(
+  request,
+  env
+) {
   if (!env.TELEGRAM_BOT_TOKEN) {
     return json({
       ok: false,
-      error: "TELEGRAM_BOT_TOKEN is not configured"
+      error:
+        "TELEGRAM_BOT_TOKEN is not configured"
     }, 500);
   }
 
   let update;
 
   try {
-    update = await request.json();
+    update =
+      await request.json();
   } catch {
     return json({
       ok: false,
-      error: "Invalid Telegram update"
+      error:
+        "Invalid Telegram update"
     }, 400);
   }
 
@@ -1301,6 +1520,7 @@ async function handleTelegramWebhook(request, env) {
   // =========================
 
   if (update.callback_query) {
+
     await handleTelegramCallback(
       update.callback_query,
       env
@@ -1316,14 +1536,18 @@ async function handleTelegramWebhook(request, env) {
   // =========================
 
   if (update.message) {
+
     const message =
       update.message;
 
     const chatId =
-      String(message.chat?.id || "");
+      String(
+        message.chat?.id || ""
+      );
 
     if (
-      chatId !== String(adminChatId(env))
+      chatId !==
+      String(adminChatId(env))
     ) {
       return json({
         ok: true
@@ -1334,11 +1558,14 @@ async function handleTelegramWebhook(request, env) {
       clean(message.text);
 
     if (text === "/start") {
+
       await telegramRequest(
         env,
         "sendMessage",
         {
-          chat_id: adminChatId(env),
+          chat_id:
+            adminChatId(env),
+
           text:
             "👋 پنل مدیریت 7BOX\n\n" +
             "دستورهای موجود:\n\n" +
@@ -1350,11 +1577,14 @@ async function handleTelegramWebhook(request, env) {
     }
 
     if (text === "/help") {
+
       await telegramRequest(
         env,
         "sendMessage",
         {
-          chat_id: adminChatId(env),
+          chat_id:
+            adminChatId(env),
+
           text:
             "📋 راهنمای مدیریت 7BOX\n\n" +
             "وقتی سفارش جدید ثبت شود، " +
@@ -1387,28 +1617,39 @@ async function handleTelegramCallback(
     callbackQuery.id;
 
   const userId =
-    String(callbackQuery.from?.id || "");
+    String(
+      callbackQuery.from?.id || ""
+    );
 
   const adminId =
-    String(adminChatId(env));
+    String(
+      adminChatId(env)
+    );
 
   const message =
     callbackQuery.message;
 
   const chatId =
-    String(message?.chat?.id || "");
+    String(
+      message?.chat?.id || ""
+    );
 
   // فقط ادمین
   if (
     userId !== adminId ||
     chatId !== adminId
   ) {
+
     await telegramRequest(
       env,
       "answerCallbackQuery",
       {
-        callback_query_id: callbackId,
-        text: "⛔ دسترسی مجاز نیست.",
+        callback_query_id:
+          callbackId,
+
+        text:
+          "⛔ دسترسی مجاز نیست.",
+
         show_alert: true
       }
     );
@@ -1426,12 +1667,17 @@ async function handleTelegramCallback(
     parts.length !== 3 ||
     parts[0] !== "order"
   ) {
+
     await telegramRequest(
       env,
       "answerCallbackQuery",
       {
-        callback_query_id: callbackId,
-        text: "دستور نامعتبر است.",
+        callback_query_id:
+          callbackId,
+
+        text:
+          "دستور نامعتبر است.",
+
         show_alert: true
       }
     );
@@ -1448,14 +1694,20 @@ async function handleTelegramCallback(
   if (
     !Number.isInteger(statusIndex) ||
     statusIndex < 0 ||
-    statusIndex >= ORDER_STATUSES.length
+    statusIndex >=
+      ORDER_STATUSES.length
   ) {
+
     await telegramRequest(
       env,
       "answerCallbackQuery",
       {
-        callback_query_id: callbackId,
-        text: "وضعیت نامعتبر است.",
+        callback_query_id:
+          callbackId,
+
+        text:
+          "وضعیت نامعتبر است.",
+
         show_alert: true
       }
     );
@@ -1464,7 +1716,9 @@ async function handleTelegramCallback(
   }
 
   const status =
-    ORDER_STATUSES[statusIndex];
+    ORDER_STATUSES[
+      statusIndex
+    ];
 
   const order =
     await env.DB.prepare(
@@ -1494,12 +1748,17 @@ async function handleTelegramCallback(
     .first();
 
   if (!order) {
+
     await telegramRequest(
       env,
       "answerCallbackQuery",
       {
-        callback_query_id: callbackId,
-        text: "❌ سفارش پیدا نشد.",
+        callback_query_id:
+          callbackId,
+
+        text:
+          "❌ سفارش پیدا نشد.",
+
         show_alert: true
       }
     );
@@ -1526,8 +1785,11 @@ async function handleTelegramCallback(
     env,
     "answerCallbackQuery",
     {
-      callback_query_id: callbackId,
-      text: `وضعیت شد: ${status}`
+      callback_query_id:
+        callbackId,
+
+      text:
+        `وضعیت شد: ${status}`
     }
   );
 
@@ -1543,14 +1805,21 @@ async function handleTelegramCallback(
     );
 
   if (message?.message_id) {
+
     const editResponse =
       await telegramRequest(
         env,
         "editMessageText",
         {
-          chat_id: adminChatId(env),
-          message_id: message.message_id,
-          text: messageText,
+          chat_id:
+            adminChatId(env),
+
+          message_id:
+            message.message_id,
+
+          text:
+            messageText,
+
           reply_markup:
             orderStatusKeyboard(
               trackingCode,
@@ -1579,7 +1848,11 @@ function orderStatusKeyboard(
 ) {
   const buttons = [];
 
-  for (const status of ORDER_STATUSES) {
+  for (
+    const status
+    of ORDER_STATUSES
+  ) {
+
     const icon =
       status === currentStatus
         ? "✅"
@@ -1589,7 +1862,9 @@ function orderStatusKeyboard(
 
     buttons.push([
       {
-        text: `${icon} ${status}`,
+        text:
+          `${icon} ${status}`,
+
         callback_data:
           `order:${trackingCode}:${ORDER_STATUSES.indexOf(status)}`
       }
@@ -1597,7 +1872,8 @@ function orderStatusKeyboard(
   }
 
   return {
-    inline_keyboard: buttons
+    inline_keyboard:
+      buttons
   };
 }
 
@@ -1606,7 +1882,9 @@ function orderStatusKeyboard(
 // TELEGRAM ORDER MESSAGE
 // ========================================
 
-function buildTelegramOrderMessage(order) {
+function buildTelegramOrderMessage(
+  order
+) {
   return (
     `🛒 سفارش 7BOX\n\n` +
     `🔖 کد رهگیری: ${order.tracking_code}\n` +
@@ -1652,12 +1930,16 @@ async function sendTelegramOrders(env) {
     result.results || [];
 
   if (!orders.length) {
+
     await telegramRequest(
       env,
       "sendMessage",
       {
-        chat_id: adminChatId(env),
-        text: "📭 هنوز سفارشی ثبت نشده است."
+        chat_id:
+          adminChatId(env),
+
+        text:
+          "📭 هنوز سفارشی ثبت نشده است."
       }
     );
 
@@ -1667,7 +1949,11 @@ async function sendTelegramOrders(env) {
   let text =
     "📦 آخرین سفارش‌های 7BOX\n\n";
 
-  for (const order of orders) {
+  for (
+    const order
+    of orders
+  ) {
+
     text +=
       `🔖 ${order.tracking_code}\n` +
       `📦 ${order.product_name}\n` +
@@ -1680,7 +1966,9 @@ async function sendTelegramOrders(env) {
     env,
     "sendMessage",
     {
-      chat_id: adminChatId(env),
+      chat_id:
+        adminChatId(env),
+
       text
     }
   );
@@ -1696,37 +1984,69 @@ async function telegramRequest(
   method,
   body
 ) {
-  const response =
-    await fetch(
-      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(body)
-      }
-    );
-
-  let data;
-
   try {
-    data =
-      await response.json();
-  } catch {
-    data = {
+
+    const response =
+      await fetch(
+        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(body)
+        }
+      );
+
+    let data;
+
+    try {
+      data =
+        await response.json();
+
+    } catch {
+      data = {
+        ok: false,
+        error:
+          "Invalid Telegram response"
+      };
+    }
+
+    return {
+      ok:
+        response.ok &&
+        data.ok === true,
+
+      http_status:
+        response.status,
+
+      data
+    };
+
+  } catch (error) {
+
+    return {
       ok: false,
-      error: "Invalid Telegram response"
+
+      http_status: 0,
+
+      data: {
+        ok: false,
+
+        error:
+          String(
+            error?.message ||
+            error
+          )
+      }
     };
   }
-
-  return {
-    ok:
-      response.ok &&
-      data.ok,
-    data
-  };
 }
+
 
 function adminChatId(env) {
   return (
@@ -1750,26 +2070,35 @@ async function sign(
   const key =
     await crypto.subtle.importKey(
       "raw",
+
       encoder.encode(secret),
+
       {
         name: "HMAC",
         hash: "SHA-256"
       },
+
       false,
+
       ["sign"]
     );
 
   const signature =
     await crypto.subtle.sign(
       "HMAC",
+
       key,
+
       encoder.encode(value)
     );
 
   return bytesToHex(
-    new Uint8Array(signature)
+    new Uint8Array(
+      signature
+    )
   );
 }
+
 
 function bytesToHex(bytes) {
   return Array.from(bytes)
@@ -1782,6 +2111,7 @@ function bytesToHex(bytes) {
     .join("");
 }
 
+
 function safeEqual(a, b) {
   if (a.length !== b.length) {
     return false;
@@ -1789,7 +2119,11 @@ function safeEqual(a, b) {
 
   let result = 0;
 
-  for (let i = 0; i < a.length; i++) {
+  for (
+    let i = 0;
+    i < a.length;
+    i++
+  ) {
     result |=
       a.charCodeAt(i) ^
       b.charCodeAt(i);
@@ -1814,12 +2148,15 @@ function clean(value) {
   return String(value).trim();
 }
 
+
 function formatToman(value) {
   return (
-    Number(value).toLocaleString("fa-IR") +
+    Number(value)
+      .toLocaleString("fa-IR") +
     " تومان"
   );
 }
+
 
 function generateTrackingCode() {
   const now =
@@ -1836,12 +2173,14 @@ function generateTrackingCode() {
   return `7BX-${now}-${random}`;
 }
 
+
 function unauthorized() {
   return json({
     ok: false,
     error: "Unauthorized"
   }, 401);
 }
+
 
 function json(
   data,
@@ -1855,9 +2194,11 @@ function json(
     ),
     {
       status,
+
       headers: {
         "Content-Type":
           "application/json; charset=utf-8",
+
         "Cache-Control":
           "no-store"
       }
