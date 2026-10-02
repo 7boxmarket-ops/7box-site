@@ -4,8 +4,5 @@ compatibility_date = "2026-10-01"
 
 [assets]
 directory = "."
-binding = "ASSETS"[[d1_databases]]
-binding = "DB"
-database_name = "sevenbox-orders"
-database_id = "DATABASE_ID"
+binding = "ASSETS"
 run_worker_first = ["/api/*"]
