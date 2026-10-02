@@ -127,6 +127,16 @@
       color: #061008;
     }
 
+    .danger {
+      background: rgba(255,70,70,.12);
+      color: #ffb0b0;
+      border: 1px solid rgba(255,70,70,.2);
+    }
+
+    .danger:hover {
+      background: rgba(255,70,70,.2);
+    }
+
     .refresh {
       background: rgba(255,255,255,.07);
       color: #fff;
@@ -238,6 +248,12 @@
       min-width: 200px;
     }
 
+    .actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
     .message {
       display: none;
       padding: 12px;
@@ -278,6 +294,11 @@
 
       .title {
         font-size: 24px;
+      }
+
+      .actions {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -792,13 +813,28 @@ async function loadProducts() {
 
           <td>
 
-            <button
-              class="btn save"
-              onclick="saveProduct(${product.id})">
+            <div class="actions">
 
-              ذخیره
+              <button
+                class="btn save"
+                onclick="saveProduct(${product.id})">
 
-            </button>
+                ذخیره
+
+              </button>
+
+              <button
+                class="btn danger"
+                onclick="deleteProduct(
+                  ${product.id},
+                  '${escapeJs(product.name)}'
+                )">
+
+                🗑️ حذف
+
+              </button>
+
+            </div>
 
           </td>
 
@@ -846,6 +882,52 @@ async function saveProduct(id) {
 
     showMessage(
       "قیمت محصول با موفقیت ذخیره شد.",
+      "success"
+    );
+
+    await loadProducts();
+
+  } catch (error) {
+
+    if (error.message !== "AUTH") {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+    }
+  }
+}
+
+
+async function deleteProduct(id, name) {
+
+  const confirmed =
+    confirm(
+      `آیا از حذف محصول «${name}» مطمئن هستید؟`
+    );
+
+  if (!confirmed) return;
+
+  try {
+
+    await api(
+      "/api/admin/products",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify({
+            id
+          })
+      }
+    );
+
+    showMessage(
+      "محصول با موفقیت حذف شد.",
       "success"
     );
 
@@ -1108,15 +1190,29 @@ async function loadOrders() {
 
           <td>
 
-            <button
-              class="btn save"
-              onclick="saveOrder('${escapeJs(
-                order.tracking_code
-              )}')">
+            <div class="actions">
 
-              ذخیره
+              <button
+                class="btn save"
+                onclick="saveOrder('${escapeJs(
+                  order.tracking_code
+                )}')">
 
-            </button>
+                ذخیره
+
+              </button>
+
+              <button
+                class="btn danger"
+                onclick="deleteOrder('${escapeJs(
+                  order.tracking_code
+                )}')">
+
+                🗑️ حذف
+
+              </button>
+
+            </div>
 
           </td>
 
@@ -1191,6 +1287,54 @@ async function saveOrder(trackingCode) {
 
     showMessage(
       "سفارش با موفقیت بروزرسانی شد.",
+      "success"
+    );
+
+    await loadOrders();
+
+  } catch (error) {
+
+    if (error.message !== "AUTH") {
+
+      showMessage(
+        error.message,
+        "error"
+      );
+    }
+  }
+}
+
+
+async function deleteOrder(trackingCode) {
+
+  const confirmed =
+    confirm(
+      "آیا از حذف دائمی این سفارش مطمئن هستید؟\n\n" +
+      "این عملیات قابل برگشت نیست."
+    );
+
+  if (!confirmed) return;
+
+  try {
+
+    await api(
+      "/api/admin/orders",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body:
+          JSON.stringify({
+            tracking_code:
+              trackingCode
+          })
+      }
+    );
+
+    showMessage(
+      "سفارش با موفقیت حذف شد.",
       "success"
     );
 
