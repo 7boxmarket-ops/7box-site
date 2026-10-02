@@ -1,484 +1,1194 @@
-<!DOCTYPE html>  <html lang="fa" dir="rtl">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width,initial-scale=1">  
-<title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>  <style>  
-*{box-sizing:border-box;margin:0;padding:0}  
-html{scroll-behavior:smooth}  
-body{  
-font-family:Tahoma,Arial,sans-serif;  
-background:#050505;color:#fff;overflow-x:hidden  
-}  
-  
-body:before{  
-content:"";position:fixed;inset:0;z-index:-5;  
-background:  
-linear-gradient(rgba(0,0,0,.86),rgba(0,0,0,.94)),  
-url("file_000000000bc881f4b380545386922ec1.png") center/cover no-repeat;  
-opacity:.55  
-}  
-  
-body:after{  
-content:"";position:fixed;width:450px;height:450px;border-radius:50%;  
-background:radial-gradient(circle,rgba(255,255,255,.07),transparent 65%);  
-top:10%;left:-180px;z-index:-4;  
-animation:light 14s infinite alternate ease-in-out  
-}  
-  
-@keyframes light{  
-to{transform:translate(75vw,35vh)}  
-}  
-  
-.particles{position:fixed;inset:0;pointer-events:none;z-index:-2}  
-.particles i{  
-position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;  
-opacity:.18;animation:float 8s infinite ease-in-out  
-}  
-.particles i:nth-child(1){top:15%;left:10%}  
-.particles i:nth-child(2){top:30%;left:82%;animation-delay:2s}  
-.particles i:nth-child(3){top:70%;left:18%;animation-delay:4s}  
-.particles i:nth-child(4){top:80%;left:75%;animation-delay:1s}  
-.particles i:nth-child(5){top:45%;left:50%;animation-delay:3s}  
-@keyframes float{  
-50%{transform:translateY(-35px) scale(1.5);opacity:.35}  
-}  
-  
-/* HERO */  
-.hero{  
-min-height:100vh;display:flex;align-items:center;justify-content:center;  
-text-align:center;padding:40px 20px  
-}  
-.hero-content{max-width:850px}  
-.hero-logo{  
-width:145px;height:145px;object-fit:contain;margin-bottom:20px;  
-filter:drop-shadow(0 0 22px rgba(255,255,255,.18));  
-animation:logo 4s ease-in-out infinite  
-}  
-@keyframes logo{  
-50%{transform:translateY(-8px)}  
-}  
-.hero h1{font-size:clamp(45px,8vw,82px);letter-spacing:6px;margin-bottom:15px}  
-.hero p{font-size:18px;color:#ccc;margin-bottom:35px}  
-.hero-buttons{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}  
-.btn{  
-display:inline-block;padding:13px 27px;border:1px solid #ffffff40;  
-border-radius:30px;color:#fff;text-decoration:none;  
-background:#ffffff0d;backdrop-filter:blur(8px);transition:.3s  
-}  
-.btn:hover{background:#fff;color:#000;transform:translateY(-3px)}  
-.btn-main{background:#fff;color:#000}  
-  
-/* SECTIONS */  
-section{padding:85px 20px}  
-.section-title{text-align:center;margin-bottom:45px}  
-.section-title h2{font-size:32px;margin-bottom:12px}  
-.section-title p{color:#aaa}  
-  
-/* PRODUCTS */  
-.products{  
-max-width:1200px;margin:auto;  
-display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));  
-gap:25px  
-}  
-.product{  
-background:#ffffff0b;border:1px solid #ffffff1a;border-radius:20px;  
-overflow:hidden;backdrop-filter:blur(8px);transition:.3s  
-}  
-.product:hover{transform:translateY(-6px);border-color:#ffffff40}  
-.product-image{  
-height:290px;position:relative;perspective:1200px;  
-cursor:pointer;overflow:hidden  
-}  
-.flip-inner{  
-position:relative;width:100%;height:100%;  
-transform-style:preserve-3d;  
-transition:transform .75s cubic-bezier(.2,.7,.2,1)  
-}  
-.product.flipped .flip-inner{transform:rotateY(180deg)}  
-.flip-front,.flip-back{  
-position:absolute;inset:0;width:100%;height:100%;  
-backface-visibility:hidden;-webkit-backface-visibility:hidden  
-}  
-.flip-front{  
-display:flex;align-items:center;justify-content:center;  
-background:#00000040  
-}  
-.flip-front img{  
-width:100%;height:100%;object-fit:contain;padding:18px  
-}  
-.flip-back{  
-transform:rotateY(180deg);  
-display:flex;flex-direction:column;justify-content:center;  
-align-items:center;text-align:center;padding:25px;  
-background:radial-gradient(circle,#ffffff12,#000000e8)  
-}  
-.flip-back h3{font-size:21px;margin-bottom:16px}  
-.flip-back p{color:#ccc;line-height:2;font-size:14px}  
-.product-info{padding:18px;text-align:center}  
-.product-info h3{font-size:18px;margin-bottom:8px}  
-.product-info span{color:#999;font-size:13px}  
-  
-/* ABOUT */  
-.about{max-width:850px;margin:auto;text-align:center}  
-.about p{color:#bbb;line-height:2.2}  
-  
-/* SOCIAL */  
-.socials{  
-max-width:600px;margin:auto;display:flex;flex-direction:column;gap:14px  
-}  
-.social{  
-display:flex;align-items:center;justify-content:center;gap:12px;  
-padding:16px;color:#fff;text-decoration:none;  
-background:#ffffff0d;border:1px solid #ffffff1a;border-radius:15px;  
-transition:.3s  
-}  
-.social:hover{background:#ffffff1c;transform:translateX(-4px)}  
-.social svg{width:22px;height:22px;fill:currentColor}  
-  
-/* =========================  
-   BLACK ANIME WOLF  
-========================= */  
-.wolf{  
-height:360px;position:relative;overflow:hidden;  
-display:flex;align-items:flex-end;justify-content:center;  
-margin-top:10px  
-}  
-  
-/* moon */  
-.moon{  
-position:absolute;  
-width:155px;height:155px;border-radius:50%;  
-background:#eee;  
-right:calc(50% - 175px);bottom:135px;  
-opacity:.14;  
-box-shadow:0 0 30px #fff2,0 0 80px #fff1;  
-animation:moon 5s infinite ease-in-out  
-}  
-.moon:after{  
-content:"";position:absolute;  
-width:155px;height:155px;border-radius:50%;  
-background:#050505;  
-left:38px;top:-20px  
-}  
-@keyframes moon{  
-50%{opacity:.21}  
-}  
-  
-/* wolf silhouette */  
-.wolf-body{  
-position:relative;width:310px;height:245px;  
-z-index:2;animation:wolf 5s ease-in-out infinite  
-}  
-@keyframes wolf{  
-50%{transform:translateY(-6px)}  
-}  
-  
-/* head */  
-.wolf-head{  
-position:absolute;width:105px;height:95px;  
-background:#080808;border-radius:48% 48% 45% 45%;  
-left:95px;top:20px;  
-box-shadow:inset 0 0 18px #fff1,0 10px 25px #000  
-}  
-  
-/* ears */  
-.wolf-head:before,.wolf-head:after{  
-content:"";position:absolute;  
-width:42px;height:62px;background:#080808;  
-top:-37px;transform:skewY(-18deg)  
-}  
-.wolf-head:before{  
-left:3px;clip-path:polygon(0 100%,20% 0,100% 100%)  
-}  
-.wolf-head:after{  
-right:3px;clip-path:polygon(0 100%,80% 0,100% 100%)  
-}  
-  
-/* muzzle */  
-.muzzle{  
-position:absolute;width:55px;height:38px;  
-background:#111;border-radius:50%;  
-left:25px;top:58px  
-}  
-  
-/* eyes */  
-.eye{  
-position:absolute;width:8px;height:5px;  
-background:#ddd;border-radius:50%;  
-top:52px;box-shadow:0 0 10px #fff  
-}  
-.eye.one{left:25px}  
-.eye.two{right:25px}  
-  
-/* body */  
-.wolf-body:after{  
-content:"";position:absolute;  
-width:155px;height:145px;  
-background:#070707;border-radius:55% 45% 30% 30%;  
-left:75px;top:105px;  
-box-shadow:inset 0 0 25px #fff1  
-}  
-  
-/* tail */  
-.tail{  
-position:absolute;width:105px;height:38px;  
-border-radius:80% 20% 80% 20%;  
-background:#080808;  
-left:5px;top:125px;  
-transform:rotate(-28deg);  
-box-shadow:0 0 15px #fff1  
-}  
-  
-/* legs */  
-.leg{  
-position:absolute;width:27px;height:85px;  
-background:#080808;border-radius:0 0 15px 15px;  
-top:175px;z-index:3  
-}  
-.leg.a{left:105px}  
-.leg.b{left:155px}  
-.leg.c{left:195px}  
-.leg.d{left:225px}  
-  
-/* ground */  
-.wolf:after{  
-content:"";position:absolute;  
-bottom:25px;width:280px;height:24px;border-radius:50%;  
-background:#000;filter:blur(16px)  
-}  
-  
-/* FOOTER */  
-footer{  
-text-align:center;padding:35px 20px;color:#777;  
-border-top:1px solid #ffffff14;font-size:13px  
-}  
-  
-/* MOBILE */  
-@media(max-width:600px){  
-.hero{min-height:90vh}  
-.hero-logo{width:120px;height:120px}  
-.hero p{font-size:15px}  
-section{padding:65px 15px}  
-.products{grid-template-columns:repeat(2,1fr);gap:12px}  
-.product-image{height:220px}  
-.product-info{padding:14px 8px}  
-.product-info h3{font-size:15px}  
-.product-info span{font-size:11px}  
-.flip-back{padding:14px}  
-.flip-back h3{font-size:17px}  
-.flip-back p{font-size:11px;line-height:1.9}  
-.wolf{height:290px}  
-.wolf-body{transform:scale(.78);transform-origin:bottom center}  
-.moon{width:105px;height:105px;right:calc(50% - 120px);bottom:115px}  
-.moon:after{width:105px;height:105px;left:25px;top:-14px}  
-}  
-</style>  </head>  <body>  <div class="particles">  
-<i></i><i></i><i></i><i></i><i></i>  
-</div>  <header class="hero">  
-<div class="hero-content">  <img
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>7BOX | انتخاب هوشمندانه، خرید مطمئن</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+font-family:Tahoma,Arial,sans-serif;
+background:#050505;color:#fff;overflow-x:hidden
+}
+
+body:before{
+content:"";position:fixed;inset:0;z-index:-5;
+background:
+linear-gradient(rgba(0,0,0,.86),rgba(0,0,0,.94)),
+url("file_000000000bc881f4b380545386922ec1.png") center/cover no-repeat;
+opacity:.55
+}
+
+body:after{
+content:"";position:fixed;width:450px;height:450px;border-radius:50%;
+background:radial-gradient(circle,rgba(255,255,255,.07),transparent 65%);
+top:10%;left:-180px;z-index:-4;
+animation:light 14s infinite alternate ease-in-out
+}
+
+@keyframes light{
+to{transform:translate(75vw,35vh)}
+}
+
+.particles{position:fixed;inset:0;pointer-events:none;z-index:-2}
+.particles i{
+position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;
+opacity:.18;animation:float 8s infinite ease-in-out
+}
+.particles i:nth-child(1){top:15%;left:10%}
+.particles i:nth-child(2){top:30%;left:82%;animation-delay:2s}
+.particles i:nth-child(3){top:70%;left:18%;animation-delay:4s}
+.particles i:nth-child(4){top:80%;left:75%;animation-delay:1s}
+.particles i:nth-child(5){top:45%;left:50%;animation-delay:3s}
+
+@keyframes float{
+50%{transform:translateY(-35px) scale(1.5);opacity:.35}
+}
+
+/* HERO */
+
+.hero{
+min-height:100vh;display:flex;align-items:center;justify-content:center;
+text-align:center;padding:40px 20px
+}
+
+.hero-content{max-width:850px}
+
+.hero-logo{
+width:145px;height:145px;object-fit:contain;margin-bottom:20px;
+filter:drop-shadow(0 0 22px rgba(255,255,255,.18));
+animation:logo 4s ease-in-out infinite
+}
+
+@keyframes logo{
+50%{transform:translateY(-8px)}
+}
+
+.hero h1{
+font-size:clamp(45px,8vw,82px);
+letter-spacing:6px;
+margin-bottom:15px
+}
+
+.hero p{
+font-size:18px;
+color:#ccc;
+margin-bottom:35px
+}
+
+.hero-buttons{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap
+}
+
+.btn{
+display:inline-block;
+padding:13px 27px;
+border:1px solid #ffffff40;
+border-radius:30px;
+color:#fff;
+text-decoration:none;
+background:#ffffff0d;
+backdrop-filter:blur(8px);
+transition:.3s
+}
+
+.btn:hover{
+background:#fff;
+color:#000;
+transform:translateY(-3px)
+}
+
+.btn-main{
+background:#fff;
+color:#000
+}
+
+/* SECTIONS */
+
+section{
+padding:85px 20px
+}
+
+.section-title{
+text-align:center;
+margin-bottom:45px
+}
+
+.section-title h2{
+font-size:32px;
+margin-bottom:12px
+}
+
+.section-title p{
+color:#aaa
+}
+
+/* PRODUCTS */
+
+.products{
+max-width:1200px;
+margin:auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+gap:25px
+}
+
+.product{
+background:#ffffff0b;
+border:1px solid #ffffff1a;
+border-radius:20px;
+overflow:hidden;
+backdrop-filter:blur(8px);
+transition:.3s
+}
+
+.product:hover{
+transform:translateY(-6px);
+border-color:#ffffff40
+}
+
+.product-image{
+height:290px;
+position:relative;
+perspective:1200px;
+cursor:pointer;
+overflow:hidden
+}
+
+.flip-inner{
+position:relative;
+width:100%;
+height:100%;
+transform-style:preserve-3d;
+transition:transform .75s cubic-bezier(.2,.7,.2,1)
+}
+
+.product.flipped .flip-inner{
+transform:rotateY(180deg)
+}
+
+.flip-front,
+.flip-back{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+backface-visibility:hidden;
+-webkit-backface-visibility:hidden
+}
+
+.flip-front{
+display:flex;
+align-items:center;
+justify-content:center;
+background:#00000040
+}
+
+.flip-front img{
+width:100%;
+height:100%;
+object-fit:contain;
+padding:18px
+}
+
+.flip-back{
+transform:rotateY(180deg);
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:25px;
+background:radial-gradient(circle,#ffffff12,#000000e8)
+}
+
+.flip-back h3{
+font-size:21px;
+margin-bottom:16px
+}
+
+.flip-back p{
+color:#ccc;
+line-height:2;
+font-size:14px
+}
+
+.product-info{
+padding:18px;
+text-align:center
+}
+
+.product-info h3{
+font-size:18px;
+margin-bottom:8px
+}
+
+.product-info span{
+color:#999;
+font-size:13px
+}
+
+/* PRICE */
+
+.product-price{
+margin-top:12px;
+font-size:15px;
+font-weight:bold;
+color:#fff
+}
+
+.price-inquiry{
+color:#b9ffca;
+font-size:14px
+}
+
+/* ORDER BUTTON */
+
+.order-btn{
+width:100%;
+margin-top:14px;
+padding:11px 14px;
+border:1px solid rgba(150,255,180,.35);
+border-radius:12px;
+background:rgba(120,255,150,.10);
+color:#caffd4;
+font-family:Tahoma,Arial,sans-serif;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+transition:.18s ease;
+-webkit-tap-highlight-color:transparent
+}
+
+.order-btn:hover{
+background:rgba(120,255,150,.22);
+border-color:rgba(150,255,180,.65);
+transform:translateY(-2px)
+}
+
+.order-btn:active{
+background:#aaffb8;
+color:#061009;
+transform:scale(.96)
+}
+
+.order-btn:disabled{
+opacity:.45;
+cursor:not-allowed;
+transform:none
+}
+
+/* PRODUCT LOADING */
+
+.products-loading{
+grid-column:1/-1;
+text-align:center;
+padding:50px 20px;
+color:#aaa
+}
+
+.products-error{
+grid-column:1/-1;
+text-align:center;
+padding:35px 20px;
+border:1px solid #ffffff18;
+border-radius:18px;
+background:#ffffff08;
+color:#ccc;
+line-height:2
+}
+
+/* ABOUT */
+
+.about{
+max-width:850px;
+margin:auto;
+text-align:center
+}
+
+.about p{
+color:#bbb;
+line-height:2.2
+}
+
+/* SOCIAL */
+
+.socials{
+max-width:600px;
+margin:auto;
+display:flex;
+flex-direction:column;
+gap:14px
+}
+
+.social{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:12px;
+padding:16px;
+color:#fff;
+text-decoration:none;
+background:#ffffff0d;
+border:1px solid #ffffff1a;
+border-radius:15px;
+transition:.3s
+}
+
+.social:hover{
+background:#ffffff1c;
+transform:translateX(-4px)
+}
+
+.social svg{
+width:22px;
+height:22px;
+fill:currentColor
+}
+
+/* =========================
+   BLACK ANIME WOLF
+========================= */
+
+.wolf{
+height:360px;
+position:relative;
+overflow:hidden;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+margin-top:10px
+}
+
+/* moon */
+
+.moon{
+position:absolute;
+width:155px;
+height:155px;
+border-radius:50%;
+background:#eee;
+right:calc(50% - 175px);
+bottom:135px;
+opacity:.14;
+box-shadow:0 0 30px #fff2,0 0 80px #fff1;
+animation:moon 5s infinite ease-in-out
+}
+
+.moon:after{
+content:"";
+position:absolute;
+width:155px;
+height:155px;
+border-radius:50%;
+background:#050505;
+left:38px;
+top:-20px
+}
+
+@keyframes moon{
+50%{opacity:.21}
+}
+
+/* wolf silhouette */
+
+.wolf-body{
+position:relative;
+width:310px;
+height:245px;
+z-index:2;
+animation:wolf 5s ease-in-out infinite
+}
+
+@keyframes wolf{
+50%{transform:translateY(-6px)}
+}
+
+/* head */
+
+.wolf-head{
+position:absolute;
+width:105px;
+height:95px;
+background:#080808;
+border-radius:48% 48% 45% 45%;
+left:95px;
+top:20px;
+box-shadow:inset 0 0 18px #fff1,0 10px 25px #000
+}
+
+/* ears */
+
+.wolf-head:before,
+.wolf-head:after{
+content:"";
+position:absolute;
+width:42px;
+height:62px;
+background:#080808;
+top:-37px;
+transform:skewY(-18deg)
+}
+
+.wolf-head:before{
+left:3px;
+clip-path:polygon(0 100%,20% 0,100% 100%)
+}
+
+.wolf-head:after{
+right:3px;
+clip-path:polygon(0 100%,80% 0,100% 100%)
+}
+
+/* muzzle */
+
+.muzzle{
+position:absolute;
+width:55px;
+height:38px;
+background:#111;
+border-radius:50%;
+left:25px;
+top:58px
+}
+
+/* eyes */
+
+.eye{
+position:absolute;
+width:8px;
+height:5px;
+background:#ddd;
+border-radius:50%;
+top:52px;
+box-shadow:0 0 10px #fff
+}
+
+.eye.one{left:25px}
+.eye.two{right:25px}
+
+/* body */
+
+.wolf-body:after{
+content:"";
+position:absolute;
+width:155px;
+height:145px;
+background:#070707;
+border-radius:55% 45% 30% 30%;
+left:75px;
+top:105px;
+box-shadow:inset 0 0 25px #fff1
+}
+
+/* tail */
+
+.tail{
+position:absolute;
+width:105px;
+height:38px;
+border-radius:80% 20% 80% 20%;
+background:#080808;
+left:5px;
+top:125px;
+transform:rotate(-28deg);
+box-shadow:0 0 15px #fff1
+}
+
+/* legs */
+
+.leg{
+position:absolute;
+width:27px;
+height:85px;
+background:#080808;
+border-radius:0 0 15px 15px;
+top:175px;
+z-index:3
+}
+
+.leg.a{left:105px}
+.leg.b{left:155px}
+.leg.c{left:195px}
+.leg.d{left:225px}
+
+/* ground */
+
+.wolf:after{
+content:"";
+position:absolute;
+bottom:25px;
+width:280px;
+height:24px;
+border-radius:50%;
+background:#000;
+filter:blur(16px)
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:35px 20px;
+color:#777;
+border-top:1px solid #ffffff14;
+font-size:13px
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.hero{
+min-height:90vh
+}
+
+.hero-logo{
+width:120px;
+height:120px
+}
+
+.hero p{
+font-size:15px
+}
+
+section{
+padding:65px 15px
+}
+
+.products{
+grid-template-columns:repeat(2,1fr);
+gap:12px
+}
+
+.product-image{
+height:220px
+}
+
+.product-info{
+padding:14px 8px
+}
+
+.product-info h3{
+font-size:15px
+}
+
+.product-info span{
+font-size:11px
+}
+
+.product-price{
+font-size:13px
+}
+
+.price-inquiry{
+font-size:11px
+}
+
+.order-btn{
+font-size:11px;
+padding:10px 6px
+}
+
+.flip-back{
+padding:14px
+}
+
+.flip-back h3{
+font-size:17px
+}
+
+.flip-back p{
+font-size:11px;
+line-height:1.9
+}
+
+.wolf{
+height:290px
+}
+
+.wolf-body{
+transform:scale(.78);
+transform-origin:bottom center
+}
+
+.moon{
+width:105px;
+height:105px;
+right:calc(50% - 120px);
+bottom:115px
+}
+
+.moon:after{
+width:105px;
+height:105px;
+left:25px;
+top:-14px
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="particles">
+<i></i><i></i><i></i><i></i><i></i>
+</div>
+
+<header class="hero">
+
+<div class="hero-content">
+
+<img
 class="hero-logo"
 src="file_0000000088e481fdb76b9fde3b01e677.png"
 alt="7BOX Logo"
+>
 
-> 
+<h1>7BOX</h1>
 
-<h1>7BOX</h1>  <p>انتخاب هوشمندانه، خرید مطمئن</p>  <div class="hero-buttons">  <a class="btn btn-main" href="#products">  
-مشاهده محصولات  
-</a>  <a class="btn" href="https://t.me/i7BOX" target="_blank">  
-Telegram  
-</a>  </div>  </div>  
-</header>  <section id="products">  <div class="section-title">  
-<h2>محصولات 7BOX</h2>  
-<p>انتخابی از محصولات کاربردی و دیجیتال</p>  
-</div>  <div class="products">  <!-- 1 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_0000000004e881f48828bdab9ffaf089.png" alt="KTS 2006">  
-</div>  
-<div class="flip-back">  
-<h3>KTS 2006</h3>  
-<p>اسپیکر بلوتوثی قابل حمل با امکان پخش موسیقی؛ مناسب استفاده روزمره و دورهمی.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>KTS 2006</h3><span>اسپیکر بلوتوثی</span>  
-</div>  
-</div>  <!-- 2 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_0000000070f081f594186c8b7bfd03ac.png" alt="GTS 1360">  
-</div>  
-<div class="flip-back">  
-<h3>GTS 1360</h3>  
-<p>اسپیکر قابل حمل و کاربردی؛ مناسب پخش موسیقی در خانه و فضای بیرون.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>GTS 1360</h3><span>اسپیکر قابل حمل</span>  
-</div>  
-</div>  <!-- 3 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_000000008b4881f4afdaca2c40fe0b21.png" alt="KH-740">  
-</div>  
-<div class="flip-back">  
-<h3>KH-740</h3>  
-<p>ماساژور دستی با چند سری و سرعت‌های مختلف؛ مناسب ماساژ و آرام‌سازی عضلات.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>KH-740</h3><span>ماساژور</span>  
-</div>  
-</div>  <!-- 4 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_000000009298821099bceb4c4e8cf665.png" alt="ZQS 8210">  
-</div>  
-<div class="flip-back">  
-<h3>ZQS 8210</h3>  
-<p>اسپیکر بلوتوثی قدرتمند با امکانات متنوع؛ مناسب مهمانی، دورهمی و فضای باز.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>ZQS 8210</h3><span>اسپیکر بلوتوثی</span>  
-</div>  
-</div>  <!-- 5 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000980482468609e818921cad4c.png" alt="Samsung B310e">  
-</div>  
-<div class="flip-back">  
-<h3>Samsung B310e</h3>  
-<p>گوشی ساده و کاربردی سامسونگ؛ مناسب تماس، پیامک و استفاده روزمره.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>Samsung B310e</h3><span>گوشی موبایل</span>  
-</div>  
-</div>  <!-- 6 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000b7cc8210a154a3902c791fa8.png" alt="VGR V-071">  
-</div>  
-<div class="flip-back">  
-<h3>VGR V-071</h3>  
-<p>ماشین اصلاح شارژی و کاربردی؛ مناسب اصلاح سر و صورت و استفاده روزمره.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>VGR V-071</h3><span>ماشین اصلاح</span>  
-</div>  
-</div>  <!-- 7 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000b868820c8f72bfd40c201441.png" alt="ZQS 6169">  
-</div>  
-<div class="flip-back">  
-<h3>ZQS 6169</h3>  
-<p>اسپیکر بلوتوثی قابل حمل با طراحی کاربردی؛ مناسب پخش موسیقی و استفاده روزمره.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>ZQS 6169</h3><span>اسپیکر بلوتوثی</span>  
-</div>  
-</div>  <!-- 8 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000c61881f4b5045ed01c793b2b.png" alt="KTS 1576">  
-</div>  
-<div class="flip-back">  
-<h3>KTS 1576</h3>  
-<p>اسپیکر قابل حمل و کاربردی؛ مناسب موسیقی، دورهمی و استفاده روزمره.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>KTS 1576</h3><span>اسپیکر قابل حمل</span>  
-</div>  
-</div>  <!-- 9 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000e5b48210af39bd972b307b94.png" alt="KTS 1579">  
-</div>  
-<div class="flip-back">  
-<h3>KTS 1579</h3>  
-<p>اسپیکر بلوتوثی قابل حمل با امکانات متنوع؛ مناسب موسیقی، مهمانی و دورهمی.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>KTS 1579</h3><span>اسپیکر بلوتوثی</span>  
-</div>  
-</div>  <!-- 10 -->  <div class="product" onclick="flipProduct(this)">  
-<div class="product-image">  
-<div class="flip-inner">  
-<div class="flip-front">  
-<img src="file_00000000ea5c8243bef44201b6af8110.png" alt="Arm Style">  
-</div>  
-<div class="flip-back">  
-<h3>Arm Style</h3>  
-<p>فشارسنج دیجیتال بازویی با نمایشگر خوانا؛ مناسب اندازه‌گیری فشار خون و ضربان قلب.</p>  
-</div>  
-</div>  
-</div>  
-<div class="product-info">  
-<h3>Arm Style</h3><span>فشارسنج دیجیتال</span>  
-</div>  
-</div>  </div>  
-</section>  <section>  <div class="section-title">  
-<h2>درباره 7BOX</h2>  
-<p>انتخاب هوشمندانه، خرید مطمئن</p>  
-</div>  <div class="about">  
-<p>  
-7BOX مجموعه‌ای از محصولات دیجیتال، اسپیکر، گجت و لوازم جانبی کاربردی را با تمرکز بر انتخاب مناسب و خرید مطمئن ارائه می‌کند.  
-</p>  
-</div>  </section>  <section>  <div class="section-title">  
-<h2>ارتباط با 7BOX</h2>  
-<p>برای مشاهده محصولات و ارتباط با ما</p>  
-</div>  <div class="socials">  <a class="social" href="https://t.me/i7BOX" target="_blank">  
-<svg viewBox="0 0 24 24">  
-<path d="M21.4 3.3 2.9 10.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.7c.2.6.1.8.7.5l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.7-1.4ZM8.1 13l10.8-6.8c.5-.3 1-.1.6.2l-8.8 8-.3 3.5-1.4-4.9-1-.3-1.9Z"/>  
-</svg>  
-<span>Telegram | @i7BOX</span>  
-</a>  <a class="social" href="https://instagram.com/7box.1" target="_blank">  
-<svg viewBox="0 0 24 24">  
-<path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>  
-</svg>  
-<span>Instagram | @7box.1</span>  
-</a>  <a class="social" href="https://rubika.ir/joinc/FGDADAIE0FAZKIRBXVDPBFOQBXLDHUCA" target="_blank">  
-<svg viewBox="0 0 24 24">  
-<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.9 6.3-2.1 8.1c-.2.6-.5.8-1.1.5l-3-2.2-1.4 1.3c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1l-6.9 4.3-3-.9c-.7-.2-.7-.7.1-1l11.7-4.5c.5-.2.9.1.9.8Z"/>  
-</svg>  
-<span>Rubika | ورود به کانال</span>  
-</a>  </div>  
-</section>  <!-- BLACK WOLF -->  <div class="wolf">  <div class="moon"></div>  <div class="wolf-body">  <div class="tail"></div>  <div class="wolf-head">  
-<div class="eye one"></div>  
-<div class="eye two"></div>  
-<div class="muzzle"></div>  
-</div>  <div class="leg a"></div>  
-<div class="leg b"></div>  
-<div class="leg c"></div>  
-<div class="leg d"></div>  </div>  </div>  <footer>  
-© 2026 7BOX | انتخاب هوشمندانه، خرید مطمئن  
-</footer>  <script>  
-function flipProduct(product){  
-product.classList.toggle("flipped");  
-}  
-</script>  </body>  
-</html>  
+<p>انتخاب هوشمندانه، خرید مطمئن</p>
+
+<div class="hero-buttons">
+
+<a class="btn btn-main" href="#products">
+مشاهده محصولات
+</a>
+
+<a class="btn" href="https://t.me/i7BOX" target="_blank" rel="noopener">
+Telegram
+</a>
+
+</div>
+
+</div>
+
+</header>
+
+
+<section id="products">
+
+<div class="section-title">
+
+<h2>محصولات 7BOX</h2>
+
+<p>انتخابی از محصولات کاربردی و دیجیتال</p>
+
+</div>
+
+<div
+class="products"
+id="productsContainer"
+>
+
+<div class="products-loading">
+در حال دریافت محصولات...
+</div>
+
+</div>
+
+</section>
+
+
+<section>
+
+<div class="section-title">
+
+<h2>درباره 7BOX</h2>
+
+<p>انتخاب هوشمندانه، خرید مطمئن</p>
+
+</div>
+
+<div class="about">
+
+<p>
+7BOX مجموعه‌ای از محصولات دیجیتال، اسپیکر، گجت و لوازم جانبی کاربردی را با تمرکز بر انتخاب مناسب و خرید مطمئن ارائه می‌کند.
+</p>
+
+</div>
+
+</section>
+
+
+<section>
+
+<div class="section-title">
+
+<h2>ارتباط با 7BOX</h2>
+
+<p>برای مشاهده محصولات و ارتباط با ما</p>
+
+</div>
+
+<div class="socials">
+
+<a
+class="social"
+href="https://t.me/i7BOX"
+target="_blank"
+rel="noopener"
+>
+
+<svg viewBox="0 0 24 24">
+
+<path d="M21.4 3.3 2.9 10.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.7c.2.6.1.8.7.5l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.7-1.4ZM8.1 13l10.8-6.8c.5-.3 1-.1.6.2l-8.8 8-.3 3.5-1.4-4.9-1-.3-1.9-.3-1.9Z"/>
+
+</svg>
+
+<span>Telegram | @i7BOX</span>
+
+</a>
+
+
+<a
+class="social"
+href="https://instagram.com/7box.1"
+target="_blank"
+rel="noopener"
+>
+
+<svg viewBox="0 0 24 24">
+
+<path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3 3 3 0 0 0 6 0Z"/>
+
+</svg>
+
+<span>Instagram | @7box.1</span>
+
+</a>
+
+
+<a
+class="social"
+href="https://rubika.ir/joinc/FGDADAIE0FAZKIRBXVDPBFOQBXLDHUCA"
+target="_blank"
+rel="noopener"
+>
+
+<svg viewBox="0 0 24 24">
+
+<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.9 6.3-2.1 8.1c-.2.6-.5.8-1.1.5l-3-2.2-1.4 1.3c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1l-6.9 4.3-3-.9c-.7-.2-.7-.7.1-1l11.7-4.5c.5-.2.9.1.9.8Z"/>
+
+</svg>
+
+<span>Rubika | ورود به کانال</span>
+
+</a>
+
+</div>
+
+</section>
+
+
+<!-- BLACK WOLF -->
+
+<div class="wolf">
+
+<div class="moon"></div>
+
+<div class="wolf-body">
+
+<div class="tail"></div>
+
+<div class="wolf-head">
+
+<div class="eye one"></div>
+<div class="eye two"></div>
+<div class="muzzle"></div>
+
+</div>
+
+<div class="leg a"></div>
+<div class="leg b"></div>
+<div class="leg c"></div>
+<div class="leg d"></div>
+
+</div>
+
+</div>
+
+
+<footer>
+
+© 2026 7BOX | انتخاب هوشمندانه، خرید مطمئن
+
+</footer>
+
+
+<script>
+
+/* =========================================
+   PRODUCT API
+========================================= */
+
+const PRODUCTS_API = "/api/products";
+
+
+/* =========================================
+   FORMAT PRICE
+========================================= */
+
+function formatPrice(price){
+
+if(
+price === null ||
+price === undefined ||
+price === "" ||
+Number(price) <= 0
+){
+return "استعلام بگیرید";
+}
+
+return Number(price).toLocaleString("fa-IR") + " تومان";
+
+}
+
+
+/* =========================================
+   FLIP PRODUCT
+========================================= */
+
+function flipProduct(product){
+
+product.classList.toggle("flipped");
+
+}
+
+
+/* =========================================
+   ORDER PRODUCT
+========================================= */
+
+function orderProduct(event, productId){
+
+event.stopPropagation();
+
+window.location.href =
+"/order.html?product=" +
+encodeURIComponent(productId);
+
+}
+
+
+/* =========================================
+   CREATE PRODUCT CARD
+========================================= */
+
+function createProductCard(product){
+
+const card = document.createElement("div");
+
+card.className = "product";
+
+card.setAttribute(
+"data-product-id",
+product.id
+);
+
+card.onclick = function(){
+
+flipProduct(card);
+
+};
+
+
+/* IMAGE */
+
+const imageBox =
+document.createElement("div");
+
+imageBox.className = "product-image";
+
+
+/* FLIP */
+
+const flipInner =
+document.createElement("div");
+
+flipInner.className = "flip-inner";
+
+
+/* FRONT */
+
+const front =
+document.createElement("div");
+
+front.className = "flip-front";
+
+
+const image =
+document.createElement("img");
+
+image.src = product.image;
+
+image.alt = product.name;
+
+image.loading = "lazy";
+
+
+image.onerror = function(){
+
+this.style.opacity = "0.25";
+
+};
+
+
+front.appendChild(image);
+
+
+/* BACK */
+
+const back =
+document.createElement("div");
+
+back.className = "flip-back";
+
+
+const backTitle =
+document.createElement("h3");
+
+backTitle.textContent =
+product.name;
+
+
+const backDescription =
+document.createElement("p");
+
+backDescription.textContent =
+product.description ||
+"اطلاعاتی برای این محصول ثبت نشده است.";
+
+
+back.appendChild(backTitle);
+
+back.appendChild(backDescription);
+
+
+/* BUILD FLIP */
+
+flipInner.appendChild(front);
+
+flipInner.appendChild(back);
+
+imageBox.appendChild(flipInner);
+
+
+/* INFO */
+
+const info =
+document.createElement("div");
+
+info.className = "product-info";
+
+
+const title =
+document.createElement("h3");
+
+title.textContent =
+product.name;
+
+
+const category =
+document.createElement("span");
+
+category.textContent =
+product.category || "محصول 7BOX";
+
+
+/* PRICE */
+
+const price =
+document.createElement("div");
+
+price.className = "product-price";
+
+
+if(
+product.price === null ||
+product.price === undefined ||
+product.price === "" ||
+Number(product.price) <= 0
+){
+
+price.innerHTML =
+'<span class="price-inquiry">استعلام بگیرید</span>';
+
+}else{
+
+price.textContent =
+formatPrice(product.price);
+
+}
+
+
+/* ORDER BUTTON */
+
+const orderButton =
+document.createElement("button");
+
+orderButton.type = "button";
+
+orderButton.className = "order-btn";
+
+orderButton.textContent =
+"ثبت سفارش";
+
+
+orderButton.addEventListener(
+"click",
+function(event){
+
+orderProduct(
+event,
+product.id
+);
+
+}
+);
+
+
+/* BUILD INFO */
+
+info.appendChild(title);
+
+info.appendChild(category);
+
+info.appendChild(price);
+
+info.appendChild(orderButton);
+
+
+/* BUILD CARD */
+
+card.appendChild(imageBox);
+
+card.appendChild(info);
+
+
+return card;
+
+}
+
+
+/* =========================================
+   LOAD PRODUCTS
+========================================= */
+
+async function loadProducts(){
+
+const container =
+document.getElementById(
+"productsContainer"
+);
+
+if(!container){
+return;
+}
+
+try{
+
+const response =
+await fetch(
+PRODUCTS_API,
+{
+method:"GET",
+cache:"no-store"
+}
+);
+
+if(!response.ok){
+
+throw new Error(
+"Products API error: " +
+response.status
+);
+
+}
+
+const data =
+await response.json();
+
+
+if(
+!data ||
+!data.ok ||
+!Array.isArray(data.products)
+){
+
+throw new Error(
+"Invalid products response"
+);
+
+}
+
+
+container.innerHTML = "";
+
+
+if(data.products.length === 0){
+
+container.innerHTML = `
+<div class="products-error">
+هیچ محصول فعالی برای نمایش وجود ندارد.
+</div>
+`;
+
+return;
+
+}
+
+
+data.products.forEach(
+function(product){
+
+container.appendChild(
+createProductCard(product)
+);
+
+}
+);
+
+
+}catch(error){
+
+console.error(
+"7BOX products error:",
+error
+);
+
+container.innerHTML = `
+<div class="products-error">
+امکان دریافت محصولات وجود ندارد.<br>
+لطفاً چند لحظه بعد دوباره تلاش کنید.
+</div>
+`;
+
+}
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+loadProducts();
+
+}
+);
+
+</script>
+
+</body>
+</html>
