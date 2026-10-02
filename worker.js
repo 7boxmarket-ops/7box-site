@@ -191,6 +191,18 @@ export default {
         return await updateProduct(request, env);
       }
 
+      // حذف محصول
+      if (
+        url.pathname === "/api/admin/products" &&
+        request.method === "DELETE"
+      ) {
+        if (!await isAdmin(request, env)) {
+          return unauthorized();
+        }
+
+        return await deleteProduct(request, env);
+      }
+
       // =========================
       // ADMIN SETTINGS
       // =========================
@@ -273,6 +285,18 @@ export default {
           ok: true,
           orders: result.results || []
         });
+      }
+
+      // حذف سفارش
+      if (
+        url.pathname === "/api/admin/orders" &&
+        request.method === "DELETE"
+      ) {
+        if (!await isAdmin(request, env)) {
+          return unauthorized();
+        }
+
+        return await deleteOrder(request, env);
       }
 
       if (
@@ -589,6 +613,75 @@ async function updateProduct(request, env) {
 
 
 // ========================================
+// PRODUCT DELETE
+// ========================================
+
+async function deleteProduct(request, env) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return json({
+      ok: false,
+      error: "Invalid JSON"
+    }, 400);
+  }
+
+  const id = Number(body.id);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({
+      ok: false,
+      error: "Invalid product ID"
+    }, 400);
+  }
+
+  const product = await env.DB.prepare(
+    `SELECT
+      id,
+      name
+     FROM products
+     WHERE id = ?`
+  ).bind(id).first();
+
+  if (!product) {
+    return json({
+      ok: false,
+      error: "محصول پیدا نشد."
+    }, 404);
+  }
+
+  // اگر محصول سفارش ثبت‌شده دارد، حذف نشود
+  const orders = await env.DB.prepare(
+    `SELECT COUNT(*) AS count
+     FROM orders
+     WHERE product_id = ?`
+  ).bind(id).first();
+
+  if (Number(orders?.count || 0) > 0) {
+    return json({
+      ok: false,
+      error:
+        "این محصول دارای سفارش ثبت‌شده است و حذف نمی‌شود. " +
+        "برای حفظ سوابق سفارش، ابتدا آن را حذف نکنید."
+    }, 409);
+  }
+
+  await env.DB.prepare(
+    `DELETE FROM products
+     WHERE id = ?`
+  ).bind(id).run();
+
+  return json({
+    ok: true,
+    message: "محصول با موفقیت حذف شد.",
+    product_id: id
+  });
+}
+
+
+// ========================================
 // SETTINGS UPDATE
 // ========================================
 
@@ -779,6 +872,61 @@ async function updateOrderNote(request, env) {
     ok: true,
     tracking_code: trackingCode,
     admin_note: note
+  });
+}
+
+
+// ========================================
+// ORDER DELETE
+// ========================================
+
+async function deleteOrder(request, env) {
+  let body;
+
+  try {
+    body = await request.json();
+  } catch {
+    return json({
+      ok: false,
+      error: "Invalid JSON"
+    }, 400);
+  }
+
+  const trackingCode = clean(
+    body.tracking_code
+  );
+
+  if (!trackingCode) {
+    return json({
+      ok: false,
+      error: "Tracking code is required"
+    }, 400);
+  }
+
+  const order = await env.DB.prepare(
+    `SELECT
+      tracking_code,
+      product_name
+     FROM orders
+     WHERE tracking_code = ?`
+  ).bind(trackingCode).first();
+
+  if (!order) {
+    return json({
+      ok: false,
+      error: "سفارش پیدا نشد."
+    }, 404);
+  }
+
+  await env.DB.prepare(
+    `DELETE FROM orders
+     WHERE tracking_code = ?`
+  ).bind(trackingCode).run();
+
+  return json({
+    ok: true,
+    message: "سفارش با موفقیت حذف شد.",
+    tracking_code: trackingCode
   });
 }
 
