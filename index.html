@@ -94,7 +94,9 @@ color:#fff;
 text-decoration:none;
 background:#ffffff0d;
 backdrop-filter:blur(8px);
-transition:.3s
+transition:.3s;
+cursor:pointer;
+font-family:Tahoma,Arial,sans-serif
 }
 
 .btn:hover{
@@ -303,6 +305,243 @@ color:#ccc;
 line-height:2
 }
 
+/* =========================
+   TRACKING
+========================= */
+
+.tracking-section{
+padding-top:70px;
+padding-bottom:85px
+}
+
+.tracking-box{
+max-width:620px;
+margin:auto;
+padding:30px 22px;
+border:1px solid #ffffff1a;
+border-radius:24px;
+background:#ffffff0b;
+backdrop-filter:blur(12px);
+box-shadow:0 15px 50px rgba(0,0,0,.35);
+text-align:center
+}
+
+.tracking-logo{
+width:82px;
+height:82px;
+object-fit:contain;
+margin-bottom:12px;
+filter:drop-shadow(0 0 18px rgba(255,255,255,.16))
+}
+
+.tracking-box h3{
+font-size:21px;
+margin-bottom:10px
+}
+
+.tracking-box > p{
+color:#aaa;
+font-size:13px;
+line-height:2;
+margin-bottom:22px
+}
+
+.tracking-form{
+display:flex;
+gap:10px;
+align-items:stretch
+}
+
+.tracking-input{
+flex:1;
+min-width:0;
+padding:14px 16px;
+border:1px solid #ffffff20;
+border-radius:13px;
+background:#00000055;
+color:#fff;
+outline:none;
+font-family:Tahoma,Arial,sans-serif;
+font-size:14px;
+text-align:center;
+direction:ltr;
+transition:.2s
+}
+
+.tracking-input::placeholder{
+color:#777
+}
+
+.tracking-input:focus{
+border-color:#ffffff55;
+box-shadow:0 0 0 3px #ffffff08
+}
+
+.tracking-button{
+padding:0 22px;
+border:1px solid #ffffff35;
+border-radius:13px;
+background:#fff;
+color:#000;
+font-family:Tahoma,Arial,sans-serif;
+font-weight:bold;
+cursor:pointer;
+transition:.2s;
+white-space:nowrap
+}
+
+.tracking-button:hover{
+transform:translateY(-2px);
+background:#eee
+}
+
+.tracking-button:disabled{
+opacity:.5;
+cursor:wait;
+transform:none
+}
+
+.tracking-result{
+display:none;
+margin-top:22px;
+padding:20px;
+border:1px solid #ffffff18;
+border-radius:17px;
+background:#00000045;
+text-align:right
+}
+
+.tracking-result.show{
+display:block
+}
+
+.tracking-error{
+color:#ffbaba;
+line-height:2;
+text-align:center
+}
+
+.tracking-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding-bottom:14px;
+margin-bottom:14px;
+border-bottom:1px solid #ffffff12
+}
+
+.tracking-header strong{
+font-size:15px
+}
+
+.status-badge{
+padding:7px 12px;
+border-radius:20px;
+font-size:12px;
+background:#ffffff12;
+border:1px solid #ffffff20;
+color:#fff
+}
+
+.tracking-details{
+display:grid;
+gap:10px
+}
+
+.tracking-row{
+display:flex;
+justify-content:space-between;
+gap:15px;
+font-size:13px;
+line-height:1.9
+}
+
+.tracking-row span:first-child{
+color:#888
+}
+
+.tracking-row span:last-child{
+color:#ddd;
+text-align:left
+}
+
+.tracking-note{
+margin-top:14px;
+padding:12px;
+border-radius:12px;
+background:#ffffff08;
+color:#aaa;
+font-size:12px;
+line-height:2
+}
+
+/* TRACKING STEPS */
+
+.tracking-steps{
+display:flex;
+align-items:flex-start;
+justify-content:space-between;
+gap:4px;
+margin-top:24px;
+position:relative
+}
+
+.tracking-step{
+flex:1;
+position:relative;
+text-align:center;
+font-size:10px;
+color:#777
+}
+
+.tracking-step:before{
+content:"";
+display:block;
+width:12px;
+height:12px;
+border-radius:50%;
+margin:0 auto 8px;
+background:#222;
+border:1px solid #444;
+position:relative;
+z-index:2
+}
+
+.tracking-step:after{
+content:"";
+position:absolute;
+height:1px;
+background:#222;
+top:6px;
+right:50%;
+width:100%;
+z-index:1
+}
+
+.tracking-step:first-child:after{
+display:none
+}
+
+.tracking-step.active{
+color:#fff
+}
+
+.tracking-step.active:before{
+background:#fff;
+border-color:#fff;
+box-shadow:0 0 12px #fff5
+}
+
+.tracking-step.done{
+color:#aaa
+}
+
+.tracking-step.done:before{
+background:#aaa;
+border-color:#aaa
+}
+
 /* ABOUT */
 
 .about{
@@ -351,9 +590,7 @@ height:22px;
 fill:currentColor
 }
 
-/* =========================
-   BLACK ANIME WOLF
-========================= */
+/* WOLF */
 
 .wolf{
 height:360px;
@@ -364,8 +601,6 @@ align-items:flex-end;
 justify-content:center;
 margin-top:10px
 }
-
-/* moon */
 
 .moon{
 position:absolute;
@@ -395,8 +630,6 @@ top:-20px
 50%{opacity:.21}
 }
 
-/* wolf silhouette */
-
 .wolf-body{
 position:relative;
 width:310px;
@@ -409,8 +642,6 @@ animation:wolf 5s ease-in-out infinite
 50%{transform:translateY(-6px)}
 }
 
-/* head */
-
 .wolf-head{
 position:absolute;
 width:105px;
@@ -421,8 +652,6 @@ left:95px;
 top:20px;
 box-shadow:inset 0 0 18px #fff1,0 10px 25px #000
 }
-
-/* ears */
 
 .wolf-head:before,
 .wolf-head:after{
@@ -445,8 +674,6 @@ right:3px;
 clip-path:polygon(0 100%,80% 0,100% 100%)
 }
 
-/* muzzle */
-
 .muzzle{
 position:absolute;
 width:55px;
@@ -456,8 +683,6 @@ border-radius:50%;
 left:25px;
 top:58px
 }
-
-/* eyes */
 
 .eye{
 position:absolute;
@@ -472,8 +697,6 @@ box-shadow:0 0 10px #fff
 .eye.one{left:25px}
 .eye.two{right:25px}
 
-/* body */
-
 .wolf-body:after{
 content:"";
 position:absolute;
@@ -486,8 +709,6 @@ top:105px;
 box-shadow:inset 0 0 25px #fff1
 }
 
-/* tail */
-
 .tail{
 position:absolute;
 width:105px;
@@ -499,8 +720,6 @@ top:125px;
 transform:rotate(-28deg);
 box-shadow:0 0 15px #fff1
 }
-
-/* legs */
 
 .leg{
 position:absolute;
@@ -516,8 +735,6 @@ z-index:3
 .leg.b{left:155px}
 .leg.c{left:195px}
 .leg.d{left:225px}
-
-/* ground */
 
 .wolf:after{
 content:"";
@@ -608,6 +825,35 @@ font-size:11px;
 line-height:1.9
 }
 
+.tracking-box{
+padding:25px 15px
+}
+
+.tracking-form{
+flex-direction:column
+}
+
+.tracking-input{
+width:100%;
+height:48px
+}
+
+.tracking-button{
+height:48px
+}
+
+.tracking-row{
+font-size:12px
+}
+
+.tracking-steps{
+gap:0
+}
+
+.tracking-step{
+font-size:8px
+}
+
 .wolf{
 height:290px
 }
@@ -661,6 +907,10 @@ alt="7BOX Logo"
 مشاهده محصولات
 </a>
 
+<a class="btn" href="#tracking">
+پیگیری سفارش
+</a>
+
 <a class="btn" href="https://t.me/i7BOX" target="_blank" rel="noopener">
 Telegram
 </a>
@@ -689,6 +939,66 @@ id="productsContainer"
 
 <div class="products-loading">
 در حال دریافت محصولات...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- TRACKING -->
+
+<section id="tracking" class="tracking-section">
+
+<div class="section-title">
+
+<h2>پیگیری سفارش</h2>
+
+<p>کد رهگیری سفارش خود را وارد کنید تا وضعیت سفارش را ببینید.</p>
+
+</div>
+
+<div class="tracking-box">
+
+<img
+class="tracking-logo"
+src="file_0000000088e481fdb76b9fde3b01e677.png"
+alt="7BOX"
+>
+
+<h3>پیگیری سفارش 7BOX</h3>
+
+<p>
+کد رهگیری که هنگام ثبت سفارش دریافت کرده‌اید را وارد کنید.
+</p>
+
+<form class="tracking-form" id="trackingForm">
+
+<input
+class="tracking-input"
+id="trackingCodeInput"
+type="text"
+inputmode="text"
+autocomplete="off"
+placeholder="کد رهگیری"
+aria-label="کد رهگیری سفارش"
+required
+>
+
+<button
+class="tracking-button"
+id="trackingButton"
+type="submit"
+>
+پیگیری
+</button>
+
+</form>
+
+<div
+class="tracking-result"
+id="trackingResult"
+>
 </div>
 
 </div>
@@ -737,9 +1047,7 @@ rel="noopener"
 >
 
 <svg viewBox="0 0 24 24">
-
-<path d="M21.4 3.3 2.9 10.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.7c.2.6.1.8.7.5l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.7-1.4ZM8.1 13l10.8-6.8c.5-.3 1-.1.6.2l-8.8 8-.3 3.5-1.4-4.9-1-.3-1.9-.3-1.9Z"/>
-
+<path d="M21.4 3.3 2.9 10.4c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.7c.2.6.1.8.7.5l2.3-2.2 4.8 3.5c.9.5 1.5.3 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.7-1.4ZM8.1 13l10.8-6.8c.5-.3 1-.1.6.2l-8.8 8-.3 3.5-1.4 4.9-1-.3-1.9-.3-1.9Z"/>
 </svg>
 
 <span>Telegram | @i7BOX</span>
@@ -755,9 +1063,7 @@ rel="noopener"
 >
 
 <svg viewBox="0 0 24 24">
-
-<path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3 3 3 0 0 0 6 0Z"/>
-
+<path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.1 2A3.1 3.1 0 0 0 4 7.1v9.8A3.1 3.1 0 0 0 7.1 20h9.8a3.1 3.1 0 0 0 3.1-3.1V7.1A3.1 3.1 0 0 0 16.9 4H7.1Zm9.7 1.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
 </svg>
 
 <span>Instagram | @7box.1</span>
@@ -773,12 +1079,28 @@ rel="noopener"
 >
 
 <svg viewBox="0 0 24 24">
-
 <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.9 6.3-2.1 8.1c-.2.6-.5.8-1.1.5l-3-2.2-1.4 1.3c-.2.2-.3.3-.6.3l.2-3.1 5.6-5c.2-.2-.1-.3-.4-.1l-6.9 4.3-3-.9c-.7-.2-.7-.7.1-1l11.7-4.5c.5-.2.9.1.9.8Z"/>
-
 </svg>
 
 <span>Rubika | ورود به کانال</span>
+
+</a>
+
+
+<!-- SUPPORT RUBIKA -->
+
+<a
+class="social"
+href="https://rubika.ir/XWcx_ii"
+target="_blank"
+rel="noopener"
+>
+
+<svg viewBox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.15 2 11.27c0 2.92 1.53 5.58 4.02 7.37-.12.96-.44 2.02-.93 2.91-.13.25.11.54.39.47 1.23-.31 2.42-.87 3.45-1.61.98.28 2 .43 3.07.43 5.52 0 10-4.15 10-9.27S17.52 2 12 2Z"/>
+</svg>
+
+<span>💬 ارتباط مستقیم با پشتیبانی</span>
 
 </a>
 
@@ -1176,6 +1498,301 @@ container.innerHTML = `
 
 
 /* =========================================
+   ORDER STATUS
+========================================= */
+
+const ORDER_STATUSES = [
+"ثبت سفارش",
+"تأیید سفارش",
+"بسته‌بندی",
+"ارسال",
+"تحویل"
+];
+
+function normalizeStatus(status){
+
+return String(status || "ثبت سفارش").trim();
+
+}
+
+
+/* =========================================
+   TRACKING RESULT
+========================================= */
+
+function showTrackingResult(order){
+
+const result =
+document.getElementById("trackingResult");
+
+const status =
+normalizeStatus(order.status);
+
+const statusIndex =
+ORDER_STATUSES.indexOf(status);
+
+const currentIndex =
+statusIndex >= 0 ? statusIndex : 0;
+
+let steps = "";
+
+ORDER_STATUSES.forEach(
+function(item,index){
+
+let cls = "";
+
+if(index < currentIndex){
+cls = "done";
+}
+
+if(index === currentIndex){
+cls = "active";
+}
+
+steps += `
+<div class="tracking-step ${cls}">
+${item}
+</div>
+`;
+
+}
+);
+
+
+const productName =
+order.product_name ||
+order.productName ||
+"—";
+
+const quantity =
+order.quantity !== undefined &&
+order.quantity !== null
+? Number(order.quantity).toLocaleString("fa-IR")
+: "—";
+
+
+const trackingCode =
+order.tracking_code ||
+order.trackingCode ||
+"—";
+
+
+const createdAt =
+order.created_at ||
+order.createdAt ||
+"—";
+
+
+const note =
+order.admin_note ||
+order.adminNote ||
+"";
+
+
+result.className =
+"tracking-result show";
+
+result.innerHTML = `
+
+<div class="tracking-header">
+
+<strong>وضعیت سفارش</strong>
+
+<span class="status-badge">
+${escapeHtml(status)}
+</span>
+
+</div>
+
+
+<div class="tracking-details">
+
+<div class="tracking-row">
+<span>کد رهگیری</span>
+<span>${escapeHtml(trackingCode)}</span>
+</div>
+
+<div class="tracking-row">
+<span>محصول</span>
+<span>${escapeHtml(productName)}</span>
+</div>
+
+<div class="tracking-row">
+<span>تعداد</span>
+<span>${escapeHtml(quantity)}</span>
+</div>
+
+<div class="tracking-row">
+<span>تاریخ ثبت</span>
+<span>${escapeHtml(createdAt)}</span>
+</div>
+
+</div>
+
+
+<div class="tracking-steps">
+${steps}
+</div>
+
+
+${
+note
+? `
+<div class="tracking-note">
+${escapeHtml(note)}
+</div>
+`
+: ""
+}
+
+`;
+
+}
+
+
+/* =========================================
+   HTML SAFE
+========================================= */
+
+function escapeHtml(value){
+
+return String(value ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   TRACK ORDER
+========================================= */
+
+async function trackOrder(event){
+
+event.preventDefault();
+
+const input =
+document.getElementById(
+"trackingCodeInput"
+);
+
+const button =
+document.getElementById(
+"trackingButton"
+);
+
+const result =
+document.getElementById(
+"trackingResult"
+);
+
+const trackingCode =
+input.value.trim();
+
+if(!trackingCode){
+
+result.className =
+"tracking-result show tracking-error";
+
+result.innerHTML =
+"لطفاً کد رهگیری سفارش را وارد کنید.";
+
+return;
+
+}
+
+button.disabled = true;
+
+button.textContent =
+"در حال بررسی...";
+
+result.className =
+"tracking-result show";
+
+result.innerHTML =
+"در حال دریافت وضعیت سفارش...";
+
+
+try{
+
+const response =
+await fetch(
+"/api/orders/" +
+encodeURIComponent(trackingCode),
+{
+method:"GET",
+cache:"no-store"
+}
+);
+
+
+let data = null;
+
+try{
+data = await response.json();
+}catch(error){
+data = null;
+}
+
+
+if(
+!response.ok ||
+!data ||
+!data.ok
+){
+
+throw new Error(
+(data && (data.error || data.message)) ||
+"ORDER_NOT_FOUND"
+);
+
+}
+
+
+/*
+  API ممکن است سفارش را مستقیماً
+  داخل data.order برگرداند.
+*/
+
+const order =
+data.order ||
+data;
+
+
+showTrackingResult(order);
+
+
+}catch(error){
+
+console.error(
+"7BOX tracking error:",
+error
+);
+
+result.className =
+"tracking-result show tracking-error";
+
+result.innerHTML = `
+سفارشی با این کد رهگیری پیدا نشد.<br>
+لطفاً کد رهگیری را بررسی کنید.
+`;
+
+}finally{
+
+button.disabled = false;
+
+button.textContent =
+"پیگیری";
+
+}
+
+}
+
+
+/* =========================================
    START
 ========================================= */
 
@@ -1184,6 +1801,20 @@ document.addEventListener(
 function(){
 
 loadProducts();
+
+const trackingForm =
+document.getElementById(
+"trackingForm"
+);
+
+if(trackingForm){
+
+trackingForm.addEventListener(
+"submit",
+trackOrder
+);
+
+}
 
 }
 );
