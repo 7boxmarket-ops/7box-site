@@ -1494,29 +1494,78 @@ async function deleteOrder(
     }, 400);
   }
 
-  const trackingCode =
-    clean(
-      body.tracking_code
-    );
+  // پنل مدیریت ممکن است id بفرستد
+  // یا tracking_code.
+  // هر دو را پشتیبانی می‌کنیم.
 
-  if (!trackingCode) {
+  const rawId =
+    body.id;
+
+  const id =
+    rawId !== undefined &&
+    rawId !== null &&
+    rawId !== ""
+      ? Number(rawId)
+      : null;
+
+  const trackingCode =
+    clean(body.tracking_code);
+
+  if (
+    id !== null &&
+    (
+      !Number.isInteger(id) ||
+      id <= 0
+    )
+  ) {
     return json({
       ok: false,
       error:
-        "Tracking code is required"
+        "شناسه سفارش نامعتبر است."
     }, 400);
   }
 
-  const order =
-    await env.DB.prepare(
-      `SELECT
-        tracking_code,
-        product_name
-       FROM orders
-       WHERE tracking_code = ?`
-    )
-    .bind(trackingCode)
-    .first();
+  if (
+    id === null &&
+    !trackingCode
+  ) {
+    return json({
+      ok: false,
+      error:
+        "شناسه یا کد رهگیری سفارش ارسال نشده است."
+    }, 400);
+  }
+
+  let order;
+
+  if (id !== null) {
+
+    order =
+      await env.DB.prepare(
+        `SELECT
+          id,
+          tracking_code,
+          product_name
+         FROM orders
+         WHERE id = ?`
+      )
+      .bind(id)
+      .first();
+
+  } else {
+
+    order =
+      await env.DB.prepare(
+        `SELECT
+          id,
+          tracking_code,
+          product_name
+         FROM orders
+         WHERE tracking_code = ?`
+      )
+      .bind(trackingCode)
+      .first();
+  }
 
   if (!order) {
     return json({
@@ -1526,19 +1575,49 @@ async function deleteOrder(
     }, 404);
   }
 
-  await env.DB.prepare(
-    `DELETE FROM orders
-     WHERE tracking_code = ?`
-  )
-  .bind(trackingCode)
-  .run();
+  let result;
+
+  if (id !== null) {
+
+    result =
+      await env.DB.prepare(
+        `DELETE FROM orders
+         WHERE id = ?`
+      )
+      .bind(id)
+      .run();
+
+  } else {
+
+    result =
+      await env.DB.prepare(
+        `DELETE FROM orders
+         WHERE tracking_code = ?`
+      )
+      .bind(trackingCode)
+      .run();
+  }
+
+  if (
+    Number(
+      result?.meta?.changes || 0
+    ) !== 1
+  ) {
+    return json({
+      ok: false,
+      error:
+        "حذف سفارش انجام نشد."
+    }, 500);
+  }
 
   return json({
     ok: true,
     message:
       "سفارش با موفقیت حذف شد.",
+    id:
+      order.id,
     tracking_code:
-      trackingCode
+      order.tracking_code
   });
 }
 
