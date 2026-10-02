@@ -3,7 +3,8 @@ const ORDER_STATUSES = [
   "تأیید سفارش",
   "بسته‌بندی",
   "ارسال",
-  "تحویل"
+  "تحویل",
+  "لغو سفارش"
 ];
 
 const ADMIN_COOKIE = "sevenbox_admin";
@@ -116,6 +117,17 @@ export default {
           ok: true,
           settings
         });
+      }
+
+      // =========================
+      // TELEGRAM WEBHOOK
+      // =========================
+
+      if (
+        url.pathname === "/api/telegram/webhook" &&
+        request.method === "POST"
+      ) {
+        return await telegramWebhook(request, env);
       }
 
       // =========================
@@ -488,7 +500,6 @@ async function isAdmin(request, env) {
     return false;
   }
 
-  // 8 ساعت اعتبار
   if (Date.now() - time > 8 * 60 * 60 * 1000) {
     return false;
   }
@@ -526,11 +537,13 @@ async function updateProduct(request, env) {
   }
 
   const id = Number(body.id);
-  const price = body.price === null ||
-                body.price === "" ||
-                body.price === undefined
-    ? null
-    : Number(body.price);
+
+  const price =
+    body.price === null ||
+    body.price === "" ||
+    body.price === undefined
+      ? null
+      : Number(body.price);
 
   if (!Number.isInteger(id) || id <= 0) {
     return json({
@@ -674,9 +687,12 @@ async function updateOrderStatus(request, env) {
     `UPDATE orders
      SET status = ?, updated_at = ?
      WHERE tracking_code = ?`
-  ).bind(status, now, trackingCode).run();
+  ).bind(
+    status,
+    now,
+    trackingCode
+  ).run();
 
-  // اطلاع به مدیر در تلگرام
   if (env.TELEGRAM_BOT_TOKEN) {
     try {
       await telegramRequest(
@@ -693,7 +709,10 @@ async function updateOrderStatus(request, env) {
         }
       );
     } catch (error) {
-      console.error("Telegram status notification:", error);
+      console.error(
+        "Telegram status notification:",
+        error
+      );
     }
   }
 
@@ -999,7 +1018,11 @@ async function createOrder(request, env) {
         "sendMessage",
         {
           chat_id: adminChatId(env),
-          text: telegramMessage
+          text: telegramMessage,
+          reply_markup: orderStatusKeyboard(
+            trackingCode,
+            "ثبت سفارش"
+          )
         }
       );
 
@@ -1013,7 +1036,6 @@ async function createOrder(request, env) {
         let base64Data = receiptBase64;
         let mimeType = "image/jpeg";
 
-        // اگر Base64 به شکل data:image/...;base64,... باشد
         if (base64Data.startsWith("data:")) {
           const commaIndex = base64Data.indexOf(",");
 
@@ -1055,11 +1077,9 @@ async function createOrder(request, env) {
           }
         }
 
-        // حذف فاصله یا newline احتمالی از Base64
         base64Data = base64Data
           .replace(/\s/g, "");
 
-        // تبدیل Base64 به بایت
         const binaryString = atob(base64Data);
 
         const bytes = new Uint8Array(
@@ -1225,40 +1245,331 @@ async function createOrder(request, env) {
 
 
 // ========================================
-// TELEGRAM
+// TELEGRAM WEBHOOK
 // ========================================
 
-async function telegramRequest(env, method, body) {
+async function telegramWebhook(request, env) {
+  let update;
+
+  try {
+    update = await request.json();
+  } catch {
+    return json({
+      ok: false,
+      error: "Invalid Telegram update"
+    }, 400);
+  }
+
+  try {
+    if (
+      update &&
+      update.callback_query
+    ) {
+      await handleTelegramCallback(
+        update.callback_query,
+        env
+      );
+    }
+  } catch (error) {
+    console.error(
+      "Telegram webhook error:",
+      error
+    );
+  }
+
+  return json({
+    ok: true
+  });
+}
+
+
+// ========================================
+// TELEGRAM CALLBACK
+// ========================================
+
+async function handleTelegramCallback(
+  callbackQuery,
+  env
+) {
+  const callbackId =
+    callbackQuery.id;
+
+  const data =
+    callbackQuery.data || "";
+
+  const message =
+    callbackQuery.message;
+
+  const chatId =
+    callbackQuery.from?.id;
+
+  // فقط ادمین اجازه تغییر وضعیت دارد
+  if (
+    String(chatId) !==
+    String(adminChatId(env))
+  ) {
+    await telegramRequest(
+      env,
+      "answerCallbackQuery",
+      {
+        callback_query_id: callbackId,
+        text: "⛔ دسترسی مجاز نیست.",
+        show_alert: true
+      }
+    );
+
+    return;
+  }
+
+  if (!data.startsWith("order:")) {
+    await telegramRequest(
+      env,
+      "answerCallbackQuery",
+      {
+        callback_query_id: callbackId,
+        text: "دستور نامعتبر است.",
+        show_alert: true
+      }
+    );
+
+    return;
+  }
+
+  const parts = data.split(":");
+
+  if (parts.length !== 3) {
+    await telegramRequest(
+      env,
+      "answerCallbackQuery",
+      {
+        callback_query_id: callbackId,
+        text: "دستور نامعتبر است.",
+        show_alert: true
+      }
+    );
+
+    return;
+  }
+
+  const trackingCode = parts[1];
+  const statusIndex = Number(parts[2]);
+
+  if (
+    !Number.isInteger(statusIndex) ||
+    !ORDER_STATUSES[statusIndex]
+  ) {
+    await telegramRequest(
+      env,
+      "answerCallbackQuery",
+      {
+        callback_query_id: callbackId,
+        text: "وضعیت نامعتبر است.",
+        show_alert: true
+      }
+    );
+
+    return;
+  }
+
+  const newStatus =
+    ORDER_STATUSES[statusIndex];
+
+  const order = await env.DB.prepare(
+    `SELECT
+      tracking_code,
+      product_name,
+      customer_name,
+      status
+     FROM orders
+     WHERE tracking_code = ?`
+  ).bind(trackingCode).first();
+
+  if (!order) {
+    await telegramRequest(
+      env,
+      "answerCallbackQuery",
+      {
+        callback_query_id: callbackId,
+        text: "سفارش پیدا نشد.",
+        show_alert: true
+      }
+    );
+
+    return;
+  }
+
+  const now =
+    new Date().toISOString();
+
+  await env.DB.prepare(
+    `UPDATE orders
+     SET status = ?, updated_at = ?
+     WHERE tracking_code = ?`
+  ).bind(
+    newStatus,
+    now,
+    trackingCode
+  ).run();
+
+  // جواب کوچک روی دکمه
+  await telegramRequest(
+    env,
+    "answerCallbackQuery",
+    {
+      callback_query_id: callbackId,
+      text: `وضعیت شد: ${newStatus}`
+    }
+  );
+
+  // پیام اصلی را با وضعیت جدید و دکمه‌های جدید به‌روزرسانی کن
+  if (
+    message &&
+    message.chat &&
+    message.message_id
+  ) {
+    const originalText =
+      message.text ||
+      message.caption ||
+      "";
+
+    let updatedText =
+      originalText;
+
+    updatedText =
+      updatedText.replace(
+        /📌 وضعیت: .*/g,
+        `📌 وضعیت: ${newStatus}`
+      );
+
+    if (
+      !updatedText.includes(
+        "📌 وضعیت:"
+      )
+    ) {
+      updatedText +=
+        `\n\n📌 وضعیت: ${newStatus}`;
+    }
+
+    await telegramRequest(
+      env,
+      "editMessageText",
+      {
+        chat_id:
+          message.chat.id,
+        message_id:
+          message.message_id,
+        text:
+          updatedText,
+        reply_markup:
+          orderStatusKeyboard(
+            trackingCode,
+            newStatus
+          )
+      }
+    );
+  }
+
+  // اطلاع تغییر وضعیت
+  await telegramRequest(
+    env,
+    "sendMessage",
+    {
+      chat_id:
+        adminChatId(env),
+      text:
+        `🔄 وضعیت سفارش تغییر کرد\n\n` +
+        `🔖 کد رهگیری: ${trackingCode}\n` +
+        `📦 محصول: ${order.product_name}\n` +
+        `👤 مشتری: ${order.customer_name}\n\n` +
+        `📌 وضعیت قبلی: ${order.status}\n` +
+        `✅ وضعیت جدید: ${newStatus}`
+    }
+  );
+}
+
+
+// ========================================
+// TELEGRAM STATUS KEYBOARD
+// ========================================
+
+function orderStatusKeyboard(
+  trackingCode,
+  currentStatus
+) {
+  const buttons = [];
+
+  for (
+    const status of ORDER_STATUSES
+  ) {
+    const icon =
+      status === currentStatus
+        ? "✅"
+        : "▫️";
+
+    buttons.push([
+      {
+        text:
+          `${icon} ${status}`,
+        callback_data:
+          `order:${trackingCode}:${ORDER_STATUSES.indexOf(status)}`
+      }
+    ]);
+  }
+
+  return {
+    inline_keyboard: buttons
+  };
+}
+
+
+// ========================================
+// TELEGRAM API
+// ========================================
+
+async function telegramRequest(
+  env,
+  method,
+  body
+) {
   const response = await fetch(
     `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,
     {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type":
+          "application/json"
       },
-      body: JSON.stringify(body)
+      body:
+        JSON.stringify(body)
     }
   );
 
   let data;
 
   try {
-    data = await response.json();
+    data =
+      await response.json();
   } catch {
     data = {
       ok: false,
-      error: "Invalid Telegram response"
+      error:
+        "Invalid Telegram response"
     };
   }
 
   return {
-    ok: response.ok && data.ok,
+    ok:
+      response.ok &&
+      data.ok,
     data
   };
 }
 
 function adminChatId(env) {
-  return env.TELEGRAM_ADMIN_CHAT_ID || "833033142";
+  return (
+    env.TELEGRAM_ADMIN_CHAT_ID ||
+    "833033142"
+  );
 }
 
 
@@ -1266,25 +1577,31 @@ function adminChatId(env) {
 // SESSION SIGNING
 // ========================================
 
-async function sign(value, secret) {
-  const encoder = new TextEncoder();
+async function sign(
+  value,
+  secret
+) {
+  const encoder =
+    new TextEncoder();
 
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    {
-      name: "HMAC",
-      hash: "SHA-256"
-    },
-    false,
-    ["sign"]
-  );
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(secret),
+      {
+        name: "HMAC",
+        hash: "SHA-256"
+      },
+      false,
+      ["sign"]
+    );
 
-  const signature = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(value)
-  );
+  const signature =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(value)
+    );
 
   return bytesToHex(
     new Uint8Array(signature)
@@ -1293,7 +1610,11 @@ async function sign(value, secret) {
 
 function bytesToHex(bytes) {
   return Array.from(bytes)
-    .map(byte => byte.toString(16).padStart(2, "0"))
+    .map(byte =>
+      byte
+        .toString(16)
+        .padStart(2, "0")
+    )
     .join("");
 }
 
@@ -1304,8 +1625,14 @@ function safeEqual(a, b) {
 
   let result = 0;
 
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  for (
+    let i = 0;
+    i < a.length;
+    i++
+  ) {
+    result |=
+      a.charCodeAt(i) ^
+      b.charCodeAt(i);
   }
 
   return result === 0;
@@ -1328,18 +1655,23 @@ function clean(value) {
 }
 
 function formatToman(value) {
-  return Number(value).toLocaleString("fa-IR") + " تومان";
+  return (
+    Number(value).toLocaleString("fa-IR") +
+    " تومان"
+  );
 }
 
 function generateTrackingCode() {
-  const now = Date.now()
-    .toString(36)
-    .toUpperCase();
+  const now =
+    Date.now()
+      .toString(36)
+      .toUpperCase();
 
-  const random = Math.random()
-    .toString(36)
-    .substring(2, 7)
-    .toUpperCase();
+  const random =
+    Math.random()
+      .toString(36)
+      .substring(2, 7)
+      .toUpperCase();
 
   return `7BX-${now}-${random}`;
 }
@@ -1351,15 +1683,24 @@ function unauthorized() {
   }, 401);
 }
 
-function json(data, status = 200) {
+function json(
+  data,
+  status = 200
+) {
   return new Response(
-    JSON.stringify(data, null, 2),
+    JSON.stringify(
+      data,
+      null,
+      2
+    ),
     {
       status,
       headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "no-store"
+        "Content-Type":
+          "application/json; charset=utf-8",
+        "Cache-Control":
+          "no-store"
       }
     }
   );
-} 
+}
