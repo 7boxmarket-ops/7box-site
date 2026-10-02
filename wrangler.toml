@@ -6,3 +6,8 @@ compatibility_date = "2026-10-01"
 directory = "."
 binding = "ASSETS"
 run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sevenbox-orders"
+database_id = "b0668796-5d2e-4777-92bd-a8e5c637d89f"
