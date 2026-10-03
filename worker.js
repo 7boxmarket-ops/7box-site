@@ -14,7 +14,6 @@ export default {
     const url = new URL(request.url);
 
     try {
-
       // =========================
       // PUBLIC API
       // =========================
@@ -42,7 +41,6 @@ export default {
             new Date().toISOString()
         });
       }
-
 
       if (
         url.pathname === "/api/test-telegram" &&
@@ -86,7 +84,6 @@ export default {
         });
       }
 
-
       if (
         url.pathname === "/api/test-db" &&
         request.method === "GET"
@@ -105,7 +102,6 @@ export default {
             result.results || []
         });
       }
-
 
       // =========================
       // PUBLIC PRODUCTS
@@ -138,7 +134,6 @@ export default {
         });
       }
 
-
       if (
         url.pathname === "/api/settings" &&
         request.method === "GET"
@@ -165,7 +160,6 @@ export default {
         });
       }
 
-
       // =========================
       // TELEGRAM WEBHOOK
       // =========================
@@ -180,7 +174,6 @@ export default {
           env
         );
       }
-
 
       // =========================
       // ADMIN AUTH
@@ -197,7 +190,6 @@ export default {
         );
       }
 
-
       if (
         url.pathname ===
           "/api/admin/logout" &&
@@ -207,7 +199,6 @@ export default {
           request
         );
       }
-
 
       if (
         url.pathname ===
@@ -226,7 +217,6 @@ export default {
           authenticated: true
         });
       }
-
 
       // =========================
       // ADMIN PRODUCTS
@@ -263,7 +253,6 @@ export default {
         });
       }
 
-
       // افزودن محصول
       if (
         url.pathname ===
@@ -279,7 +268,6 @@ export default {
           env
         );
       }
-
 
       // ویرایش کامل محصول
       if (
@@ -297,7 +285,6 @@ export default {
         );
       }
 
-
       // حذف محصول
       if (
         url.pathname ===
@@ -313,7 +300,6 @@ export default {
           env
         );
       }
-
 
       // =========================
       // ADMIN SETTINGS
@@ -350,7 +336,6 @@ export default {
         });
       }
 
-
       if (
         url.pathname ===
           "/api/admin/settings" &&
@@ -365,7 +350,6 @@ export default {
           env
         );
       }
-
 
       // =========================
       // ADMIN ORDERS
@@ -413,7 +397,6 @@ export default {
         });
       }
 
-
       // حذف سفارش
       if (
         url.pathname ===
@@ -430,7 +413,6 @@ export default {
         );
       }
 
-
       if (
         url.pathname ===
           "/api/admin/orders/status" &&
@@ -445,7 +427,6 @@ export default {
           env
         );
       }
-
 
       if (
         url.pathname ===
@@ -462,7 +443,6 @@ export default {
         );
       }
 
-
       // =========================
       // PUBLIC ORDER
       // =========================
@@ -476,7 +456,6 @@ export default {
           env
         );
       }
-
 
       if (
         url.pathname.startsWith(
@@ -535,35 +514,35 @@ export default {
         });
       }
 
-// =========================
-// SITEMAP
-// =========================
+      // =========================
+      // SITEMAP
+      // =========================
 
-if (
-  url.pathname === "/sitemap.xml" &&
-  request.method === "GET"
-) {
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+      if (
+        url.pathname === "/sitemap.xml" &&
+        request.method === "GET"
+      ) {
+        const sitemap =
+          `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://7box-site.sevenbox.workers.dev/</loc>
   </url>
 </urlset>`;
 
-  return new Response(
-    sitemap,
-    {
-      status: 200,
-      headers: {
-        "Content-Type":
-          "application/xml; charset=utf-8",
-        "Cache-Control":
-          "public, max-age=3600"
+        return new Response(
+          sitemap,
+          {
+            status: 200,
+            headers: {
+              "Content-Type":
+                "application/xml; charset=utf-8",
+              "Cache-Control":
+                "public, max-age=3600"
+            }
+          }
+        );
       }
-    }
-  );
-}
-
 
       // =========================
       // STATIC FILES
@@ -572,7 +551,6 @@ if (
       return env.ASSETS.fetch(request);
 
     } catch (error) {
-
       console.error(
         "Worker error:",
         error
@@ -586,7 +564,6 @@ if (
     }
   }
 };
-
 
 // ========================================
 // ADMIN LOGIN
@@ -673,7 +650,6 @@ async function adminLogin(
   );
 }
 
-
 // ========================================
 // ADMIN LOGOUT
 // ========================================
@@ -696,7 +672,6 @@ async function adminLogout(
     }
   );
 }
-
 
 // ========================================
 // AUTH CHECK
@@ -737,7 +712,8 @@ async function isAdmin(
           .slice(index + 1)
           .trim();
 
-      cookies[key] = value;
+      cookies[key] =
+        value;
     });
 
   const token =
@@ -792,7 +768,6 @@ async function isAdmin(
     expectedSignature
   );
 }
-
 
 // ========================================
 // CREATE PRODUCT
@@ -872,8 +847,10 @@ async function createProduct(
 
   if (
     price !== null &&
-    (!Number.isInteger(price) ||
-      price < 0)
+    (
+      !Number.isInteger(price) ||
+      price < 0
+    )
   ) {
     return json({
       ok: false,
@@ -884,8 +861,10 @@ async function createProduct(
 
   if (
     stock !== null &&
-    (!Number.isInteger(stock) ||
-      stock < 0)
+    (
+      !Number.isInteger(stock) ||
+      stock < 0
+    )
   ) {
     return json({
       ok: false,
@@ -895,7 +874,6 @@ async function createProduct(
   }
 
   try {
-
     const result =
       await env.DB.prepare(
         `INSERT INTO products (
@@ -933,7 +911,6 @@ async function createProduct(
     }, 201);
 
   } catch (error) {
-
     if (
       String(error.message || "")
         .toLowerCase()
@@ -949,7 +926,6 @@ async function createProduct(
     throw error;
   }
 }
-
 
 // ========================================
 // PRODUCT UPDATE
@@ -1044,7 +1020,9 @@ async function updateProduct(
   const active =
     body.active !== undefined
       ? normalizeActive(body.active)
-      : Number(product.active) ? 1 : 0;
+      : Number(product.active)
+        ? 1
+        : 0;
 
   if (!name) {
     return json({
@@ -1080,8 +1058,10 @@ async function updateProduct(
 
   if (
     price !== null &&
-    (!Number.isInteger(price) ||
-      price < 0)
+    (
+      !Number.isInteger(price) ||
+      price < 0
+    )
   ) {
     return json({
       ok: false,
@@ -1092,8 +1072,10 @@ async function updateProduct(
 
   if (
     stock !== null &&
-    (!Number.isInteger(stock) ||
-      stock < 0)
+    (
+      !Number.isInteger(stock) ||
+      stock < 0
+    )
   ) {
     return json({
       ok: false,
@@ -1142,7 +1124,6 @@ async function updateProduct(
     }
   });
 }
-
 
 // ========================================
 // PRODUCT DELETE
@@ -1231,10 +1212,10 @@ async function deleteProduct(
     ok: true,
     message:
       "محصول با موفقیت حذف شد.",
-    product_id: id
+    product_id:
+      id
   });
 }
-
 
 // ========================================
 // SETTINGS UPDATE
@@ -1282,8 +1263,7 @@ async function updateSettings(
       ('shipping_cost',?)
      ON CONFLICT(key)
      DO UPDATE SET
-      value =
-        excluded.value`
+      value = excluded.value`
   )
   .bind(
     String(shippingCost)
@@ -1299,6 +1279,315 @@ async function updateSettings(
   });
 }
 
+// ========================================
+// ORDER STATUS + STOCK TRANSITION
+// ========================================
+
+async function changeOrderStatus(
+  env,
+  trackingCode,
+  newStatus
+) {
+  const order =
+    await env.DB.prepare(
+      `SELECT
+        id,
+        tracking_code,
+        product_id,
+        product_name,
+        quantity,
+        status,
+        customer_name
+       FROM orders
+       WHERE tracking_code = ?`
+    )
+    .bind(trackingCode)
+    .first();
+
+  if (!order) {
+    return {
+      ok: false,
+      status: 404,
+      error:
+        "سفارش پیدا نشد."
+    };
+  }
+
+  const oldStatus =
+    clean(order.status);
+
+  if (
+    oldStatus === newStatus
+  ) {
+    return {
+      ok: true,
+      changed: false,
+      order,
+      oldStatus,
+      newStatus
+    };
+  }
+
+  const oldCancelled =
+    oldStatus === "لغو سفارش";
+
+  const newCancelled =
+    newStatus === "لغو سفارش";
+
+  const product =
+    await env.DB.prepare(
+      `SELECT
+        id,
+        stock,
+        active
+       FROM products
+       WHERE id = ?`
+    )
+    .bind(order.product_id)
+    .first();
+
+  if (!product) {
+    return {
+      ok: false,
+      status: 404,
+      error:
+        "محصول مربوط به این سفارش پیدا نشد."
+    };
+  }
+
+  const quantity =
+    Number(order.quantity);
+
+  const productStock =
+    product.stock === null ||
+    product.stock === undefined
+      ? null
+      : Number(product.stock);
+
+  // ========================================
+  // فعال → لغو
+  // موجودی برگردانده می‌شود
+  // ========================================
+
+  if (
+    !oldCancelled &&
+    newCancelled
+  ) {
+    if (
+      productStock === null
+    ) {
+      await env.DB.prepare(
+        `UPDATE orders
+         SET
+           status = ?,
+           updated_at = ?
+         WHERE tracking_code = ?`
+      )
+      .bind(
+        newStatus,
+        new Date().toISOString(),
+        trackingCode
+      )
+      .run();
+
+    } else {
+      const result =
+        await env.DB.batch([
+          env.DB.prepare(
+            `UPDATE products
+             SET stock = stock + ?
+             WHERE id = ?`
+          )
+          .bind(
+            quantity,
+            order.product_id
+          ),
+
+          env.DB.prepare(
+            `UPDATE orders
+             SET
+               status = ?,
+               updated_at = ?
+             WHERE tracking_code = ?`
+          )
+          .bind(
+            newStatus,
+            new Date().toISOString(),
+            trackingCode
+          )
+        ]);
+
+      const stockChanges =
+        Number(
+          result?.[0]?.meta?.changes || 0
+        );
+
+      const orderChanges =
+        Number(
+          result?.[1]?.meta?.changes || 0
+        );
+
+      if (
+        stockChanges !== 1 ||
+        orderChanges !== 1
+      ) {
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "تغییر موجودی سفارش انجام نشد."
+        };
+      }
+    }
+
+    return {
+      ok: true,
+      changed: true,
+      order,
+      oldStatus,
+      newStatus
+    };
+  }
+
+  // ========================================
+  // لغو → فعال
+  // موجودی دوباره کم می‌شود
+  // ========================================
+
+  if (
+    oldCancelled &&
+    !newCancelled
+  ) {
+    if (
+      productStock === null
+    ) {
+      await env.DB.prepare(
+        `UPDATE orders
+         SET
+           status = ?,
+           updated_at = ?
+         WHERE tracking_code = ?`
+      )
+      .bind(
+        newStatus,
+        new Date().toISOString(),
+        trackingCode
+      )
+      .run();
+
+    } else {
+      const stockResult =
+        await env.DB.prepare(
+          `UPDATE products
+           SET stock = stock - ?
+           WHERE id = ?
+             AND active = 1
+             AND stock >= ?`
+        )
+        .bind(
+          quantity,
+          order.product_id,
+          quantity
+        )
+        .run();
+
+      const stockChanges =
+        Number(
+          stockResult?.meta?.changes || 0
+        );
+
+      if (
+        stockChanges !== 1
+      ) {
+        return {
+          ok: false,
+          status: 409,
+          error:
+            "موجودی کافی نیست؛ سفارش نمی‌تواند دوباره فعال شود."
+        };
+      }
+
+      const orderResult =
+        await env.DB.prepare(
+          `UPDATE orders
+           SET
+             status = ?,
+             updated_at = ?
+           WHERE tracking_code = ?`
+        )
+        .bind(
+          newStatus,
+          new Date().toISOString(),
+          trackingCode
+        )
+        .run();
+
+      const orderChanges =
+        Number(
+          orderResult?.meta?.changes || 0
+        );
+
+      if (
+        orderChanges !== 1
+      ) {
+        // اگر تغییر سفارش انجام نشد،
+        // موجودی را برمی‌گردانیم.
+        await env.DB.prepare(
+          `UPDATE products
+           SET stock = stock + ?
+           WHERE id = ?`
+        )
+        .bind(
+          quantity,
+          order.product_id
+        )
+        .run();
+
+        return {
+          ok: false,
+          status: 500,
+          error:
+            "تغییر وضعیت سفارش انجام نشد."
+        };
+      }
+    }
+
+    return {
+      ok: true,
+      changed: true,
+      order,
+      oldStatus,
+      newStatus
+    };
+  }
+
+  // ========================================
+  // تغییر وضعیت عادی → عادی
+  // بدون تغییر موجودی
+  // ========================================
+
+  await env.DB.prepare(
+    `UPDATE orders
+     SET
+       status = ?,
+       updated_at = ?
+     WHERE tracking_code = ?`
+  )
+  .bind(
+    newStatus,
+    new Date().toISOString(),
+    trackingCode
+  )
+  .run();
+
+  return {
+    ok: true,
+    changed: true,
+    order,
+    oldStatus,
+    newStatus
+  };
+}
 
 // ========================================
 // ORDER STATUS
@@ -1347,49 +1636,29 @@ async function updateOrderStatus(
     }, 400);
   }
 
-  const order =
-    await env.DB.prepare(
-      `SELECT
-        tracking_code,
-        product_name,
-        status,
-        customer_name
-       FROM orders
-       WHERE tracking_code = ?`
-    )
-    .bind(trackingCode)
-    .first();
+  const result =
+    await changeOrderStatus(
+      env,
+      trackingCode,
+      status
+    );
 
-  if (!order) {
+  if (!result.ok) {
     return json({
       ok: false,
       error:
-        "سفارش پیدا نشد."
-    }, 404);
+        result.error
+    }, result.status || 500);
   }
 
-  const now =
-    new Date().toISOString();
-
-  await env.DB.prepare(
-    `UPDATE orders
-     SET
-       status = ?,
-       updated_at = ?
-     WHERE tracking_code = ?`
-  )
-  .bind(
-    status,
-    now,
-    trackingCode
-  )
-  .run();
+  const order =
+    result.order;
 
   if (
+    result.changed &&
     env.TELEGRAM_BOT_TOKEN
   ) {
     try {
-
       await telegramRequest(
         env,
         "sendMessage",
@@ -1404,9 +1673,7 @@ async function updateOrderStatus(
             `📌 وضعیت جدید: ${status}`
         }
       );
-
     } catch (error) {
-
       console.error(
         "Telegram status notification:",
         error
@@ -1421,7 +1688,6 @@ async function updateOrderStatus(
     status
   });
 }
-
 
 // ========================================
 // ORDER NOTE
@@ -1501,7 +1767,6 @@ async function updateOrderNote(
   });
 }
 
-
 // ========================================
 // ORDER DELETE
 // ========================================
@@ -1525,7 +1790,6 @@ async function deleteOrder(
 
   // پنل مدیریت ممکن است id بفرستد
   // یا tracking_code.
-  // هر دو را پشتیبانی می‌کنیم.
 
   const rawId =
     body.id;
@@ -1568,27 +1832,30 @@ async function deleteOrder(
   let order;
 
   if (id !== null) {
-
     order =
       await env.DB.prepare(
         `SELECT
           id,
           tracking_code,
-          product_name
+          product_id,
+          product_name,
+          quantity,
+          status
          FROM orders
          WHERE id = ?`
       )
       .bind(id)
       .first();
-
   } else {
-
     order =
       await env.DB.prepare(
         `SELECT
           id,
           tracking_code,
-          product_name
+          product_id,
+          product_name,
+          quantity,
+          status
          FROM orders
          WHERE tracking_code = ?`
       )
@@ -1604,39 +1871,129 @@ async function deleteOrder(
     }, 404);
   }
 
-  let result;
+  const product =
+    await env.DB.prepare(
+      `SELECT
+        id,
+        stock
+       FROM products
+       WHERE id = ?`
+    )
+    .bind(order.product_id)
+    .first();
 
-  if (id !== null) {
+  const wasCancelled =
+    clean(order.status) ===
+    "لغو سفارش";
 
-    result =
-      await env.DB.prepare(
-        `DELETE FROM orders
-         WHERE id = ?`
-      )
-      .bind(id)
-      .run();
-
-  } else {
-
-    result =
-      await env.DB.prepare(
-        `DELETE FROM orders
-         WHERE tracking_code = ?`
-      )
-      .bind(trackingCode)
-      .run();
-  }
+  // سفارش فعال → حذف:
+  // موجودی برمی‌گردد.
+  //
+  // سفارش لغوشده → حذف:
+  // موجودی قبلاً برگشته و
+  // دوباره اضافه نمی‌شود.
 
   if (
-    Number(
-      result?.meta?.changes || 0
-    ) !== 1
+    !wasCancelled &&
+    product &&
+    product.stock !== null &&
+    product.stock !== undefined
   ) {
-    return json({
-      ok: false,
-      error:
-        "حذف سفارش انجام نشد."
-    }, 500);
+    let result;
+
+    if (id !== null) {
+      result =
+        await env.DB.batch([
+          env.DB.prepare(
+            `UPDATE products
+             SET stock = stock + ?
+             WHERE id = ?`
+          )
+          .bind(
+            Number(order.quantity),
+            order.product_id
+          ),
+
+          env.DB.prepare(
+            `DELETE FROM orders
+             WHERE id = ?`
+          )
+          .bind(id)
+        ]);
+    } else {
+      result =
+        await env.DB.batch([
+          env.DB.prepare(
+            `UPDATE products
+             SET stock = stock + ?
+             WHERE id = ?`
+          )
+          .bind(
+            Number(order.quantity),
+            order.product_id
+          ),
+
+          env.DB.prepare(
+            `DELETE FROM orders
+             WHERE tracking_code = ?`
+          )
+          .bind(trackingCode)
+        ]);
+    }
+
+    const stockChanges =
+      Number(
+        result?.[0]?.meta?.changes || 0
+      );
+
+    const orderChanges =
+      Number(
+        result?.[1]?.meta?.changes || 0
+      );
+
+    if (
+      stockChanges !== 1 ||
+      orderChanges !== 1
+    ) {
+      return json({
+        ok: false,
+        error:
+          "حذف سفارش و بازگردانی موجودی انجام نشد."
+      }, 500);
+    }
+
+  } else {
+    let result;
+
+    if (id !== null) {
+      result =
+        await env.DB.prepare(
+          `DELETE FROM orders
+           WHERE id = ?`
+        )
+        .bind(id)
+        .run();
+    } else {
+      result =
+        await env.DB.prepare(
+          `DELETE FROM orders
+           WHERE tracking_code = ?`
+        )
+        .bind(trackingCode)
+        .run();
+    }
+
+    if (
+      Number(
+        result?.meta?.changes || 0
+      ) !== 1
+    ) {
+      return json({
+        ok: false,
+        error:
+          "حذف سفارش انجام نشد."
+      }, 500);
+    }
   }
 
   return json({
@@ -1649,7 +2006,6 @@ async function deleteOrder(
       order.tracking_code
   });
 }
-
 
 // ========================================
 // CREATE ORDER
@@ -1707,7 +2063,6 @@ async function createOrder(
       body.receipt_file_name
     );
 
-
   if (
     !Number.isInteger(
       productId
@@ -1720,7 +2075,6 @@ async function createOrder(
         "Invalid product"
     }, 400);
   }
-
 
   if (
     !Number.isInteger(
@@ -1736,7 +2090,6 @@ async function createOrder(
     }, 400);
   }
 
-
   if (
     !customerName ||
     customerName.length < 2
@@ -1747,7 +2100,6 @@ async function createOrder(
         "Customer name is required"
     }, 400);
   }
-
 
   if (
     !phone ||
@@ -1760,7 +2112,6 @@ async function createOrder(
     }, 400);
   }
 
-
   if (!province) {
     return json({
       ok: false,
@@ -1769,7 +2120,6 @@ async function createOrder(
     }, 400);
   }
 
-
   if (!city) {
     return json({
       ok: false,
@@ -1777,7 +2127,6 @@ async function createOrder(
         "City is required"
     }, 400);
   }
-
 
   if (
     !address ||
@@ -1790,7 +2139,6 @@ async function createOrder(
     }, 400);
   }
 
-
   if (
     !postalCode ||
     postalCode.length < 5
@@ -1802,7 +2150,6 @@ async function createOrder(
     }, 400);
   }
 
-
   if (!receiptBase64) {
     return json({
       ok: false,
@@ -1810,7 +2157,6 @@ async function createOrder(
         "Receipt image is required"
     }, 400);
   }
-
 
   const product =
     await env.DB.prepare(
@@ -1827,7 +2173,6 @@ async function createOrder(
     .bind(productId)
     .first();
 
-
   if (!product) {
     return json({
       ok: false,
@@ -1836,7 +2181,6 @@ async function createOrder(
     }, 404);
   }
 
-
   if (!product.active) {
     return json({
       ok: false,
@@ -1844,7 +2188,6 @@ async function createOrder(
         "Product is not available"
     }, 400);
   }
-
 
   // ========================================
   // STOCK CHECK
@@ -1855,7 +2198,6 @@ async function createOrder(
     product.stock === undefined
       ? null
       : Number(product.stock);
-
 
   if (
     productStock !== null &&
@@ -1873,7 +2215,6 @@ async function createOrder(
     }, 500);
   }
 
-
   if (
     productStock !== null &&
     productStock < quantity
@@ -1887,10 +2228,8 @@ async function createOrder(
     }, 409);
   }
 
-
   const unitPrice =
     Number(product.price);
-
 
   if (
     !Number.isFinite(
@@ -1905,24 +2244,20 @@ async function createOrder(
     }, 400);
   }
 
-
   const shippingSetting =
     await env.DB.prepare(
       `SELECT value
        FROM settings
-       WHERE key =
-         'shipping_cost'
+       WHERE key = 'shipping_cost'
        LIMIT 1`
     )
     .first();
-
 
   const shippingCost =
     Number(
       shippingSetting?.value ||
       300000
     );
-
 
   if (
     !Number.isFinite(
@@ -1937,7 +2272,6 @@ async function createOrder(
     }, 500);
   }
 
-
   const productTotal =
     unitPrice *
     quantity;
@@ -1950,13 +2284,11 @@ async function createOrder(
     productTotal +
     shippingTotal;
 
-
   const trackingCode =
     generateTrackingCode();
 
   const now =
     new Date().toISOString();
-
 
   // ========================================
   // BUILD ORDER INSERT
@@ -2012,26 +2344,20 @@ async function createOrder(
       now
     );
 
-
   // ========================================
   // STOCK UPDATE
   // ========================================
 
   let queries;
 
-
   if (
     productStock === null
   ) {
-
-    // محصول قدیمی / بدون مدیریت موجودی
+    // محصول بدون مدیریت موجودی
     queries = [
       orderInsert
     ];
-
   } else {
-
-    // فقط اگر موجودی هنوز کافی است کم کن
     const stockUpdate =
       env.DB.prepare(
         `UPDATE products
@@ -2052,19 +2378,14 @@ async function createOrder(
     ];
   }
 
-
-  // D1 batch برای جلوگیری از ثبت سفارش
-  // بدون کاهش صحیح موجودی
   const batchResult =
     await env.DB.batch(
       queries
     );
 
-
   if (
     productStock !== null
   ) {
-
     const stockChanges =
       Number(
         batchResult?.[0]?.meta?.changes ||
@@ -2082,13 +2403,11 @@ async function createOrder(
     }
   }
 
-
   let telegramSent =
     false;
 
   let receiptSent =
     false;
-
 
   // ========================================
   // TELEGRAM
@@ -2097,9 +2416,7 @@ async function createOrder(
   if (
     env.TELEGRAM_BOT_TOKEN
   ) {
-
     try {
-
       const telegramMessage =
         `🛒 سفارش جدید 7BOX\n\n` +
         `🔖 کد رهگیری: ${trackingCode}\n` +
@@ -2127,7 +2444,6 @@ async function createOrder(
         `🧾 رسید: ${receiptFileName || "ارسال شده"}\n\n` +
         `📌 وضعیت: ثبت سفارش`;
 
-
       const telegramResponse =
         await telegramRequest(
           env,
@@ -2145,30 +2461,25 @@ async function createOrder(
           }
         );
 
-
       telegramSent =
         telegramResponse.ok;
-
 
       // ========================================
       // SEND RECEIPT
       // ========================================
 
       try {
-
         let base64Data =
           receiptBase64;
 
         let mimeType =
           "image/jpeg";
 
-
         if (
           base64Data.startsWith(
             "data:"
           )
         ) {
-
           const commaIndex =
             base64Data.indexOf(
               ","
@@ -2177,7 +2488,6 @@ async function createOrder(
           if (
             commaIndex !== -1
           ) {
-
             const header =
               base64Data.substring(
                 0,
@@ -2200,13 +2510,10 @@ async function createOrder(
                 commaIndex + 1
               );
           }
-
         } else {
-
           const lowerFileName =
             receiptFileName
               .toLowerCase();
-
 
           if (
             lowerFileName.endsWith(
@@ -2237,28 +2544,23 @@ async function createOrder(
           }
         }
 
-
         base64Data =
           base64Data.replace(
             /\s/g,
             ""
           );
 
-
         const binaryString =
           atob(base64Data);
-
 
         const bytes =
           new Uint8Array(
             binaryString.length
           );
 
-
         for (
           let i = 0;
-          i <
-          binaryString.length;
+          i < binaryString.length;
           i++
         ) {
           bytes[i] =
@@ -2267,21 +2569,17 @@ async function createOrder(
             );
         }
 
-
         const fileName =
           receiptFileName ||
           `receipt-${trackingCode}`;
 
-
         const formData =
           new FormData();
-
 
         formData.append(
           "chat_id",
           adminChatId(env)
         );
-
 
         formData.append(
           "caption",
@@ -2290,7 +2588,6 @@ async function createOrder(
           `👤 مشتری: ${customerName}\n` +
           `📦 محصول: ${product.name}`
         );
-
 
         if (
           mimeType ===
@@ -2304,7 +2601,6 @@ async function createOrder(
             .toLowerCase()
             .endsWith(".jpeg")
         ) {
-
           formData.append(
             "photo",
             new Blob(
@@ -2324,7 +2620,6 @@ async function createOrder(
                 : `${fileName}.jpg`
           );
 
-
           const photoResponse =
             await fetch(
               `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
@@ -2336,9 +2631,7 @@ async function createOrder(
               }
             );
 
-
           let photoData;
-
 
           try {
             photoData =
@@ -2351,11 +2644,9 @@ async function createOrder(
             };
           }
 
-
           receiptSent =
             photoResponse.ok &&
             photoData.ok === true;
-
 
           if (!receiptSent) {
             console.error(
@@ -2365,7 +2656,6 @@ async function createOrder(
           }
 
         } else {
-
           formData.append(
             "document",
             new Blob(
@@ -2378,7 +2668,6 @@ async function createOrder(
             fileName
           );
 
-
           const documentResponse =
             await fetch(
               `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendDocument`,
@@ -2390,9 +2679,7 @@ async function createOrder(
               }
             );
 
-
           let documentData;
-
 
           try {
             documentData =
@@ -2405,11 +2692,9 @@ async function createOrder(
             };
           }
 
-
           receiptSent =
             documentResponse.ok &&
             documentData.ok === true;
-
 
           if (!receiptSent) {
             console.error(
@@ -2420,7 +2705,6 @@ async function createOrder(
         }
 
       } catch (error) {
-
         console.error(
           "Telegram receipt sending error:",
           error
@@ -2428,14 +2712,12 @@ async function createOrder(
       }
 
     } catch (error) {
-
       console.error(
         "Telegram notification error:",
         error
       );
     }
   }
-
 
   return json({
     ok: true,
@@ -2453,7 +2735,6 @@ async function createOrder(
       receiptSent
   }, 201);
 }
-
 
 // ========================================
 // TELEGRAM WEBHOOK
@@ -2477,7 +2758,6 @@ async function telegramWebhook(
   }
 
   try {
-
     if (
       update &&
       update.callback_query
@@ -2487,9 +2767,7 @@ async function telegramWebhook(
         env
       );
     }
-
   } catch (error) {
-
     console.error(
       "Telegram webhook error:",
       error
@@ -2500,7 +2778,6 @@ async function telegramWebhook(
     ok: true
   });
 }
-
 
 // ========================================
 // TELEGRAM CALLBACK
@@ -2522,14 +2799,12 @@ async function handleTelegramCallback(
   const chatId =
     callbackQuery.from?.id;
 
-
   if (
     String(chatId) !==
     String(
       adminChatId(env)
     )
   ) {
-
     await telegramRequest(
       env,
       "answerCallbackQuery",
@@ -2546,13 +2821,11 @@ async function handleTelegramCallback(
     return;
   }
 
-
   if (
     !data.startsWith(
       "order:"
     )
   ) {
-
     await telegramRequest(
       env,
       "answerCallbackQuery",
@@ -2568,16 +2841,13 @@ async function handleTelegramCallback(
 
     return;
   }
-
 
   const parts =
     data.split(":");
 
-
   if (
     parts.length !== 3
   ) {
-
     await telegramRequest(
       env,
       "answerCallbackQuery",
@@ -2593,14 +2863,12 @@ async function handleTelegramCallback(
 
     return;
   }
-
 
   const trackingCode =
     parts[1];
 
   const statusIndex =
     Number(parts[2]);
-
 
   if (
     !Number.isInteger(
@@ -2610,7 +2878,6 @@ async function handleTelegramCallback(
       statusIndex
     ]
   ) {
-
     await telegramRequest(
       env,
       "answerCallbackQuery",
@@ -2627,29 +2894,19 @@ async function handleTelegramCallback(
     return;
   }
 
-
   const newStatus =
     ORDER_STATUSES[
       statusIndex
     ];
 
+  const statusResult =
+    await changeOrderStatus(
+      env,
+      trackingCode,
+      newStatus
+    );
 
-  const order =
-    await env.DB.prepare(
-      `SELECT
-        tracking_code,
-        product_name,
-        customer_name,
-        status
-       FROM orders
-       WHERE tracking_code = ?`
-    )
-    .bind(trackingCode)
-    .first();
-
-
-  if (!order) {
-
+  if (!statusResult.ok) {
     await telegramRequest(
       env,
       "answerCallbackQuery",
@@ -2657,7 +2914,8 @@ async function handleTelegramCallback(
         callback_query_id:
           callbackId,
         text:
-          "سفارش پیدا نشد.",
+          statusResult.error ||
+          "تغییر وضعیت انجام نشد.",
         show_alert:
           true
       }
@@ -2666,25 +2924,8 @@ async function handleTelegramCallback(
     return;
   }
 
-
-  const now =
-    new Date().toISOString();
-
-
-  await env.DB.prepare(
-    `UPDATE orders
-     SET
-       status = ?,
-       updated_at = ?
-     WHERE tracking_code = ?`
-  )
-  .bind(
-    newStatus,
-    now,
-    trackingCode
-  )
-  .run();
-
+  const order =
+    statusResult.order;
 
   await telegramRequest(
     env,
@@ -2697,29 +2938,24 @@ async function handleTelegramCallback(
     }
   );
 
-
   if (
     message &&
     message.chat &&
     message.message_id
   ) {
-
     const originalText =
       message.text ||
       message.caption ||
       "";
 
-
     let updatedText =
       originalText;
-
 
     updatedText =
       updatedText.replace(
         /📌 وضعیت: .*/g,
         `📌 وضعیت: ${newStatus}`
       );
-
 
     if (
       !updatedText.includes(
@@ -2729,7 +2965,6 @@ async function handleTelegramCallback(
       updatedText +=
         `\n\n📌 وضعیت: ${newStatus}`;
     }
-
 
     await telegramRequest(
       env,
@@ -2750,24 +2985,26 @@ async function handleTelegramCallback(
     );
   }
 
-
-  await telegramRequest(
-    env,
-    "sendMessage",
-    {
-      chat_id:
-        adminChatId(env),
-      text:
-        `🔄 وضعیت سفارش تغییر کرد\n\n` +
-        `🔖 کد رهگیری: ${trackingCode}\n` +
-        `📦 محصول: ${order.product_name}\n` +
-        `👤 مشتری: ${order.customer_name}\n\n` +
-        `📌 وضعیت قبلی: ${order.status}\n` +
-        `✅ وضعیت جدید: ${newStatus}`
-    }
-  );
+  if (
+    statusResult.changed
+  ) {
+    await telegramRequest(
+      env,
+      "sendMessage",
+      {
+        chat_id:
+          adminChatId(env),
+        text:
+          `🔄 وضعیت سفارش تغییر کرد\n\n` +
+          `🔖 کد رهگیری: ${trackingCode}\n` +
+          `📦 محصول: ${order.product_name}\n` +
+          `👤 مشتری: ${order.customer_name}\n\n` +
+          `📌 وضعیت قبلی: ${order.status}\n` +
+          `✅ وضعیت جدید: ${newStatus}`
+      }
+    );
+  }
 }
-
 
 // ========================================
 // TELEGRAM STATUS KEYBOARD
@@ -2782,12 +3019,10 @@ function orderStatusKeyboard(
   for (
     const status of ORDER_STATUSES
   ) {
-
     const icon =
       status === currentStatus
         ? "✅"
         : "▫️";
-
 
     buttons.push([
       {
@@ -2804,7 +3039,6 @@ function orderStatusKeyboard(
       buttons
   };
 }
-
 
 // ========================================
 // TELEGRAM API
@@ -2830,9 +3064,7 @@ async function telegramRequest(
       }
     );
 
-
   let data;
-
 
   try {
     data =
@@ -2845,7 +3077,6 @@ async function telegramRequest(
     };
   }
 
-
   return {
     ok:
       response.ok &&
@@ -2854,14 +3085,12 @@ async function telegramRequest(
   };
 }
 
-
 function adminChatId(env) {
   return (
     env.TELEGRAM_ADMIN_CHAT_ID ||
     "833033142"
   );
 }
-
 
 // ========================================
 // SESSION SIGNING
@@ -2873,7 +3102,6 @@ async function sign(
 ) {
   const encoder =
     new TextEncoder();
-
 
   const key =
     await crypto.subtle.importKey(
@@ -2891,7 +3119,6 @@ async function sign(
       ["sign"]
     );
 
-
   const signature =
     await crypto.subtle.sign(
       "HMAC",
@@ -2901,14 +3128,12 @@ async function sign(
       )
     );
 
-
   return bytesToHex(
     new Uint8Array(
       signature
     )
   );
 }
-
 
 function bytesToHex(
   bytes
@@ -2923,7 +3148,6 @@ function bytesToHex(
     )
     .join("");
 }
-
 
 function safeEqual(
   a,
@@ -2950,7 +3174,6 @@ function safeEqual(
 
   return result === 0;
 }
-
 
 // ========================================
 // PRODUCT HELPERS
@@ -2982,7 +3205,6 @@ function normalizePrice(
   return number;
 }
 
-
 function normalizeStock(
   value
 ) {
@@ -3009,7 +3231,6 @@ function normalizeStock(
   return number;
 }
 
-
 function normalizeActive(
   value
 ) {
@@ -3024,7 +3245,6 @@ function normalizeActive(
 
   return 1;
 }
-
 
 // ========================================
 // HELPERS
@@ -3041,7 +3261,6 @@ function clean(value) {
   return String(value).trim();
 }
 
-
 function formatToman(
   value
 ) {
@@ -3054,7 +3273,6 @@ function formatToman(
     " تومان"
   );
 }
-
 
 function generateTrackingCode() {
   const now =
@@ -3071,7 +3289,6 @@ function generateTrackingCode() {
   return `7BX-${now}-${random}`;
 }
 
-
 function unauthorized() {
   return json({
     ok: false,
@@ -3079,7 +3296,6 @@ function unauthorized() {
       "Unauthorized"
   }, 401);
 }
-
 
 function json(
   data,
