@@ -148,24 +148,6 @@
       font-weight: 800;
     }
 
-    .stock-info {
-      margin-top: 7px;
-      color: #929b95;
-      font-size: 12px;
-    }
-
-    .stock-info.available {
-      color: #b9ffd0;
-    }
-
-    .stock-info.unlimited {
-      color: #929b95;
-    }
-
-    .stock-info.out {
-      color: #ff9e9e;
-    }
-
     .product-error {
       text-align: center;
       color: #ff9e9e;
@@ -668,11 +650,6 @@
               class="product-price">
             </div>
 
-            <div
-              id="stockInfo"
-              class="stock-info">
-            </div>
-
           </div>
 
         </div>
@@ -1045,8 +1022,7 @@
     /*
       اگر stock خالی/null باشد،
       محصول از نظر موجودی نامحدود محسوب می‌شود.
-      برای جلوگیری از عددهای غیرمنطقی،
-      سقف انتخاب در حالت نامحدود ۵۰ عدد است.
+      در حالت نامحدود، سقف انتخاب ۵۰ عدد است.
     */
 
     const DEFAULT_MAX_QUANTITY = 50;
@@ -1077,9 +1053,6 @@
 
     const productPrice =
       document.getElementById("productPrice");
-
-    const stockInfo =
-      document.getElementById("stockInfo");
 
 
     const quantityValue =
@@ -1240,86 +1213,6 @@
 
       quantityValue.textContent =
         quantity.toLocaleString("fa-IR");
-
-    }
-
-
-    /*
-      نمایش موجودی
-    */
-
-    function updateStockInfo() {
-
-      if (!selectedProduct) {
-        return;
-      }
-
-
-      const stock =
-        selectedProduct.stock;
-
-
-      /*
-        موجودی نامحدود
-      */
-
-      if (
-        stock === null ||
-        stock === undefined ||
-        stock === ""
-      ) {
-
-        stockInfo.textContent =
-          "موجودی: نامحدود";
-
-        stockInfo.className =
-          "stock-info unlimited";
-
-        return;
-
-      }
-
-
-      const stockNumber =
-        Number(stock);
-
-
-      if (
-        !Number.isFinite(stockNumber)
-      ) {
-
-        stockInfo.textContent =
-          "موجودی: نامحدود";
-
-        stockInfo.className =
-          "stock-info unlimited";
-
-        return;
-
-      }
-
-
-      if (stockNumber <= 0) {
-
-        stockInfo.textContent =
-          "ناموجود";
-
-        stockInfo.className =
-          "stock-info out";
-
-        return;
-
-      }
-
-
-      stockInfo.textContent =
-        "موجودی: " +
-        Math.floor(stockNumber)
-          .toLocaleString("fa-IR") +
-        " عدد";
-
-      stockInfo.className =
-        "stock-info available";
 
     }
 
@@ -1649,15 +1542,8 @@
 
 
         /*
-          موجودی
-        */
-
-        updateStockInfo();
-
-
-        /*
           اگر محصول موجودی محدود دارد،
-          تعداد اولیه را از موجودی بیشتر نمی‌کنیم.
+          تعداد اولیه از موجودی بیشتر نمی‌شود.
         */
 
         const maxQuantity =
