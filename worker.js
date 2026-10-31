@@ -131,7 +131,7 @@ export default {
              ORDER BY id ASC`
           ).all();
 
-        return json({
+        return jsonCached({
           ok: true,
           products:
             result.results || []
@@ -555,7 +555,7 @@ if (url.pathname === "/api/banners" && request.method === "GET") {
      FROM banners WHERE active = 1
      ORDER BY sort_order ASC, id ASC`
   ).all();
-  return json({ ok: true, banners: result.results || [] });
+  return jsonCached({ ok: true, banners: result.results || [] });
 }
 
 if (url.pathname === "/api/apps" && request.method === "GET") {
@@ -563,7 +563,7 @@ if (url.pathname === "/api/apps" && request.method === "GET") {
     `SELECT id, name, image, category, description, price, stock
      FROM apps WHERE active = 1 ORDER BY id ASC`
   ).all();
-  return json({ ok: true, apps: result.results || [] });
+  return jsonCached({ ok: true, apps: result.results || [] });
 }
 
 if (url.pathname === "/api/books" && request.method === "GET") {
@@ -571,7 +571,7 @@ if (url.pathname === "/api/books" && request.method === "GET") {
     `SELECT id, name, image, category, description, price, stock
      FROM books WHERE active = 1 ORDER BY id ASC`
   ).all();
-  return json({ ok: true, books: result.results || [] });
+  return jsonCached({ ok: true, books: result.results || [] });
 }
 
 /* ========== ADMIN BANNERS ========== */
@@ -3417,6 +3417,16 @@ function json(
     }
   );
 }
+function jsonCached(data) {
+  return new Response(JSON.stringify(data), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
+    }
+  });
+}
+
 // ========================================
 // BANNER CRUD
 // ========================================
