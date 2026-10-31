@@ -743,7 +743,7 @@ if (
           "no-store",
         "Set-Cookie":
           `${ADMIN_COOKIE}=${token}; ` +
-          `HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=28800`
+          `HttpOnly; Secure; SameSite=lax; Path=/; Max-Age=28800`
       }
     }
   );
@@ -766,7 +766,7 @@ async function adminLogout(
         "Content-Type":
           "application/json; charset=utf-8",
         "Set-Cookie":
-          `${ADMIN_COOKIE}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`
+          `${ADMIN_COOKIE}=; HttpOnly; Secure; SameSite=lax; Path=/; Max-Age=0`
       }
     }
   );
