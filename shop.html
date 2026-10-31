@@ -117,7 +117,7 @@ section{padding:70px 0;position:relative}
 .feature-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent-3);flex-shrink:0}
 .feature-icon svg{width:22px;height:22px}
 </style>
-<link rel="stylesheet" href="theme.css?v=3">
+<link rel="stylesheet" href="theme.css?v=2">
 </head>
 <body data-page="shop">
 
@@ -157,19 +157,19 @@ section{padding:70px 0;position:relative}
     <span class="feature-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
     </span>
-    <div><strong>ثبت سفارش آنلاین</strong><small>سفارش را آنلاین ثبت کنید</small></div>
+    <div><strong>ضمانت اصالت</strong><small>کالای اصل و معتبر</small></div>
   </div>
   <div class="feature-item">
     <span class="feature-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
     </span>
-    <div><strong>پیگیری با کد رهگیری</strong><small>وضعیت سفارش را ببینید</small></div>
+    <div><strong>ارسال سریع</strong><small>ارسال به سراسر کشور</small></div>
   </div>
   <div class="feature-item">
     <span class="feature-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
     </span>
-    <div><strong>پاسخگویی در تلگرام</strong><small>ارتباط مستقیم با 7BOX</small></div>
+    <div><strong>پشتیبانی ۲۴/۷</strong><small>همیشه در دسترس</small></div>
   </div>
 </div>
     </div>
@@ -179,7 +179,7 @@ section{padding:70px 0;position:relative}
     <div class="wrap">
       <div class="section-head">
         <h2>محصولات <span class="em">7BOX</span></h2>
-        <p>گجت، اسپیکر و لوازم جانبی منتخب</p>
+        <p>انتخابی از محصولات کاربردی و دیجیتال</p>
       </div>
       <div class="grid" id="productsGrid"></div>
     </div>
@@ -193,7 +193,7 @@ section{padding:70px 0;position:relative}
 
 <script>
 const API={banners:"/api/banners",products:"/api/products",apps:"/api/apps",books:"/api/books",order:"/api/orders/"};
-const FALLBACK_BANNERS=[{title:"فروشگاه 7BOX",subtitle:"گجت، اسپیکر و لوازم جانبی منتخب",cta:"ورود به فروشگاه",link:"/shop.html",gradient:"linear-gradient(135deg,#121216,#3a2a24)"},{title:"کتاب‌های دیجیتال",subtitle:"کتاب‌های کاربردی و منتخب",cta:"مشاهده کتابخانه",link:"/library.html",gradient:"linear-gradient(135deg,#121216,#2b2f3a)"},{title:"اپلیکیشن‌ها و بازی‌ها",subtitle:"اپلیکیشن و بازی‌های منتخب 7BOX",cta:"مشاهده اپ‌ها",link:"/apps.html",gradient:"linear-gradient(135deg,#121216,#26332e)"}];
+const FALLBACK_BANNERS=[{title:"تخفیف ویژه پاییزه",subtitle:"تا ۴۰٪ تخفیف روی محصولات منتخب",cta:"مشاهده محصولات",link:"/shop.html",gradient:"linear-gradient(135deg,#4c1d95,#7c3aed)"},{title:"کتاب‌های دیجیتال",subtitle:"دانلود کتاب‌های کاربردی",cta:"خرید کتاب",link:"/library.html",gradient:"linear-gradient(135deg,#7c2d12,#d97706)"},{title:"اپلیکیشن‌ها و بازی‌ها",subtitle:"بهترین اپ‌ها در 7BOX",cta:"مشاهده اپ‌ها",link:"/apps.html",gradient:"linear-gradient(135deg,#1e3a8a,#3b82f6)"}];
 const ORDER_STATUSES=["ثبت سفارش","تأیید سفارش","بسته‌بندی","ارسال","تحویل"];
 function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 function formatPrice(p){if(p===null||p===undefined||p===""||Number(p)<=0)return null;return Number(p).toLocaleString("fa-IR")+" تومان"}
