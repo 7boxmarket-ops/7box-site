@@ -627,6 +627,77 @@
           </div>
         </div>
       </section>
+<!-- BANNERS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">مدیریت بنرها</div>
+    <button class="btn gray small" onclick="loadBanners()">بروزرسانی</button>
+  </div>
+  <div class="section-body">
+    <form id="addBannerForm" style="margin-bottom:18px;">
+      <div class="add-product-grid">
+        <div class="field"><label>عنوان بنر *</label><input id="bnTitle" type="text" required></div>
+        <div class="field"><label>زیرعنوان</label><input id="bnSubtitle" type="text"></div>
+        <div class="field"><label>متن دکمه</label><input id="bnCta" type="text"></div>
+        <div class="field"><label>لینک</label><input id="bnLink" type="text" placeholder="#products"></div>
+        <div class="field full"><label>آدرس تصویر</label><input id="bnImage" type="text" placeholder="https://..."></div>
+        <div class="field"><label>ترتیب</label><input id="bnSort" type="number" min="0" value="0"></div>
+        <div class="field">
+          <label>وضعیت</label>
+          <div class="active-toggle"><input id="bnActive" type="checkbox" checked><label for="bnActive">فعال</label></div>
+        </div>
+      </div>
+      <div class="add-actions"><button class="btn green" type="submit">+ افزودن بنر</button></div>
+    </form>
+    <div id="bannersContainer" class="banners-grid"><div class="loading">در حال دریافت...</div></div>
+  </div>
+</section>
+
+<!-- APPS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">مدیریت اپلیکیشن‌ها</div>
+    <button class="btn gray small" onclick="loadCatalog('apps')">بروزرسانی</button>
+  </div>
+  <div class="section-body">
+    <form id="addAppsForm" style="margin-bottom:18px;">
+      <div class="add-product-grid">
+        <div class="field"><label>نام اپ *</label><input class="cat-name" type="text" required></div>
+        <div class="field"><label>دسته‌بندی *</label><input class="cat-category" type="text" required></div>
+        <div class="field full"><label>آدرس تصویر *</label><input class="cat-image" type="text" required></div>
+        <div class="field"><label>قیمت</label><input class="cat-price" type="number" min="0"></div>
+        <div class="field"><label>موجودی</label><input class="cat-stock" type="number" min="0"></div>
+        <div class="field full"><label>توضیحات *</label><textarea class="cat-description" required></textarea></div>
+      </div>
+      <div class="checkbox-field"><input class="cat-active" type="checkbox" checked><label>فعال باشد</label></div>
+      <div class="add-actions"><button class="btn green" type="submit">+ افزودن اپ</button></div>
+    </form>
+    <div id="appsContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
+  </div>
+</section>
+
+<!-- BOOKS -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">مدیریت کتاب‌ها</div>
+    <button class="btn gray small" onclick="loadCatalog('books')">بروزرسانی</button>
+  </div>
+  <div class="section-body">
+    <form id="addBooksForm" style="margin-bottom:18px;">
+      <div class="add-product-grid">
+        <div class="field"><label>نام کتاب *</label><input class="cat-name" type="text" required></div>
+        <div class="field"><label>دسته‌بندی *</label><input class="cat-category" type="text" required></div>
+        <div class="field full"><label>آدرس تصویر *</label><input class="cat-image" type="text" required></div>
+        <div class="field"><label>قیمت</label><input class="cat-price" type="number" min="0"></div>
+        <div class="field"><label>موجودی</label><input class="cat-stock" type="number" min="0"></div>
+        <div class="field full"><label>توضیحات *</label><textarea class="cat-description" required></textarea></div>
+      </div>
+      <div class="checkbox-field"><input class="cat-active" type="checkbox" checked><label>فعال باشد</label></div>
+      <div class="add-actions"><button class="btn green" type="submit">+ افزودن کتاب</button></div>
+    </form>
+    <div id="booksContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
+  </div>
+</section>
 
       <!-- ORDERS -->
       <section class="section">
