@@ -543,7 +543,102 @@ export default {
           }
         );
       }
+/* ========== PUBLIC BANNERS / APPS / BOOKS ========== */
 
+if (url.pathname === "/api/banners" && request.method === "GET") {
+  const result = await env.DB.prepare(
+    `SELECT id, title, subtitle, cta, link, image, sort_order
+     FROM banners WHERE active = 1
+     ORDER BY sort_order ASC, id ASC`
+  ).all();
+  return json({ ok: true, banners: result.results || [] });
+}
+
+if (url.pathname === "/api/apps" && request.method === "GET") {
+  const result = await env.DB.prepare(
+    `SELECT id, name, image, category, description, price, stock
+     FROM apps WHERE active = 1 ORDER BY id ASC`
+  ).all();
+  return json({ ok: true, apps: result.results || [] });
+}
+
+if (url.pathname === "/api/books" && request.method === "GET") {
+  const result = await env.DB.prepare(
+    `SELECT id, name, image, category, description, price, stock
+     FROM books WHERE active = 1 ORDER BY id ASC`
+  ).all();
+  return json({ ok: true, books: result.results || [] });
+}
+
+/* ========== ADMIN BANNERS ========== */
+
+if (url.pathname === "/api/admin/banners" && request.method === "GET") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  const result = await env.DB.prepare(
+    `SELECT * FROM banners ORDER BY sort_order ASC, id ASC`
+  ).all();
+  return json({ ok: true, banners: result.results || [] });
+}
+
+if (url.pathname === "/api/admin/banners" && request.method === "POST") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await createBanner(request, env);
+}
+
+if (url.pathname === "/api/admin/banners" && request.method === "PUT") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await updateBanner(request, env);
+}
+
+if (url.pathname === "/api/admin/banners" && request.method === "DELETE") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await deleteBanner(request, env);
+}
+
+/* ========== ADMIN APPS ========== */
+
+if (url.pathname === "/api/admin/apps" && request.method === "GET") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogList("apps", env);
+}
+
+if (url.pathname === "/api/admin/apps" && request.method === "POST") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogCreate("apps", request, env);
+}
+
+if (url.pathname === "/api/admin/apps" && request.method === "PUT") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogUpdate("apps", request, env);
+}
+
+if (url.pathname === "/api/admin/apps" && request.method === "DELETE") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogDelete("apps", request, env);
+}
+
+/* ========== ADMIN BOOKS ========== */
+
+if (url.pathname === "/api/admin/books" && request.method === "GET") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogList("books", env);
+}
+
+if (url.pathname === "/api/admin/books" && request.method === "POST") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogCreate("books", request, env);
+}
+
+if (url.pathname === "/api/admin/books" && request.method === "PUT") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogUpdate("books", request, env);
+}
+
+if (url.pathname === "/api/admin/books" && request.method === "DELETE") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogDelete("books", request, env);
+}
+      
       // =========================
       // STATIC FILES
       // =========================
@@ -3317,4 +3412,210 @@ function json(
       }
     }
   );
+}
+// ========================================
+// BANNER CRUD
+// ========================================
+
+async function createBanner(request, env) {
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const title     = clean(body.title);
+  const subtitle  = clean(body.subtitle);
+  const cta       = clean(body.cta);
+  const link      = clean(body.link);
+  const image     = clean(body.image);
+  const sortOrder = Number(body.sort_order) || 0;
+  const active    = normalizeActive(body.active);
+
+  if (!title) {
+    return json({ ok: false, error: "عنوان بنر الزامی است." }, 400);
+  }
+  if (!image && !subtitle) {
+    return json({ ok: false, error: "تصویر یا زیرعنوان لازم است." }, 400);
+  }
+
+  const result = await env.DB.prepare(
+    `INSERT INTO banners
+      (title, subtitle, cta, link, image, sort_order, active, created_at)
+     VALUES (?,?,?,?,?,?,?,?)`
+  ).bind(
+    title, subtitle || null, cta || null, link || null,
+    image || null, sortOrder, active, new Date().toISOString()
+  ).run();
+
+  return json({
+    ok: true, message: "بنر ایجاد شد.",
+    id: result.meta?.last_row_id || null
+  }, 201);
+}
+
+async function updateBanner(request, env) {
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const id = Number(body.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({ ok: false, error: "شناسه بنر نامعتبر است." }, 400);
+  }
+
+  const exists = await env.DB.prepare(
+    `SELECT id FROM banners WHERE id = ?`
+  ).bind(id).first();
+  if (!exists) return json({ ok: false, error: "بنر پیدا نشد." }, 404);
+
+  const title     = clean(body.title);
+  const subtitle  = clean(body.subtitle);
+  const cta       = clean(body.cta);
+  const link      = clean(body.link);
+  const image     = clean(body.image);
+  const sortOrder = Number(body.sort_order) || 0;
+  const active    = normalizeActive(body.active);
+
+  if (!title) {
+    return json({ ok: false, error: "عنوان بنر الزامی است." }, 400);
+  }
+
+  await env.DB.prepare(
+    `UPDATE banners SET
+       title = ?, subtitle = ?, cta = ?, link = ?,
+       image = ?, sort_order = ?, active = ?
+     WHERE id = ?`
+  ).bind(
+    title, subtitle || null, cta || null, link || null,
+    image || null, sortOrder, active, id
+  ).run();
+
+  return json({ ok: true, message: "بنر بروزرسانی شد." });
+}
+
+async function deleteBanner(request, env) {
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const id = Number(body.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({ ok: false, error: "شناسه نامعتبر." }, 400);
+  }
+
+  await env.DB.prepare(`DELETE FROM banners WHERE id = ?`)
+    .bind(id).run();
+
+  return json({ ok: true, message: "بنر حذف شد." });
+}
+
+// ========================================
+// GENERIC CATALOG (apps / books)
+// ========================================
+
+const CATALOG_TABLES = { apps: "apps", books: "books" };
+
+function validateCatalogTable(type) {
+  if (!CATALOG_TABLES[type]) throw new Error("Invalid catalog type");
+  return CATALOG_TABLES[type];
+}
+
+async function catalogList(type, env) {
+  const table = validateCatalogTable(type);
+  const result = await env.DB.prepare(
+    `SELECT * FROM ${table} ORDER BY id ASC`
+  ).all();
+  return json({ ok: true, items: result.results || [] });
+}
+
+async function catalogCreate(type, request, env) {
+  const table = validateCatalogTable(type);
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const name        = clean(body.name);
+  const image       = clean(body.image);
+  const category    = clean(body.category);
+  const description = clean(body.description);
+  const price       = normalizePrice(body.price);
+  const stock       = normalizeStock(body.stock);
+  const active      = normalizeActive(body.active);
+
+  if (!name)        return json({ ok: false, error: "نام الزامی است." }, 400);
+  if (!image)       return json({ ok: false, error: "تصویر الزامی است." }, 400);
+  if (!category)    return json({ ok: false, error: "دسته‌بندی الزامی است." }, 400);
+  if (!description) return json({ ok: false, error: "توضیحات الزامی است." }, 400);
+
+  const result = await env.DB.prepare(
+    `INSERT INTO ${table}
+       (name, image, category, description, price, stock, active, created_at)
+     VALUES (?,?,?,?,?,?,?,?)`
+  ).bind(
+    name, image, category, description,
+    price, stock, active, new Date().toISOString()
+  ).run();
+
+  return json({
+    ok: true, message: "با موفقیت افزوده شد.",
+    id: result.meta?.last_row_id || null
+  }, 201);
+}
+
+async function catalogUpdate(type, request, env) {
+  const table = validateCatalogTable(type);
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const id = Number(body.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({ ok: false, error: "شناسه نامعتبر." }, 400);
+  }
+
+  const exists = await env.DB.prepare(
+    `SELECT id FROM ${table} WHERE id = ?`
+  ).bind(id).first();
+  if (!exists) return json({ ok: false, error: "مورد پیدا نشد." }, 404);
+
+  const name        = clean(body.name);
+  const image       = clean(body.image);
+  const category    = clean(body.category);
+  const description = clean(body.description);
+  const price       = normalizePrice(body.price);
+  const stock       = normalizeStock(body.stock);
+  const active      = normalizeActive(body.active);
+
+  if (!name)        return json({ ok: false, error: "نام الزامی است." }, 400);
+  if (!image)       return json({ ok: false, error: "تصویر الزامی است." }, 400);
+  if (!category)    return json({ ok: false, error: "دسته‌بندی الزامی است." }, 400);
+  if (!description) return json({ ok: false, error: "توضیحات الزامی است." }, 400);
+
+  await env.DB.prepare(
+    `UPDATE ${table} SET
+       name = ?, image = ?, category = ?, description = ?,
+       price = ?, stock = ?, active = ?
+     WHERE id = ?`
+  ).bind(
+    name, image, category, description,
+    price, stock, active, id
+  ).run();
+
+  return json({ ok: true, message: "بروزرسانی شد." });
+}
+
+async function catalogDelete(type, request, env) {
+  const table = validateCatalogTable(type);
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
+
+  const id = Number(body.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({ ok: false, error: "شناسه نامعتبر." }, 400);
+  }
+
+  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`)
+    .bind(id).run();
+
+  return json({ ok: true, message: "حذف شد." });
 }
