@@ -879,11 +879,14 @@
   ========================= */
 
   async function loadAll() {
-    await Promise.all([
-      loadSettings(),
-      loadProducts(),
-      loadOrders()
-    ]);
+  await Promise.all([
+    loadSettings(),
+    loadProducts(),
+    loadBanners(),
+    loadCatalog("apps"),
+    loadCatalog("books"),
+    loadOrders()
+  ]);
   }
 
   /* =========================
