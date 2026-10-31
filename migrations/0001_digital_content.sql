@@ -1,0 +1,51 @@
+
+-- 7BOX digital content tables
+
+CREATE TABLE IF NOT EXISTS banners (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ title TEXT NOT NULL,
+ description TEXT DEFAULT '',
+ image TEXT NOT NULL,
+ mobile_image TEXT DEFAULT '',
+ link TEXT DEFAULT '',
+ sort_order INTEGER DEFAULT 0,
+ active INTEGER DEFAULT 1,
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS books (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ title TEXT NOT NULL,
+ author TEXT DEFAULT '',
+ description TEXT DEFAULT '',
+ category TEXT DEFAULT '',
+ cover TEXT DEFAULT '',
+ book_type TEXT DEFAULT 'audio',
+ active INTEGER DEFAULT 1,
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS book_chapters (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ book_id INTEGER NOT NULL,
+ title TEXT NOT NULL,
+ audio_url TEXT DEFAULT '',
+ content TEXT DEFAULT '',
+ duration INTEGER DEFAULT 0,
+ sort_order INTEGER DEFAULT 0,
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS apps (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ name TEXT NOT NULL,
+ icon TEXT DEFAULT '',
+ image TEXT DEFAULT '',
+ description TEXT DEFAULT '',
+ features TEXT DEFAULT '',
+ version TEXT DEFAULT '',
+ link TEXT DEFAULT '',
+ sort_order INTEGER DEFAULT 0,
+ active INTEGER DEFAULT 1,
+ created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
