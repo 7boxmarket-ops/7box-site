@@ -514,6 +514,40 @@ export default {
         });
       }
 
+
+      // =========================
+      // DIGITAL CONTENT (D1-backed)
+      // =========================
+      if (url.pathname.startsWith("/api/banners") || url.pathname.startsWith("/api/books") || url.pathname.startsWith("/api/apps") || url.pathname.startsWith("/api/admin/banners") || url.pathname.startsWith("/api/admin/books") || url.pathname.startsWith("/api/admin/apps")) await ensureContentTables(env);
+
+      if (url.pathname === "/api/banners" && request.method === "GET") {
+        const rows = await env.DB.prepare("SELECT id,title,description,image,mobile_image,link,sort_order,active FROM banners WHERE active=1 ORDER BY sort_order,id DESC").all();
+        return json({ok:true,banners:rows.results||[]});
+      }
+      if (url.pathname === "/api/books" && request.method === "GET") {
+        const rows = await env.DB.prepare("SELECT id,title,author,description,category,cover,book_type FROM books WHERE active=1 ORDER BY id DESC").all();
+        return json({ok:true,books:rows.results||[]});
+      }
+      if (/^\\/api\\/books\\/\\d+$/.test(url.pathname) && request.method === "GET") {
+        const id=Number(url.pathname.split("/").pop());
+        const book=await env.DB.prepare("SELECT id,title,author,description,category,cover,book_type FROM books WHERE id=? AND active=1").bind(id).first();
+        if(!book)return json({ok:false,error:"Book not found"},404);
+        const chapters=await env.DB.prepare("SELECT id,title,audio_url,content,duration,sort_order FROM book_chapters WHERE book_id=? ORDER BY sort_order,id").bind(id).all();
+        return json({ok:true,book:{...book,chapters:chapters.results||[]}});
+      }
+      if (url.pathname === "/api/apps" && request.method === "GET") {
+        const rows=await env.DB.prepare("SELECT id,name,icon,image,description,features,version,link FROM apps WHERE active=1 ORDER BY sort_order,id DESC").all();
+        return json({ok:true,apps:rows.results||[]});
+      }
+      if (url.pathname.startsWith("/api/admin/")) {
+        if (!await isAdmin(request,env)) return unauthorized();
+        if (url.pathname === "/api/admin/banners") return await adminCollection(request,env,"banners");
+        if (url.pathname === "/api/admin/books") return await adminCollection(request,env,"books");
+        if (url.pathname === "/api/admin/apps") return await adminCollection(request,env,"apps");
+        const chapterParts=url.pathname.match(new RegExp("^/api/admin/books/([0-9]+)/chapters$"));
+        if(chapterParts) return await adminChapters(request,env,Number(chapterParts[1]));
+      }
+
       // =========================
       // SITEMAP
       // =========================
@@ -564,6 +598,84 @@ export default {
     }
   }
 };
+
+
+// ========================================
+// DIGITAL CONTENT STORAGE
+// ========================================
+async function ensureContentTables(env) {
+  await env.DB.batch([
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS banners (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, description TEXT DEFAULT '',
+      image TEXT NOT NULL, mobile_image TEXT DEFAULT '', link TEXT DEFAULT '', sort_order INTEGER DEFAULT 0,
+      active INTEGER DEFAULT 1, created_at TEXT DEFAULT CURRENT_TIMESTAMP)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS books (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, author TEXT DEFAULT '',
+      description TEXT DEFAULT '', category TEXT DEFAULT '', cover TEXT DEFAULT '',
+      book_type TEXT DEFAULT 'audio', active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS book_chapters (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, book_id INTEGER NOT NULL,
+      title TEXT NOT NULL, audio_url TEXT DEFAULT '', content TEXT DEFAULT '',
+      duration INTEGER DEFAULT 0, sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP)`),
+    env.DB.prepare(`CREATE TABLE IF NOT EXISTS apps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, icon TEXT DEFAULT '',
+      image TEXT DEFAULT '', description TEXT DEFAULT '', features TEXT DEFAULT '',
+      version TEXT DEFAULT '', link TEXT DEFAULT '', sort_order INTEGER DEFAULT 0,
+      active INTEGER DEFAULT 1, created_at TEXT DEFAULT CURRENT_TIMESTAMP)`)
+  ]);
+}
+function safeContentText(v,max=12000){return String(v??"").trim().slice(0,max)}
+function safeContentLink(v){const s=String(v||"").trim();if(!s)return "";if(s.startsWith("/")&&!s.startsWith("//"))return s.slice(0,2048);if(s.startsWith("https://")&&!/[\\s"'<>]/.test(s))return s.slice(0,2048);throw new Error("لینک باید HTTPS یا مسیر داخلی سایت باشد.");}
+function safeContentImage(v){
+ const s=String(v||"").trim();
+ if(!s)return "";
+ if(/^https:\/\/[^\s"'<>]+$/i.test(s))return s.slice(0,2048);
+ if(/^data:image\/(png|jpeg|jpg|webp);base64,[a-z0-9+/=]+$/i.test(s) && s.length<=2_500_000)return s;
+ throw new Error("تصویر نامعتبر یا بزرگ‌تر از حد مجاز است (حداکثر حدود ۱٫۸ مگابایت).");
+}
+function contentBody(data,kind){
+ const active=data.active===false||Number(data.active)===0?0:1;
+ if(kind==="banners")return {title:safeContentText(data.title,180),description:safeContentText(data.description,1200),image:safeContentImage(data.image),mobile_image:safeContentImage(data.mobile_image),link:safeContentLink(data.link),sort_order:Number(data.sort_order)||0,active};
+ if(kind==="books")return {title:safeContentText(data.title,180),author:safeContentText(data.author,180),description:safeContentText(data.description,5000),category:safeContentText(data.category,100),cover:safeContentImage(data.cover),book_type:["audio","text","both"].includes(data.book_type)?data.book_type:"audio",active};
+ return {name:safeContentText(data.name,180),icon:safeContentImage(data.icon),image:safeContentImage(data.image),description:safeContentText(data.description,3000),features:safeContentText(data.features,3000),version:safeContentText(data.version,60),link:safeContentLink(data.link),sort_order:Number(data.sort_order)||0,active};
+}
+async function adminCollection(request,env,kind){
+ const tables={banners:{table:"banners",fields:["title","description","image","mobile_image","link","sort_order","active"],required:"title"},books:{table:"books",fields:["title","author","description","category","cover","book_type","active"],required:"title"},apps:{table:"apps",fields:["name","icon","image","description","features","version","link","sort_order","active"],required:"name"}};
+ const cfg=tables[kind];
+ if(request.method==="GET"){const r=await env.DB.prepare(`SELECT * FROM ${cfg.table} ORDER BY id DESC`).all();return json({ok:true,[kind]:r.results||[]});}
+ if(request.method==="POST"||request.method==="PUT"){
+  let body;try{body=await request.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
+  try{
+   const values=contentBody(body,kind);if(!values[cfg.required])return json({ok:false,error:"عنوان یا نام الزامی است."},400);
+   if(request.method==="POST"){
+    const cols=cfg.fields.filter(k=>values[k]!==undefined);const sql=`INSERT INTO ${cfg.table} (${cols.join(",")}) VALUES (${cols.map(()=>"?").join(",")})`;
+    const res=await env.DB.prepare(sql).bind(...cols.map(k=>values[k])).run();return json({ok:true,id:res.meta?.last_row_id});
+   }
+   const id=Number(body.id);if(!id)return json({ok:false,error:"شناسه معتبر نیست."},400);
+   const cols=cfg.fields.filter(k=>values[k]!==undefined);await env.DB.prepare(`UPDATE ${cfg.table} SET ${cols.map(k=>k+"=?").join(",")} WHERE id=?`).bind(...cols.map(k=>values[k]),id).run();return json({ok:true});
+  }catch(e){return json({ok:false,error:e.message||"Invalid content"},400)}
+ }
+ if(request.method==="DELETE"){const id=Number(new URL(request.url).searchParams.get("id"));if(!id)return json({ok:false,error:"شناسه معتبر نیست."},400);await env.DB.prepare(`DELETE FROM ${cfg.table} WHERE id=?`).bind(id).run();if(kind==="books")await env.DB.prepare("DELETE FROM book_chapters WHERE book_id=?").bind(id).run();return json({ok:true});}
+ return json({ok:false,error:"Method not allowed"},405);
+}
+async function adminChapters(request,env,bookId){
+ const exists=await env.DB.prepare("SELECT id FROM books WHERE id=?").bind(bookId).first();if(!exists)return json({ok:false,error:"کتاب پیدا نشد."},404);
+ if(request.method==="GET"){const r=await env.DB.prepare("SELECT * FROM book_chapters WHERE book_id=? ORDER BY sort_order,id").bind(bookId).all();return json({ok:true,chapters:r.results||[]});}
+ if(request.method==="POST"||request.method==="PUT"){
+  let b;try{b=await request.json()}catch{return json({ok:false,error:"Invalid JSON"},400)}
+  const title=safeContentText(b.title,180);if(!title)return json({ok:false,error:"عنوان فصل الزامی است."},400);
+  const audio=safeContentText(b.audio_url,2048);if(audio&&!(audio.startsWith("/")&&!audio.startsWith("//"))&&!audio.startsWith("https://"))return json({ok:false,error:"آدرس فایل صوتی معتبر نیست."},400);
+  const content=safeContentText(b.content,100000),duration=Math.max(0,Number(b.duration)||0),sort=Number(b.sort_order)||0;
+  if(request.method==="POST"){const r=await env.DB.prepare("INSERT INTO book_chapters(book_id,title,audio_url,content,duration,sort_order) VALUES(?,?,?,?,?,?)").bind(bookId,title,audio,content,duration,sort).run();return json({ok:true,id:r.meta?.last_row_id});}
+  const id=Number(b.id);if(!id)return json({ok:false,error:"شناسه فصل نامعتبر است."},400);
+  await env.DB.prepare("UPDATE book_chapters SET title=?,audio_url=?,content=?,duration=?,sort_order=? WHERE id=? AND book_id=?").bind(title,audio,content,duration,sort,id,bookId).run();return json({ok:true});
+ }
+ if(request.method==="DELETE"){const id=Number(new URL(request.url).searchParams.get("id"));await env.DB.prepare("DELETE FROM book_chapters WHERE id=? AND book_id=?").bind(id,bookId).run();return json({ok:true});}
+ return json({ok:false,error:"Method not allowed"},405);
+}
+
 
 // ========================================
 // ADMIN LOGIN
