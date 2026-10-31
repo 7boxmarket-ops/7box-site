@@ -698,13 +698,17 @@ async function adminLogin(
   }
 
   const password =
-    clean(body.password);
+  clean(body.password);
 
-  if (
-    !password ||
-    password !==
-      env.ADMIN_PASSWORD
-  ) {
+const storedPassword =
+  env.ADMIN_PASSWORD
+    ? String(env.ADMIN_PASSWORD).trim()
+    : "";
+
+if (
+  !password ||
+  password !== storedPassword
+) {
     return json({
       ok: false,
       error:
