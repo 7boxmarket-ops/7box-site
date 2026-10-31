@@ -652,6 +652,66 @@
         </div>
       </section>
 
+
+      <!-- 7BOX DIGITAL CONTENT -->
+      <section class="section">
+        <div class="section-header"><div class="section-title">مدیریت بنرهای صفحه اصلی</div><button class="btn gray small" onclick="loadContent('banners')">بروزرسانی</button></div>
+        <div class="section-body">
+          <form id="bannerForm" class="form-grid">
+            <input type="hidden" id="bannerId"><div class="field"><label>عنوان</label><input id="bannerTitle" required maxlength="180"></div>
+            <div class="field"><label>لینک مقصد</label><input id="bannerLink" placeholder="/books یا https://..."></div>
+            <div class="field full"><label>توضیحات</label><textarea id="bannerDescription"></textarea></div>
+            <div class="field"><label>تصویر دسکتاپ (افقی)</label><input id="bannerImageFile" type="file" accept="image/png,image/jpeg,image/webp"><input id="bannerImage" type="hidden"></div><div class="field"><label>تصویر موبایل (اختیاری)</label><input id="bannerMobileFile" type="file" accept="image/png,image/jpeg,image/webp"><input id="bannerMobileImage" type="hidden"></div>
+            <div class="field"><label>ترتیب نمایش</label><input id="bannerOrder" type="number" value="0"></div>
+            <label class="checkbox-field"><input id="bannerActive" type="checkbox" checked> فعال</label>
+            <div class="field full"><button class="btn green" type="submit">ذخیره بنر</button> <button class="btn gray" type="button" onclick="resetContentForm('banner')">فرم جدید</button></div>
+          </form><div id="bannersAdminList" class="products-grid"></div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-header"><div class="section-title">مدیریت کتاب‌ها و فصل‌ها | 7BOX BOOK</div><button class="btn gray small" onclick="loadContent('books')">بروزرسانی</button></div>
+        <div class="section-body">
+          <form id="bookForm" class="form-grid">
+            <input type="hidden" id="bookId"><div class="field"><label>عنوان کتاب</label><input id="bookTitle" required></div>
+            <div class="field"><label>نویسنده</label><input id="bookAuthor"></div><div class="field"><label>دسته‌بندی</label><input id="bookCategoryInput"></div>
+            <div class="field"><label>نوع محتوا</label><select id="bookType"><option value="audio">صوتی</option><option value="text">متنی</option><option value="both">صوتی و متنی</option></select></div>
+            <div class="field full"><label>معرفی کتاب</label><textarea id="bookDescription"></textarea></div>
+            <div class="field"><label>تصویر جلد</label><input id="bookCoverFile" type="file" accept="image/png,image/jpeg,image/webp"><input id="bookCover" type="hidden"></div>
+            <label class="checkbox-field"><input id="bookActive" type="checkbox" checked> منتشر شود</label>
+            <div class="field full"><button class="btn green" type="submit">ذخیره کتاب</button> <button class="btn gray" type="button" onclick="resetContentForm('book')">کتاب جدید</button></div>
+          </form>
+          <div id="booksAdminList" class="products-grid"></div>
+          <hr style="margin:25px 0;border-color:#303640">
+          <h3>فصل‌های کتاب انتخاب‌شده</h3>
+          <div class="form-grid">
+            <input type="hidden" id="chapterId"><div class="field"><label>کتاب</label><select id="chapterBook"></select></div>
+            <div class="field"><label>عنوان فصل</label><input id="chapterTitle"></div>
+            <div class="field"><label>آدرس فایل صوتی (HTTPS)</label><input id="chapterAudio" placeholder="https://..."></div>
+            <div class="field"><label>مدت زمان (ثانیه)</label><input id="chapterDuration" type="number" min="0"></div>
+            <div class="field full"><label>متن فصل (اختیاری)</label><textarea id="chapterContent"></textarea></div>
+            <div class="field"><button class="btn green" type="button" onclick="saveChapter()">افزودن فصل</button></div>
+          </div>
+          <div id="chaptersAdminList"></div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="section-header"><div class="section-title">مدیریت Apps</div><button class="btn gray small" onclick="loadContent('apps')">بروزرسانی</button></div>
+        <div class="section-body">
+          <form id="appForm" class="form-grid">
+            <input type="hidden" id="appId"><div class="field"><label>نام اپلیکیشن</label><input id="appName" required></div>
+            <div class="field"><label>نسخه</label><input id="appVersion"></div>
+            <div class="field"><label>لینک دانلود / انتشار</label><input id="appLink"></div>
+            <div class="field"><label>آیکون</label><input id="appIconFile" type="file" accept="image/png,image/jpeg,image/webp"><input id="appIcon" type="hidden"></div>
+            <div class="field"><label>تصویر معرفی</label><input id="appImageFile" type="file" accept="image/png,image/jpeg,image/webp"><input id="appImage" type="hidden"></div>
+            <div class="field"><label>ترتیب</label><input id="appOrder" type="number" value="0"></div>
+            <div class="field full"><label>توضیحات</label><textarea id="appDescription"></textarea></div>
+            <div class="field full"><label>امکانات</label><textarea id="appFeatures"></textarea></div>
+            <label class="checkbox-field"><input id="appActive" type="checkbox" checked> فعال</label>
+            <div class="field full"><button class="btn green" type="submit">ذخیره اپلیکیشن</button> <button class="btn gray" type="button" onclick="resetContentForm('app')">اپلیکیشن جدید</button></div>
+          </form><div id="appsAdminList" class="products-grid"></div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -792,6 +852,33 @@
     showLogin();
   }
 
+
+  // DIGITAL CONTENT ADMIN
+  async function imageAsData(file){if(!file)return "";if(file.size>1800000)throw new Error("حجم تصویر باید کمتر از ۱٫۸ مگابایت باشد.");return await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+  async function uploadField(fileId,hiddenId){const f=document.getElementById(fileId).files[0];if(f)document.getElementById(hiddenId).value=await imageAsData(f);return document.getElementById(hiddenId).value}
+  async function contentApi(kind,method="GET",body=null,id=null){const url=`/api/admin/${kind}`+(method==="DELETE"?`?id=${id||""}`:"");return api(url,{method,body:body?JSON.stringify(body):undefined})}
+  async function loadContent(kind){
+    try{const d=await contentApi(kind);const rows=d[kind]||[];window.contentCache=window.contentCache||{};window.contentCache[kind]=rows;const target=document.getElementById(kind+"AdminList");if(!target)return;
+      if(kind==="banners")target.innerHTML=rows.map(x=>`<div class="product-card"><img class="product-image" src="${escapeHtml(x.image)}"><b>${escapeHtml(x.title)}</b><p>${Number(x.active)?"فعال":"غیرفعال"} | ترتیب ${x.sort_order}</p><button class="btn small" onclick="editContentById('banner',${x.id})">ویرایش</button> <button class="btn red small" onclick="deleteContent('banners',${x.id})">حذف</button></div>`).join("")||"هنوز بنری ثبت نشده است.";
+      if(kind==="books"){window.adminBooks=rows;document.getElementById("chapterBook").innerHTML=rows.map(x=>`<option value="${x.id}">${escapeHtml(x.title)}</option>`).join("");target.innerHTML=rows.map(x=>`<div class="product-card"><img class="product-image" src="${escapeHtml(x.cover)}"><b>${escapeHtml(x.title)}</b><p>${escapeHtml(x.author)} · ${escapeHtml(x.category)}</p><button class="btn small" onclick="editContentById('book',${x.id})">ویرایش</button> <button class="btn gray small" onclick="selectChapterBook(${x.id})">فصل‌ها</button> <button class="btn red small" onclick="deleteContent('books',${x.id})">حذف</button></div>`).join("")||"هنوز کتابی ثبت نشده است.";if(rows.length)selectChapterBook(Number(document.getElementById("chapterBook").value)||rows[0].id);}
+      if(kind==="apps")target.innerHTML=rows.map(x=>`<div class="product-card"><img class="product-image" src="${escapeHtml(x.icon||x.image)}"><b>${escapeHtml(x.name)}</b><p>نسخه ${escapeHtml(x.version)}</p><button class="btn small" onclick="editContentById('app',${x.id})">ویرایش</button> <button class="btn red small" onclick="deleteContent('apps',${x.id})">حذف</button></div>`).join("")||"هنوز اپلیکیشنی ثبت نشده است.";
+    }catch(e){showMessage("globalMessage",e.message,"error")}
+  }
+  function resetContentForm(kind){const form=document.getElementById(kind+"Form");form.reset();document.getElementById(kind+"Id").value="";const hidden={banner:["bannerImage","bannerMobileImage"],book:["bookCover"],app:["appIcon","appImage"]}[kind];hidden.forEach(id=>document.getElementById(id).value="")}
+  function editContentById(kind,id){const list=window.contentCache?.[({banner:"banners",book:"books",app:"apps"})[kind]]||[];const item=list.find(x=>Number(x.id)===Number(id));if(item)editContent(kind,item)}
+  function editContentById(kind,id){const list=window.contentCache?.[({banner:"banners",book:"books",app:"apps"})[kind]]||[];const item=list.find(x=>Number(x.id)===Number(id));if(item)editContent(kind,item)}
+  function editContent(kind,x){const map={banner:{bannerId:"id",bannerTitle:"title",bannerDescription:"description",bannerLink:"link",bannerImage:"image",bannerMobileImage:"mobile_image",bannerOrder:"sort_order",bannerActive:"active"},book:{bookId:"id",bookTitle:"title",bookAuthor:"author",bookCategoryInput:"category",bookType:"book_type",bookDescription:"description",bookCover:"cover",bookActive:"active"},app:{appId:"id",appName:"name",appVersion:"version",appLink:"link",appIcon:"icon",appImage:"image",appOrder:"sort_order",appDescription:"description",appFeatures:"features",appActive:"active"}}[kind];Object.entries(map).forEach(([el,key])=>{const node=document.getElementById(el);if(node.type==="checkbox")node.checked=Number(x[key])===1;else node.value=x[key]??""});document.getElementById(kind+"Form").scrollIntoView({behavior:"smooth"})}
+  async function deleteContent(kind,id){if(!confirm("این مورد حذف شود؟"))return;try{await contentApi(kind,"DELETE",null,id);await loadContent(kind);showMessage("globalMessage","حذف انجام شد.")}catch(e){showMessage("globalMessage",e.message,"error")}}
+  function formValue(id){return document.getElementById(id).value}
+  document.getElementById("bannerForm").addEventListener("submit",async e=>{e.preventDefault();try{const image=await uploadField("bannerImageFile","bannerImage"),mobile_image=await uploadField("bannerMobileFile","bannerMobileImage");const b={id:Number(formValue("bannerId"))||undefined,title:formValue("bannerTitle"),description:formValue("bannerDescription"),link:formValue("bannerLink"),image,mobile_image,sort_order:Number(formValue("bannerOrder")),active:document.getElementById("bannerActive").checked};await contentApi("banners",b.id?"PUT":"POST",b);resetContentForm("banner");loadContent("banners");showMessage("globalMessage","بنر ذخیره شد.")}catch(e){showMessage("globalMessage",e.message,"error")}});
+  document.getElementById("bookForm").addEventListener("submit",async e=>{e.preventDefault();try{const cover=await uploadField("bookCoverFile","bookCover");const b={id:Number(formValue("bookId"))||undefined,title:formValue("bookTitle"),author:formValue("bookAuthor"),category:formValue("bookCategoryInput"),book_type:formValue("bookType"),description:formValue("bookDescription"),cover,active:document.getElementById("bookActive").checked};await contentApi("books",b.id?"PUT":"POST",b);resetContentForm("book");loadContent("books");showMessage("globalMessage","کتاب ذخیره شد.")}catch(e){showMessage("globalMessage",e.message,"error")}});
+  document.getElementById("appForm").addEventListener("submit",async e=>{e.preventDefault();try{const icon=await uploadField("appIconFile","appIcon"),image=await uploadField("appImageFile","appImage");const b={id:Number(formValue("appId"))||undefined,name:formValue("appName"),version:formValue("appVersion"),link:formValue("appLink"),icon,image,sort_order:Number(formValue("appOrder")),description:formValue("appDescription"),features:formValue("appFeatures"),active:document.getElementById("appActive").checked};await contentApi("apps",b.id?"PUT":"POST",b);resetContentForm("app");loadContent("apps");showMessage("globalMessage","اپلیکیشن ذخیره شد.")}catch(e){showMessage("globalMessage",e.message,"error")}});
+  async function selectChapterBook(id){document.getElementById("chapterBook").value=id;try{const d=await api(`/api/admin/books/${id}/chapters`);document.getElementById("chaptersAdminList").innerHTML=(d.chapters||[]).map(c=>`<div class="product-card"><b>${escapeHtml(c.title)}</b><p>${escapeHtml(c.audio_url)}</p><button class="btn small" onclick="editChapter(${id},${c.id})">ویرایش فصل</button> <button class="btn red small" onclick="deleteChapter(${id},${c.id})">حذف فصل</button></div>`).join("")||"فصلی ثبت نشده است."}catch(e){showMessage("globalMessage",e.message,"error")}}
+  async function editChapter(bookId,chapterId){const d=await api(`/api/admin/books/${bookId}/chapters`);const c=(d.chapters||[]).find(x=>Number(x.id)===Number(chapterId));if(!c)return;document.getElementById("chapterId").value=c.id;document.getElementById("chapterBook").value=bookId;document.getElementById("chapterTitle").value=c.title||"";document.getElementById("chapterAudio").value=c.audio_url||"";document.getElementById("chapterDuration").value=c.duration||0;document.getElementById("chapterContent").value=c.content||"";document.getElementById("chapterTitle").focus()}
+  async function saveChapter(){const id=Number(formValue("chapterBook"));if(!id)return showMessage("globalMessage","ابتدا کتابی ثبت کنید.","error");try{const chapterId=Number(formValue("chapterId"));await api(`/api/admin/books/${id}/chapters`,{method:chapterId?"PUT":"POST",body:JSON.stringify({id:chapterId||undefined,title:formValue("chapterTitle"),audio_url:formValue("chapterAudio"),duration:Number(formValue("chapterDuration")),content:formValue("chapterContent")})});document.getElementById("chapterId").value="";document.getElementById("chapterTitle").value="";document.getElementById("chapterAudio").value="";document.getElementById("chapterContent").value="";selectChapterBook(id);showMessage("globalMessage","فصل ذخیره شد.")}catch(e){showMessage("globalMessage",e.message,"error")}}
+  async function deleteChapter(book,id){if(!confirm("فصل حذف شود؟"))return;try{await api(`/api/admin/books/${book}/chapters?id=${id}`,{method:"DELETE"});selectChapterBook(book)}catch(e){showMessage("globalMessage",e.message,"error")}}
+  document.getElementById("chapterBook").addEventListener("change",e=>selectChapterBook(Number(e.target.value)));
+
   /* =========================
      LOAD ALL
   ========================= */
@@ -800,7 +887,10 @@
     await Promise.all([
       loadSettings(),
       loadProducts(),
-      loadOrders()
+      loadOrders(),
+      loadContent("banners"),
+      loadContent("books"),
+      loadContent("apps")
     ]);
   }
 
