@@ -1624,6 +1624,227 @@
   /* =========================
      START
   ========================= */
+/* ============ BANNERS ============ */
+
+async function loadBanners() {
+  const container = document.getElementById("bannersContainer");
+  container.innerHTML = '<div class="loading">در حال دریافت...</div>';
+  try {
+    const data = await api("/api/admin/banners");
+    const banners = Array.isArray(data) ? data : (data.banners || []);
+    if (!banners.length) {
+      container.innerHTML = '<div class="empty" style="grid-column:1/-1">هنوز بنری ثبت نشده است.</div>';
+      return;
+    }
+    container.innerHTML = banners.map(bannerCard).join("");
+  } catch (error) {
+    container.innerHTML = '<div class="empty" style="grid-column:1/-1">خطا در دریافت بنرها.</div>';
+    showMessage("globalMessage", error.message, "error");
+  }
+}
+
+function bannerCard(b) {
+  const id = Number(b.id);
+  const active = Number(b.active) === 1;
+  const previewStyle = b.image ? `background-image:url('${escapeHtml(b.image)}')` : `background:linear-gradient(135deg,#065f46,#10b981)`;
+  return `
+    <div class="banner-card">
+      <div class="banner-preview" style="${previewStyle}">
+        <div class="banner-preview-content">
+          <strong>${escapeHtml(b.title)}</strong>
+          <small>${escapeHtml(b.subtitle || "")}</small>
+        </div>
+      </div>
+      <div class="banner-body">
+        <div class="banner-fields">
+          <div class="field"><label>عنوان</label><input id="bn-title-${id}" value="${escapeHtml(b.title)}"></div>
+          <div class="field"><label>زیرعنوان</label><input id="bn-subtitle-${id}" value="${escapeHtml(b.subtitle || "")}"></div>
+          <div class="field"><label>دکمه</label><input id="bn-cta-${id}" value="${escapeHtml(b.cta || "")}"></div>
+          <div class="field"><label>لینک</label><input id="bn-link-${id}" value="${escapeHtml(b.link || "")}"></div>
+          <div class="field full"><label>تصویر</label><input id="bn-image-${id}" value="${escapeHtml(b.image || "")}"></div>
+          <div class="field"><label>ترتیب</label><input id="bn-sort-${id}" type="number" value="${Number(b.sort_order) || 0}"></div>
+          <div class="field"><label>وضعیت</label>
+            <div class="active-toggle"><input id="bn-active-${id}" type="checkbox" ${active ? "checked" : ""}><label for="bn-active-${id}">فعال</label></div>
+          </div>
+        </div>
+        <div class="product-actions">
+          <button class="btn green small" onclick="saveBanner(${id})">ذخیره</button>
+          <button class="btn red small" onclick="deleteBanner(${id})">حذف</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function saveBanner(id) {
+  try {
+    await api("/api/admin/banners", {
+      method: "PUT",
+      body: JSON.stringify({
+        id,
+        title: document.getElementById(`bn-title-${id}`).value,
+        subtitle: document.getElementById(`bn-subtitle-${id}`).value,
+        cta: document.getElementById(`bn-cta-${id}`).value,
+        link: document.getElementById(`bn-link-${id}`).value,
+        image: document.getElementById(`bn-image-${id}`).value,
+        sort_order: Number(document.getElementById(`bn-sort-${id}`).value) || 0,
+        active: document.getElementById(`bn-active-${id}`).checked
+      })
+    });
+    showMessage("globalMessage", "بنر بروزرسانی شد.");
+    loadBanners();
+  } catch (error) { showMessage("globalMessage", error.message, "error"); }
+}
+
+async function deleteBanner(id) {
+  if (!confirm("این بنر حذف شود؟")) return;
+  try {
+    await api("/api/admin/banners", {method:"DELETE", body:JSON.stringify({id})});
+    showMessage("globalMessage", "بنر حذف شد.");
+    loadBanners();
+  } catch (error) { showMessage("globalMessage", error.message, "error"); }
+}
+
+document.getElementById("addBannerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    await api("/api/admin/banners", {
+      method: "POST",
+      body: JSON.stringify({
+        title: document.getElementById("bnTitle").value,
+        subtitle: document.getElementById("bnSubtitle").value,
+        cta: document.getElementById("bnCta").value,
+        link: document.getElementById("bnLink").value,
+        image: document.getElementById("bnImage").value,
+        sort_order: Number(document.getElementById("bnSort").value) || 0,
+        active: document.getElementById("bnActive").checked
+      })
+    });
+    showMessage("globalMessage", "بنر جدید اضافه شد.");
+    e.target.reset();
+    document.getElementById("bnActive").checked = true;
+    loadBanners();
+  } catch (error) { showMessage("globalMessage", error.message, "error"); }
+});
+
+/* ============ CATALOG (apps/books) ============ */
+
+async function loadCatalog(type) {
+  const container = document.getElementById(type + "Container");
+  container.innerHTML = '<div class="loading">در حال دریافت...</div>';
+  try {
+    const data = await api("/api/admin/" + type);
+    const items = Array.isArray(data) ? data : (data.items || data[type] || []);
+    if (!items.length) {
+      container.innerHTML = '<div class="empty" style="grid-column:1/-1">هنوز موردی ثبت نشده است.</div>';
+      return;
+    }
+    container.innerHTML = items.map(item => catalogCard(item, type)).join("");
+  } catch (error) {
+    container.innerHTML = '<div class="empty" style="grid-column:1/-1">خطا در دریافت.</div>';
+    showMessage("globalMessage", error.message, "error");
+  }
+}
+
+function catalogCard(item, type) {
+  const id = Number(item.id);
+  const active = Number(item.active) === 1;
+  const stockValue = (item.stock === null || item.stock === undefined) ? "" : item.stock;
+  return `
+    <div class="product-card">
+      <div class="product-top">
+        <img class="product-image" src="${escapeHtml(item.image)}" onerror="this.style.opacity='.25'">
+        <div>
+          <div class="product-id">#${numberFa(id)}</div>
+          <div class="product-name-title">${escapeHtml(item.name)}</div>
+          <div class="product-status ${active ? "status-active" : "status-inactive"}">${active ? "● فعال" : "● غیرفعال"}</div>
+        </div>
+      </div>
+      <div class="product-fields">
+        <div class="field"><label>نام</label><input id="cat-name-${id}${type}" value="${escapeHtml(item.name)}"></div>
+        <div class="field"><label>دسته‌بندی</label><input id="cat-category-${id}${type}" value="${escapeHtml(item.category)}"></div>
+        <div class="field full"><label>تصویر</label><input id="cat-image-${id}${type}" value="${escapeHtml(item.image)}"></div>
+        <div class="field"><label>قیمت</label><input id="cat-price-${id}${type}" type="number" min="0" value="${item.price === null || item.price === undefined ? "" : escapeHtml(item.price)}"></div>
+        <div class="field"><label>موجودی</label><input id="cat-stock-${id}${type}" type="number" min="0" value="${escapeHtml(stockValue)}"></div>
+        <div class="field full"><label>توضیحات</label><textarea id="cat-description-${id}${type}">${escapeHtml(item.description)}</textarea></div>
+        <div class="field full"><label>وضعیت</label>
+          <div class="active-toggle"><input id="cat-active-${id}${type}" type="checkbox" ${active ? "checked" : ""}><label for="cat-active-${id}${type}">فعال باشد</label></div>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn green small" onclick="saveCatalogItem(${id}, '${type}')">ذخیره</button>
+        <button class="btn red small" onclick="deleteCatalogItem(${id}, '${escapeHtml(item.name)}', '${type}')">حذف</button>
+      </div>
+    </div>`;
+}
+
+async function saveCatalogItem(id, type) {
+  try {
+    const getNum = (elId) => {
+      const v = document.getElementById(elId).value.trim();
+      if (v === "") return null;
+      const n = Number(v);
+      if (!Number.isInteger(n) || n < 0) throw new Error("عدد نامعتبر");
+      return n;
+    };
+    await api("/api/admin/" + type, {
+      method: "PUT",
+      body: JSON.stringify({
+        id,
+        name: document.getElementById(`cat-name-${id}${type}`).value,
+        category: document.getElementById(`cat-category-${id}${type}`).value,
+        image: document.getElementById(`cat-image-${id}${type}`).value,
+        description: document.getElementById(`cat-description-${id}${type}`).value,
+        price: getNum(`cat-price-${id}${type}`),
+        stock: getNum(`cat-stock-${id}${type}`),
+        active: document.getElementById(`cat-active-${id}${type}`).checked
+      })
+    });
+    showMessage("globalMessage", "ذخیره شد.");
+    loadCatalog(type);
+  } catch (error) { showMessage("globalMessage", error.message, "error"); }
+}
+
+async function deleteCatalogItem(id, name, type) {
+  if (!confirm(`«${name}» حذف شود؟`)) return;
+  try {
+    await api("/api/admin/" + type, {method:"DELETE", body:JSON.stringify({id})});
+    showMessage("globalMessage", "حذف شد.");
+    loadCatalog(type);
+  } catch (error) { showMessage("globalMessage", error.message, "error"); }
+}
+
+["apps", "books"].forEach(type => {
+  const formId = type === "apps" ? "addAppsForm" : "addBooksForm";
+  document.getElementById(formId).addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    try {
+      const getNum = (cls) => {
+        const v = form.querySelector("." + cls).value.trim();
+        if (v === "") return null;
+        const n = Number(v);
+        if (!Number.isInteger(n) || n < 0) throw new Error("عدد نامعتبر");
+        return n;
+      };
+      await api("/api/admin/" + type, {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.querySelector(".cat-name").value,
+          category: form.querySelector(".cat-category").value,
+          image: form.querySelector(".cat-image").value,
+          description: form.querySelector(".cat-description").value,
+          price: getNum("cat-price"),
+          stock: getNum("cat-stock"),
+          active: form.querySelector(".cat-active").checked
+        })
+      });
+      showMessage("globalMessage", "با موفقیت اضافه شد.");
+      form.reset();
+      form.querySelector(".cat-active").checked = true;
+      loadCatalog(type);
+    } catch (error) { showMessage("globalMessage", error.message, "error"); }
+  });
+});
 
   checkLogin();
 </script>
