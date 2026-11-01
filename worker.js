@@ -10,7 +10,7 @@ const ORDER_STATUSES = [
 const ADMIN_COOKIE = "sevenbox_admin";
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     try {
@@ -644,30 +644,8 @@ if (url.pathname === "/api/admin/books" && request.method === "DELETE") {
 }
       
       // =========================
-      // UPLOADED IMAGES (optimized in admin panel)
-      // =========================
-
-      if (url.pathname === "/api/admin/upload-image" && request.method === "POST") {
-        if (!await isAdmin(request, env)) return unauthorized();
-        return await uploadImage(request, env);
-      }
-
-      if (url.pathname.startsWith("/api/img/") && request.method === "GET") {
-        return await serveUploadedImage(url, request, env, ctx);
-      }
-
-      // =========================
       // STATIC FILES
-      // (png/jpg -> webp when the browser supports it)
       // =========================
-
-      if (
-        (request.method === "GET" || request.method === "HEAD") &&
-        /\.(png|jpe?g)$/i.test(url.pathname)
-      ) {
-        const webp = await serveWebpVariant(request, url, env);
-        if (webp) return webp;
-      }
 
       return env.ASSETS.fetch(request);
 
@@ -3654,146 +3632,4 @@ async function catalogDelete(type, request, env) {
     .bind(id).run();
 
   return json({ ok: true, message: "حذف شد." });
-}
-
-
-// ========================================
-// IMAGE OPTIMIZATION HELPERS
-// ========================================
-
-const UPLOAD_MAX_BYTES = 900 * 1024;
-
-function sniffImage(bytes) {
-  if (
-    bytes.length > 12 &&
-    bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
-    bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50
-  ) return { mime: "image/webp", ext: "webp" };
-  if (bytes.length > 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff)
-    return { mime: "image/jpeg", ext: "jpg" };
-  if (
-    bytes.length > 8 &&
-    bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47
-  ) return { mime: "image/png", ext: "png" };
-  return null;
-}
-
-function bytesToBase64(bytes) {
-  let bin = "";
-  const chunk = 0x8000;
-  for (let i = 0; i < bytes.length; i += chunk) {
-    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
-  }
-  return btoa(bin);
-}
-
-async function uploadImage(request, env) {
-  // custom header forces a CORS preflight, so other sites cannot call this
-  if (request.headers.get("X-Upload") !== "1") {
-    return json({ ok: false, error: "Bad request" }, 400);
-  }
-
-  const declared = Number(request.headers.get("Content-Length") || 0);
-  if (declared > UPLOAD_MAX_BYTES) {
-    return json({ ok: false, error: "حجم تصویر بیش از حد مجاز است" }, 413);
-  }
-
-  const buf = await request.arrayBuffer();
-  if (!buf.byteLength) {
-    return json({ ok: false, error: "فایل خالی است" }, 400);
-  }
-  if (buf.byteLength > UPLOAD_MAX_BYTES) {
-    return json({ ok: false, error: "حجم تصویر بیش از حد مجاز است" }, 413);
-  }
-
-  const bytes = new Uint8Array(buf);
-  const kind = sniffImage(bytes);
-  if (!kind) {
-    return json({ ok: false, error: "فرمت تصویر پشتیبانی نمی‌شود (WebP/JPG/PNG)" }, 415);
-  }
-
-  const idBytes = new Uint8Array(8);
-  crypto.getRandomValues(idBytes);
-  const id = Array.from(idBytes).map(b => b.toString(16).padStart(2, "0")).join("");
-
-  try {
-    await env.DB.prepare(
-      `CREATE TABLE IF NOT EXISTS uploaded_images (
-         id TEXT PRIMARY KEY,
-         mime TEXT NOT NULL,
-         data TEXT NOT NULL,
-         size INTEGER NOT NULL,
-         created_at TEXT NOT NULL DEFAULT (datetime('now'))
-       )`
-    ).run();
-
-    await env.DB.prepare(
-      "INSERT INTO uploaded_images (id, mime, data, size) VALUES (?, ?, ?, ?)"
-    ).bind(id, kind.mime, bytesToBase64(bytes), bytes.length).run();
-  } catch (e) {
-    console.error("uploadImage error:", e);
-    return json({ ok: false, error: "ذخیره تصویر ناموفق بود" }, 500);
-  }
-
-  return json({
-    ok: true,
-    url: `/api/img/${id}.${kind.ext}`,
-    size: bytes.length
-  });
-}
-
-async function serveUploadedImage(url, request, env, ctx) {
-  const m = url.pathname.match(/^\/api\/img\/([a-f0-9]{16})\.(webp|jpg|png)$/);
-  if (!m) return new Response("Not found", { status: 404 });
-
-  const cache = caches.default;
-  const cacheKey = new Request(url.origin + url.pathname, { method: "GET" });
-  const hit = await cache.match(cacheKey);
-  if (hit) return hit;
-
-  let row = null;
-  try {
-    row = await env.DB.prepare(
-      "SELECT mime, data FROM uploaded_images WHERE id = ?"
-    ).bind(m[1]).first();
-  } catch (e) {
-    row = null;
-  }
-  if (!row) return new Response("Not found", { status: 404 });
-
-  const bin = atob(row.data);
-  const out = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-
-  const res = new Response(out, {
-    status: 200,
-    headers: {
-      "Content-Type": row.mime,
-      "Cache-Control": "public, max-age=31536000, immutable",
-      "X-Content-Type-Options": "nosniff"
-    }
-  });
-
-  if (ctx && ctx.waitUntil) ctx.waitUntil(cache.put(cacheKey, res.clone()));
-  return res;
-}
-
-async function serveWebpVariant(request, url, env) {
-  const accept = request.headers.get("Accept") || "";
-  if (!accept.includes("image/webp")) return null;
-
-  try {
-    const webpUrl = new URL(url.toString());
-    webpUrl.pathname = url.pathname.replace(/\.(png|jpe?g)$/i, ".webp");
-    const res = await env.ASSETS.fetch(new Request(webpUrl.toString(), request));
-    if (!res.ok) return null;
-
-    const headers = new Headers(res.headers);
-    headers.set("Content-Type", "image/webp");
-    headers.set("Vary", "Accept");
-    headers.set("Cache-Control", "public, max-age=86400");
-    return new Response(res.body, { status: 200, headers });
-  } catch (e) {
-    return null;
-  }
 }

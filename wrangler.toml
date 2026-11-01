@@ -6,7 +6,7 @@ keep_vars = true
 [assets]
 directory = "."
 binding = "ASSETS"
-run_worker_first = ["/api/*", "/*.png", "/*.jpg", "/*.jpeg"]
+run_worker_first = ["/api/*"]
 
 [[d1_databases]]
 binding = "DB"
