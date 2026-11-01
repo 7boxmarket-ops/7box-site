@@ -152,7 +152,7 @@ section{padding:70px 0;position:relative}
     <div class="wrap">
       <div class="section-head">
         <h2>اپلیکیشن‌ها و <span class="em">بازی‌ها</span></h2>
-        <p>بهترین اپ‌های کاربردی و دیجیتال</p>
+        <p>دنیای اپ و بازی، یک لمس تا اجرا</p>
       </div>
       <div class="grid" id="appsGrid"></div>
     </div>
@@ -161,7 +161,7 @@ section{padding:70px 0;position:relative}
 
 <footer class="site-footer">
   <p>© <span id="year"></span> 7BOX — انتخاب هوشمندانه، خرید مطمئن</p>
-  <p><a href="/admin.html">ورود به پنل مدیریت</a></p>
+  <p><a class="admin-dot" href="/admin.html" aria-label="ورود" title="">•••</a></p>
 </footer>
 
 <script>
@@ -181,5 +181,6 @@ async function trackOrder(e){e.preventDefault();const input=document.getElementB
 function initNav(){const t=document.getElementById("navToggle"),l=document.getElementById("navLinks");if(t&&l)t.addEventListener("click",()=>l.classList.toggle("open"))}
 document.addEventListener("DOMContentLoaded",()=>{initNav();loadBanners();const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();const tf=document.getElementById("trackingForm");if(tf)tf.addEventListener("submit",trackOrder);if(document.getElementById("productsGrid"))loadSection({api:API.products,gridId:"productsGrid",type:"product",emptyText:"در حال حاضر محصولی برای نمایش وجود ندارد."});if(document.getElementById("appsGrid"))loadSection({api:API.apps,gridId:"appsGrid",type:"app",emptyText:"به‌زودی اپلیکیشن‌های جدید اضافه می‌شوند."});if(document.getElementById("booksGrid"))loadSection({api:API.books,gridId:"booksGrid",type:"book",emptyText:"به‌زودی کتاب‌های جدید اضافه می‌شوند."})});
 </script>
+<script src="catalog.js?v=1"></script>
 </body>
 </html>

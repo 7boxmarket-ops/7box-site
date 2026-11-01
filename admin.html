@@ -12,7 +12,7 @@
     body {
       margin: 0;
       font-family: Tahoma, Arial, sans-serif;
-      background: #0b0d10;
+      background: #09090d;
       color: #f4f4f5;
     }
 
@@ -33,8 +33,8 @@
     }
 
     header {
-      background: #11151a;
-      border-bottom: 1px solid #252a31;
+      background: #12121a;
+      border-bottom: 1px solid #26263a;
       padding: 16px 0;
       position: sticky;
       top: 0;
@@ -54,7 +54,7 @@
     }
 
     .brand span {
-      color: #6ee7b7;
+      color: #b4a9ff;
     }
 
     .btn {
@@ -63,7 +63,7 @@
       padding: 10px 15px;
       cursor: pointer;
       color: #fff;
-      background: #2563eb;
+      background: #6d5ce8;
       font-size: 14px;
     }
 
@@ -72,7 +72,7 @@
     }
 
     .btn.green {
-      background: #059669;
+      background: #6d5ce8;
     }
 
     .btn.red {
@@ -80,7 +80,7 @@
     }
 
     .btn.gray {
-      background: #374151;
+      background: #34344f;
     }
 
     .btn.orange {
@@ -95,8 +95,8 @@
     .login-box {
       width: min(420px, 94%);
       margin: 90px auto;
-      background: #11151a;
-      border: 1px solid #252a31;
+      background: #12121a;
+      border: 1px solid #26263a;
       border-radius: 18px;
       padding: 25px;
     }
@@ -121,8 +121,8 @@
     textarea,
     select {
       width: 100%;
-      border: 1px solid #303640;
-      background: #0d1116;
+      border: 1px solid #34344c;
+      background: #0c0c13;
       color: #fff;
       border-radius: 9px;
       padding: 10px;
@@ -133,7 +133,7 @@
     input:focus,
     textarea:focus,
     select:focus {
-      border-color: #3b82f6;
+      border-color: #8b7cf6;
     }
 
     textarea {
@@ -166,8 +166,8 @@
     }
 
     .message.success {
-      background: #064e3b;
-      color: #a7f3d0;
+      background: #2a2352;
+      color: #d9d4ff;
     }
 
     .message.error {
@@ -187,8 +187,8 @@
     }
 
     .stat {
-      background: #11151a;
-      border: 1px solid #252a31;
+      background: #12121a;
+      border: 1px solid #26263a;
       border-radius: 15px;
       padding: 18px;
     }
@@ -205,8 +205,8 @@
     }
 
     .section {
-      background: #11151a;
-      border: 1px solid #252a31;
+      background: #12121a;
+      border: 1px solid #26263a;
       border-radius: 16px;
       margin-bottom: 20px;
       overflow: hidden;
@@ -214,7 +214,7 @@
 
     .section-header {
       padding: 16px 18px;
-      border-bottom: 1px solid #252a31;
+      border-bottom: 1px solid #26263a;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -269,8 +269,8 @@
     }
 
     .product-card {
-      background: #0d1116;
-      border: 1px solid #2a3038;
+      background: #0c0c13;
+      border: 1px solid #2d2d42;
       border-radius: 14px;
       padding: 15px;
     }
@@ -287,8 +287,8 @@
       height: 75px;
       object-fit: cover;
       border-radius: 10px;
-      background: #181d24;
-      border: 1px solid #303640;
+      background: #1a1a26;
+      border: 1px solid #34344c;
       flex-shrink: 0;
     }
 
@@ -309,7 +309,7 @@
     }
 
     .status-active {
-      color: #6ee7b7;
+      color: #b4a9ff;
     }
 
     .status-inactive {
@@ -341,7 +341,7 @@
       flex-wrap: wrap;
       margin-top: 13px;
       padding-top: 13px;
-      border-top: 1px solid #252a31;
+      border-top: 1px solid #26263a;
     }
 
     .stock-help {
@@ -354,8 +354,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #151a21;
-      border: 1px solid #2a3038;
+      background: #15151f;
+      border: 1px solid #2d2d42;
       border-radius: 8px;
       padding: 9px;
       height: 40px;
@@ -378,7 +378,7 @@
 
     th,
     td {
-      border-bottom: 1px solid #252a31;
+      border-bottom: 1px solid #26263a;
       padding: 11px 9px;
       text-align: right;
       vertical-align: top;
@@ -388,7 +388,7 @@
     th {
       color: #94a3b8;
       font-weight: normal;
-      background: #0e1217;
+      background: #0e0e16;
     }
 
     tr:last-child td {
@@ -400,7 +400,7 @@
     }
 
     .tracking {
-      color: #6ee7b7;
+      color: #b4a9ff;
       font-weight: bold;
     }
 
@@ -452,6 +452,31 @@
 .img-up button:disabled{opacity:.5;cursor:wait}
 .img-up .img-up-msg{font-size:12px;opacity:.8}
 .img-up .img-up-msg.err{color:#f87171;opacity:1}
+
+/* ===== v3: tabs / folds / purple admin ===== */
+:root{--hdr:66px}
+.tabs{display:flex;gap:6px;overflow-x:auto;position:sticky;top:var(--hdr);z-index:40;background:#09090d;padding:10px 0;margin:0 0 16px;border-bottom:1px solid #26263a;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid #2d2d42;background:#12121a;color:#cbd5e1;border-radius:999px;padding:9px 16px;font-size:14px;cursor:pointer;white-space:nowrap}
+.tab:hover{border-color:#6d5ce8}
+.tab.active{background:#6d5ce8;border-color:#6d5ce8;color:#fff;font-weight:bold}
+.tab-badge{display:inline-block;min-width:20px;padding:0 6px;margin-right:4px;border-radius:999px;background:#fff;color:#4c3fc0;font-size:12px;font-weight:bold;text-align:center}
+.tab-panel{animation:tabIn .18s ease-out}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fold{background:#12121a;border:1px solid #26263a;border-radius:14px;margin-bottom:14px;overflow:hidden}
+.fold>summary{cursor:pointer;padding:14px 16px;font-weight:bold;list-style:none;display:flex;align-items:center;gap:8px;color:#d9d4ff}
+.fold>summary::-webkit-details-marker{display:none}
+.fold[open]>summary{border-bottom:1px solid #26263a;background:#15151f}
+.fold-body{padding:16px}
+.dl-hint{font-size:12px;color:#94a3b8;line-height:1.9;margin-top:6px}
+.dig-badge{display:inline-block;margin-top:4px;padding:2px 9px;border-radius:999px;background:#2a2352;color:#d9d4ff;font-size:11px}
+.audio-prev{width:100%;margin-top:8px;height:38px}
+.stats{margin-bottom:14px}
+.stats{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important}
+.stat{padding:10px 8px!important;text-align:center}
+.stat-title{font-size:11px!important;margin-bottom:4px!important}
+.stat-value{font-size:20px!important}
+@media(max-width:700px){.tab{padding:8px 13px;font-size:13px}}
 </style>
 </head>
 
@@ -460,7 +485,7 @@
   <!-- LOGIN -->
   <div id="loginView">
     <div class="login-box">
-      <h1>پنل مدیریت <span style="color:#6ee7b7">7BOX</span></h1>
+      <h1>پنل مدیریت <span style="color:#b4a9ff">7BOX</span></h1>
 
       <div id="loginMessage" class="message"></div>
 
@@ -519,14 +544,59 @@
         </div>
       </div>
 
-      <!-- SETTINGS -->
+      <nav class="tabs" id="adminTabs" role="tablist" aria-label="بخش‌های مدیریت">
+        <button type="button" class="tab active" data-tab="orders">🧾 سفارش‌ها <span class="tab-badge" id="tabPending" style="display:none"></span></button>
+        <button type="button" class="tab" data-tab="products">🛍 فروشگاه</button>
+        <button type="button" class="tab" data-tab="apps">📱 اپ و بازی</button>
+        <button type="button" class="tab" data-tab="books">📚 کتاب‌ها</button>
+        <button type="button" class="tab" data-tab="banners">🖼 بنرها</button>
+      </nav>
+
+      <!-- TAB: ORDERS -->
+      <div class="tab-panel" data-panel="orders">
+        <!-- ORDERS -->
       <section class="section">
         <div class="section-header">
-          <div class="section-title">تنظیمات فروشگاه</div>
+          <div class="section-title">مدیریت سفارش‌ها</div>
+
+          <button class="btn gray small" onclick="loadOrders()">
+            بروزرسانی
+          </button>
         </div>
 
-        <div class="section-body">
-          <div class="settings-row">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>شناسه / پیگیری</th>
+                <th>محصول</th>
+                <th>مشتری</th>
+                <th>مبلغ</th>
+                <th>وضعیت</th>
+                <th>یادداشت</th>
+                <th>عملیات</th>
+              </tr>
+            </thead>
+
+            <tbody id="ordersBody">
+              <tr>
+                <td colspan="7" class="loading">
+                  در حال دریافت سفارش‌ها...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </div>
+
+      <!-- TAB: SHOP PRODUCTS -->
+      <div class="tab-panel hidden" data-panel="products">
+
+        <details class="fold">
+          <summary>⚙️ تنظیمات ارسال</summary>
+          <div class="fold-body">
+            <div class="settings-row">
             <div class="field">
               <label>هزینه ارسال (تومان)</label>
               <input id="shippingCost" type="number" min="0">
@@ -536,18 +606,13 @@
               ذخیره هزینه ارسال
             </button>
           </div>
-        </div>
-      </section>
+          </div>
+        </details>
 
-      <!-- ADD PRODUCT -->
-      <section class="section">
-        <div class="section-header">
-          <div class="section-title">افزودن محصول جدید</div>
-        </div>
-
-        <div class="section-body">
-
-          <form id="addProductForm">
+        <details class="fold">
+          <summary>＋ افزودن محصول جدید</summary>
+          <div class="fold-body">
+            <form id="addProductForm">
 
             <div class="add-product-grid">
 
@@ -602,34 +667,72 @@
             </div>
 
           </form>
-
-        </div>
-      </section>
-
-      <!-- PRODUCTS -->
-      <section class="section">
-        <div class="section-header">
-          <div class="section-title">مدیریت محصولات</div>
-
-          <button class="btn gray small" onclick="loadProducts()">
-            بروزرسانی
-          </button>
-        </div>
-
-        <div class="section-body">
-          <div id="productsContainer" class="products-grid">
-            <div class="loading">در حال دریافت محصولات...</div>
           </div>
-        </div>
-      </section>
-<!-- BANNERS -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">مدیریت بنرها</div>
-    <button class="btn gray small" onclick="loadBanners()">بروزرسانی</button>
-  </div>
-  <div class="section-body">
-    <form id="addBannerForm" style="margin-bottom:18px;">
+        </details>
+
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">محصولات فروشگاه</div>
+            <button class="btn gray small" onclick="loadProducts()">بروزرسانی</button>
+          </div>
+          <div class="section-body">
+            <div id="productsContainer" class="products-grid">
+              <div class="loading">در حال دریافت محصولات...</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: APPS -->
+      <div class="tab-panel hidden" data-panel="apps">
+        <details class="fold">
+          <summary>＋ افزودن اپ یا بازی جدید</summary>
+          <div class="fold-body">
+            <form id="addAppsForm" data-type="apps">
+              <div class="add-product-grid" id="addAppsFields"></div>
+              <div class="add-actions"><button class="btn green" type="submit">＋ افزودن</button></div>
+            </form>
+          </div>
+        </details>
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">اپلیکیشن‌ها و بازی‌ها</div>
+            <button class="btn gray small" onclick="loadCatalog('apps')">بروزرسانی</button>
+          </div>
+          <div class="section-body">
+            <div id="appsContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: BOOKS -->
+      <div class="tab-panel hidden" data-panel="books">
+        <details class="fold">
+          <summary>＋ افزودن کتاب جدید</summary>
+          <div class="fold-body">
+            <form id="addBooksForm" data-type="books">
+              <div class="add-product-grid" id="addBooksFields"></div>
+              <div class="add-actions"><button class="btn green" type="submit">＋ افزودن</button></div>
+            </form>
+          </div>
+        </details>
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">کتاب‌ها</div>
+            <button class="btn gray small" onclick="loadCatalog('books')">بروزرسانی</button>
+          </div>
+          <div class="section-body">
+            <div id="booksContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- TAB: BANNERS -->
+      <div class="tab-panel hidden" data-panel="banners">
+        <details class="fold">
+          <summary>＋ افزودن بنر جدید</summary>
+          <div class="fold-body">
+            <form id="addBannerForm" style="margin-bottom:18px;">
       <div class="add-product-grid">
         <div class="field"><label>عنوان بنر *</label><input id="bnTitle" type="text" required></div>
         <div class="field"><label>زیرعنوان</label><input id="bnSubtitle" type="text"></div>
@@ -644,90 +747,18 @@
       </div>
       <div class="add-actions"><button class="btn green" type="submit">+ افزودن بنر</button></div>
     </form>
-    <div id="bannersContainer" class="banners-grid"><div class="loading">در حال دریافت...</div></div>
-  </div>
-</section>
-
-<!-- APPS -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">مدیریت اپلیکیشن‌ها</div>
-    <button class="btn gray small" onclick="loadCatalog('apps')">بروزرسانی</button>
-  </div>
-  <div class="section-body">
-    <form id="addAppsForm" style="margin-bottom:18px;">
-      <div class="add-product-grid">
-        <div class="field"><label>نام اپ *</label><input class="cat-name" type="text" required></div>
-        <div class="field"><label>دسته‌بندی *</label><input class="cat-category" type="text" required></div>
-        <div class="field full"><label>آدرس تصویر *</label><input class="cat-image" type="text" required></div>
-        <div class="field"><label>قیمت</label><input class="cat-price" type="number" min="0"></div>
-        <div class="field"><label>موجودی</label><input class="cat-stock" type="number" min="0"></div>
-        <div class="field full"><label>توضیحات *</label><textarea class="cat-description" required></textarea></div>
+          </div>
+        </details>
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">بنرهای صفحه اصلی</div>
+            <button class="btn gray small" onclick="loadBanners()">بروزرسانی</button>
+          </div>
+          <div class="section-body">
+            <div id="bannersContainer" class="banners-grid"><div class="loading">در حال دریافت...</div></div>
+          </div>
+        </section>
       </div>
-      <div class="checkbox-field"><input class="cat-active" type="checkbox" checked><label>فعال باشد</label></div>
-      <div class="add-actions"><button class="btn green" type="submit">+ افزودن اپ</button></div>
-    </form>
-    <div id="appsContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
-  </div>
-</section>
-
-<!-- BOOKS -->
-<section class="section">
-  <div class="section-header">
-    <div class="section-title">مدیریت کتاب‌ها</div>
-    <button class="btn gray small" onclick="loadCatalog('books')">بروزرسانی</button>
-  </div>
-  <div class="section-body">
-    <form id="addBooksForm" style="margin-bottom:18px;">
-      <div class="add-product-grid">
-        <div class="field"><label>نام کتاب *</label><input class="cat-name" type="text" required></div>
-        <div class="field"><label>دسته‌بندی *</label><input class="cat-category" type="text" required></div>
-        <div class="field full"><label>آدرس تصویر *</label><input class="cat-image" type="text" required></div>
-        <div class="field"><label>قیمت</label><input class="cat-price" type="number" min="0"></div>
-        <div class="field"><label>موجودی</label><input class="cat-stock" type="number" min="0"></div>
-        <div class="field full"><label>توضیحات *</label><textarea class="cat-description" required></textarea></div>
-      </div>
-      <div class="checkbox-field"><input class="cat-active" type="checkbox" checked><label>فعال باشد</label></div>
-      <div class="add-actions"><button class="btn green" type="submit">+ افزودن کتاب</button></div>
-    </form>
-    <div id="booksContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
-  </div>
-</section>
-
-      <!-- ORDERS -->
-      <section class="section">
-        <div class="section-header">
-          <div class="section-title">مدیریت سفارش‌ها</div>
-
-          <button class="btn gray small" onclick="loadOrders()">
-            بروزرسانی
-          </button>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>شناسه / پیگیری</th>
-                <th>محصول</th>
-                <th>مشتری</th>
-                <th>مبلغ</th>
-                <th>وضعیت</th>
-                <th>یادداشت</th>
-                <th>عملیات</th>
-              </tr>
-            </thead>
-
-            <tbody id="ordersBody">
-              <tr>
-                <td colspan="7" class="loading">
-                  در حال دریافت سفارش‌ها...
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
 
     </main>
   </div>
@@ -1379,6 +1410,12 @@
       document.getElementById("statPending").textContent =
         numberFa(pending);
 
+      const tabBadge = document.getElementById("tabPending");
+      if (tabBadge) {
+        tabBadge.textContent = numberFa(pending);
+        tabBadge.style.display = pending ? "" : "none";
+      }
+
       if (!orders.length) {
         body.innerHTML = `
           <tr>
@@ -1451,6 +1488,9 @@
             <strong>
               ${escapeHtml(order.product_name)}
             </strong>
+            ${order.item_type === "app" || order.item_type === "book"
+              ? `<div><span class="dig-badge">${order.item_type === "book" ? "کتاب" : "اپ / بازی"} دیجیتال</span></div>`
+              : ""}
 
             <div>
               تعداد:
@@ -1726,6 +1766,94 @@ document.getElementById("addBannerForm").addEventListener("submit", async (e) =>
 
 /* ============ CATALOG (apps/books) ============ */
 
+/* ===== apps / books (shared catalog) ===== */
+const CAT_TYPES = {
+  apps:  { one: "اپ / بازی", nameLabel: "نام اپ / بازی", catPh: "مثلاً بازی، ابزار، آموزشی" },
+  books: { one: "کتاب",      nameLabel: "نام کتاب",      catPh: "مثلاً رمان، آموزشی" }
+};
+
+function catalogFieldsHtml(prefix, type, item) {
+  item = item || {};
+  const T = CAT_TYPES[type];
+  const v = k => escapeHtml(item[k] === null || item[k] === undefined ? "" : item[k]);
+  const dl = item.download_type || "none";
+  const isBook = type === "books";
+  const opt = (val, label) =>
+    `<option value="${val}" ${dl === val ? "selected" : ""}>${label}</option>`;
+
+  return `
+    <div class="field"><label>${T.nameLabel} *</label>
+      <input id="${prefix}-name" type="text" value="${v("name")}"></div>
+    <div class="field"><label>دسته‌بندی *</label>
+      <input id="${prefix}-category" type="text" placeholder="${T.catPh}" value="${v("category")}"></div>
+    <div class="field full"><label>تصویر *</label>
+      <input id="${prefix}-image" data-img="1" type="text" placeholder="https://... یا از دکمه آپلود استفاده کنید" value="${v("image")}"></div>
+    <div class="field"><label>قیمت (تومان)</label>
+      <input id="${prefix}-price" type="number" min="0" placeholder="خالی = رایگان" value="${v("price")}"></div>
+    <div class="field"><label>نوع لینک دانلود</label>
+      <select id="${prefix}-dltype" onchange="toggleDl('${prefix}')">
+        ${opt("none", "بدون لینک دانلود")}
+        ${opt("direct", "لینک مستقیم دانلود")}
+        ${opt("external", "انتقال به سایت دیگر (بازار، مایکت و ...)")}
+      </select></div>
+    <div class="field full" id="${prefix}-urlbox" style="${dl === "none" ? "display:none" : ""}">
+      <label>آدرس لینک</label>
+      <input id="${prefix}-dlurl" type="text" dir="ltr" placeholder="https://..." value="${v("download_url")}">
+    </div>
+    <div class="field full" id="${prefix}-labelbox" style="${dl === "external" ? "" : "display:none"}">
+      <label>متن دکمه (برای انتقال به سایت دیگر)</label>
+      <input id="${prefix}-dllabel" type="text" maxlength="40" placeholder="مثلاً دریافت از بازار" value="${v("download_label")}">
+    </div>
+    <div class="field full"><div class="dl-hint">
+      اگر قیمت خالی یا ۰ باشد، دکمه دانلود برای همه نمایش داده می‌شود. اگر قیمت دارد، مشتری سفارش ثبت می‌کند و بعد از تأیید شما، لینک در صفحه «پیگیری سفارش» برایش نمایش داده می‌شود.
+    </div></div>
+    ${isBook ? `
+    <div class="field full"><label>صوت نمونه (آدرس یا آپلود فایل)</label>
+      <input id="${prefix}-sample" data-audio="1" type="text" dir="ltr" placeholder="https://... یا آپلود فایل صوتی" value="${v("sample_audio")}">
+    </div>
+    <div class="field full"><div class="active-toggle">
+      <input id="${prefix}-sampleon" type="checkbox" ${Number(item.sample_enabled) === 1 ? "checked" : ""}>
+      <label for="${prefix}-sampleon">نمایش «پخش نمونه» در صفحه کتاب فعال باشد</label></div></div>` : ""}
+    <div class="field full"><label>توضیحات *</label>
+      <textarea id="${prefix}-description">${escapeHtml(item.description || "")}</textarea></div>
+    <div class="field full"><div class="active-toggle">
+      <input id="${prefix}-active" type="checkbox" ${item.id === undefined || Number(item.active) === 1 ? "checked" : ""}>
+      <label for="${prefix}-active">در سایت نمایش داده شود</label></div></div>`;
+}
+
+function toggleDl(prefix) {
+  const t = document.getElementById(prefix + "-dltype").value;
+  document.getElementById(prefix + "-urlbox").style.display = t === "none" ? "none" : "";
+  document.getElementById(prefix + "-labelbox").style.display = t === "external" ? "" : "none";
+}
+
+function readCatalogForm(prefix, type) {
+  const g = k => document.getElementById(prefix + "-" + k);
+  const raw = g("price").value.trim();
+  let price = null;
+  if (raw !== "") {
+    price = Number(raw);
+    if (!Number.isInteger(price) || price < 0) throw new Error("قیمت نامعتبر است");
+  }
+  const body = {
+    name: g("name").value,
+    category: g("category").value,
+    image: g("image").value,
+    description: g("description").value,
+    price,
+    stock: null,
+    active: g("active").checked,
+    download_type: g("dltype").value,
+    download_url: g("dlurl").value,
+    download_label: g("dllabel").value
+  };
+  if (type === "books") {
+    body.sample_audio = g("sample").value;
+    body.sample_enabled = g("sampleon").checked;
+  }
+  return body;
+}
+
 async function loadCatalog(type) {
   const container = document.getElementById(type + "Container");
   container.innerHTML = '<div class="loading">در حال دریافت...</div>';
@@ -1746,7 +1874,7 @@ async function loadCatalog(type) {
 function catalogCard(item, type) {
   const id = Number(item.id);
   const active = Number(item.active) === 1;
-  const stockValue = (item.stock === null || item.stock === undefined) ? "" : item.stock;
+  const prefix = `cat-${id}${type}`;
   return `
     <div class="product-card">
       <div class="product-top">
@@ -1757,46 +1885,19 @@ function catalogCard(item, type) {
           <div class="product-status ${active ? "status-active" : "status-inactive"}">${active ? "● فعال" : "● غیرفعال"}</div>
         </div>
       </div>
-      <div class="product-fields">
-        <div class="field"><label>نام</label><input id="cat-name-${id}${type}" value="${escapeHtml(item.name)}"></div>
-        <div class="field"><label>دسته‌بندی</label><input id="cat-category-${id}${type}" value="${escapeHtml(item.category)}"></div>
-        <div class="field full"><label>تصویر</label><input id="cat-image-${id}${type}" value="${escapeHtml(item.image)}"></div>
-        <div class="field"><label>قیمت</label><input id="cat-price-${id}${type}" type="number" min="0" value="${item.price === null || item.price === undefined ? "" : escapeHtml(item.price)}"></div>
-        <div class="field"><label>موجودی</label><input id="cat-stock-${id}${type}" type="number" min="0" value="${escapeHtml(stockValue)}"></div>
-        <div class="field full"><label>توضیحات</label><textarea id="cat-description-${id}${type}">${escapeHtml(item.description)}</textarea></div>
-        <div class="field full"><label>وضعیت</label>
-          <div class="active-toggle"><input id="cat-active-${id}${type}" type="checkbox" ${active ? "checked" : ""}><label for="cat-active-${id}${type}">فعال باشد</label></div>
-        </div>
-      </div>
+      <div class="product-fields">${catalogFieldsHtml(prefix, type, item)}</div>
       <div class="product-actions">
         <button class="btn green small" onclick="saveCatalogItem(${id}, '${type}')">ذخیره</button>
-        <button class="btn red small" onclick="deleteCatalogItem(${id}, '${escapeHtml(item.name)}', '${type}')">حذف</button>
+        <button class="btn red small" onclick="deleteCatalogItem(${id}, '${escapeHtml(item.name).replace(/'/g, "&#039;")}', '${type}')">حذف</button>
       </div>
     </div>`;
 }
 
 async function saveCatalogItem(id, type) {
   try {
-    const getNum = (elId) => {
-      const v = document.getElementById(elId).value.trim();
-      if (v === "") return null;
-      const n = Number(v);
-      if (!Number.isInteger(n) || n < 0) throw new Error("عدد نامعتبر");
-      return n;
-    };
-    await api("/api/admin/" + type, {
-      method: "PUT",
-      body: JSON.stringify({
-        id,
-        name: document.getElementById(`cat-name-${id}${type}`).value,
-        category: document.getElementById(`cat-category-${id}${type}`).value,
-        image: document.getElementById(`cat-image-${id}${type}`).value,
-        description: document.getElementById(`cat-description-${id}${type}`).value,
-        price: getNum(`cat-price-${id}${type}`),
-        stock: getNum(`cat-stock-${id}${type}`),
-        active: document.getElementById(`cat-active-${id}${type}`).checked
-      })
-    });
+    const body = readCatalogForm(`cat-${id}${type}`, type);
+    body.id = id;
+    await api("/api/admin/" + type, { method: "PUT", body: JSON.stringify(body) });
     showMessage("globalMessage", "ذخیره شد.");
     loadCatalog(type);
   } catch (error) { showMessage("globalMessage", error.message, "error"); }
@@ -1812,37 +1913,40 @@ async function deleteCatalogItem(id, name, type) {
 }
 
 ["apps", "books"].forEach(type => {
-  const formId = type === "apps" ? "addAppsForm" : "addBooksForm";
-  document.getElementById(formId).addEventListener("submit", async (e) => {
+  const prefix = "new-" + type;
+  const fields = document.getElementById(type === "apps" ? "addAppsFields" : "addBooksFields");
+  const form = document.getElementById(type === "apps" ? "addAppsForm" : "addBooksForm");
+  fields.innerHTML = catalogFieldsHtml(prefix, type, {});
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const form = e.target;
     try {
-      const getNum = (cls) => {
-        const v = form.querySelector("." + cls).value.trim();
-        if (v === "") return null;
-        const n = Number(v);
-        if (!Number.isInteger(n) || n < 0) throw new Error("عدد نامعتبر");
-        return n;
-      };
       await api("/api/admin/" + type, {
         method: "POST",
-        body: JSON.stringify({
-          name: form.querySelector(".cat-name").value,
-          category: form.querySelector(".cat-category").value,
-          image: form.querySelector(".cat-image").value,
-          description: form.querySelector(".cat-description").value,
-          price: getNum("cat-price"),
-          stock: getNum("cat-stock"),
-          active: form.querySelector(".cat-active").checked
-        })
+        body: JSON.stringify(readCatalogForm(prefix, type))
       });
       showMessage("globalMessage", "با موفقیت اضافه شد.");
-      form.reset();
-      form.querySelector(".cat-active").checked = true;
+      fields.innerHTML = catalogFieldsHtml(prefix, type, {});
       loadCatalog(type);
     } catch (error) { showMessage("globalMessage", error.message, "error"); }
   });
 });
+
+/* ===== tabs ===== */
+function showTab(name) {
+  const ok = ["orders", "products", "apps", "books", "banners"].includes(name) ? name : "orders";
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === ok));
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("hidden", p.dataset.panel !== ok));
+  try { history.replaceState(null, "", "#" + ok); } catch (e) {}
+  const act = document.querySelector(".tab.active");
+  if (act && act.scrollIntoView) act.scrollIntoView({ inline: "center", block: "nearest" });
+}
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+showTab((location.hash || "").replace("#", ""));
+(function () {
+  const h = document.querySelector("header");
+  const set = () => { if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); };
+  window.addEventListener("resize", set); window.addEventListener("load", set); set();
+})();
 
   checkLogin();
 
@@ -1985,7 +2089,7 @@ async function deleteCatalogItem(id, name, type) {
 
   const SELECTOR =
     'input[type="text"][id$="Image"], input#bnImage, input[id^="product-image-"], ' +
-    'input[id^="bn-image-"], input[id^="cat-image-"], input.cat-image';
+    'input[id^="bn-image-"], input[id^="cat-image-"], input.cat-image, input[data-img]';
 
   function scan(root) {
     (root || document).querySelectorAll(SELECTOR).forEach(enhance);
@@ -1993,6 +2097,99 @@ async function deleteCatalogItem(id, name, type) {
 
   scan();
   new MutationObserver(() => scan()).observe(document.body, { childList: true, subtree: true });
+})();
+
+/* ===== sample audio upload (chunked) ===== */
+(function () {
+  const CHUNK = 700 * 1024;          // must match AUDIO_CHUNK_MAX in worker.js
+  const MAX = 5 * 1024 * 1024;
+  const MIME = { mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac", ogg: "audio/ogg", wav: "audio/wav", webm: "audio/webm" };
+
+  function rid() {
+    const a = new Uint8Array(8);
+    crypto.getRandomValues(a);
+    return Array.from(a).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  function mimeOf(f) {
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    return MIME[ext] || (f.type === "audio/mpeg" ? "audio/mpeg" : "");
+  }
+  function mb(n) { return (n / 1048576).toFixed(1).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]) + " MB"; }
+
+  async function send(file, mime, onProgress) {
+    const id = rid();
+    const total = Math.ceil(file.size / CHUNK);
+    let url = "";
+    for (let i = 0; i < total; i++) {
+      const blob = file.slice(i * CHUNK, (i + 1) * CHUNK);
+      const res = await fetch(
+        `/api/admin/upload-audio?id=${id}&idx=${i}&total=${total}&mime=${encodeURIComponent(mime)}`,
+        { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/octet-stream" }, body: blob }
+      );
+      let data = null;
+      try { data = await res.json(); } catch (e) {}
+      if (!res.ok || !data || !data.ok) throw new Error((data && data.error) || "آپلود ناموفق بود");
+      if (data.url) url = data.url;
+      onProgress(Math.round(((i + 1) / total) * 100));
+    }
+    if (!url) throw new Error("آپلود کامل نشد");
+    return url;
+  }
+
+  function enhance(input) {
+    if (input.dataset.audioUp) return;
+    input.dataset.audioUp = "1";
+    const box = document.createElement("div");
+    box.className = "img-up";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "🎧 آپلود صوت نمونه";
+    const msg = document.createElement("span");
+    msg.className = "img-up-msg";
+    const file = document.createElement("input");
+    file.type = "file";
+    file.accept = "audio/*,.mp3,.m4a,.aac,.ogg,.wav";
+    file.style.display = "none";
+    const prev = document.createElement("audio");
+    prev.className = "audio-prev";
+    prev.controls = true;
+    prev.preload = "none";
+    prev.style.display = input.value ? "" : "none";
+    if (input.value) prev.src = input.value;
+
+    btn.addEventListener("click", () => file.click());
+    input.addEventListener("change", () => {
+      prev.style.display = input.value ? "" : "none";
+      if (input.value) prev.src = input.value;
+    });
+    file.addEventListener("change", async () => {
+      const f = file.files && file.files[0];
+      file.value = "";
+      if (!f) return;
+      msg.className = "img-up-msg";
+      const mime = mimeOf(f);
+      if (!mime) { msg.className = "img-up-msg err"; msg.textContent = "فرمت مجاز: MP3، M4A، AAC، OGG، WAV"; return; }
+      if (f.size > MAX) { msg.className = "img-up-msg err"; msg.textContent = "حجم فایل " + mb(f.size) + " است؛ حداکثر ۵ مگابایت. نمونه را کوتاه‌تر کنید."; return; }
+      btn.disabled = true;
+      try {
+        const url = await send(f, mime, p => { msg.textContent = "در حال آپلود… " + p + "٪"; });
+        input.value = url;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        msg.textContent = "✓ آپلود شد (" + mb(f.size) + ") — برای ثبت نهایی دکمه ذخیره/افزودن را بزنید";
+      } catch (e) {
+        msg.className = "img-up-msg err";
+        msg.textContent = (e && e.message) || "خطا در آپلود";
+      } finally { btn.disabled = false; }
+    });
+
+    box.appendChild(btn); box.appendChild(msg); box.appendChild(file);
+    input.insertAdjacentElement("afterend", box);
+    box.insertAdjacentElement("afterend", prev);
+  }
+
+  function scan() { document.querySelectorAll("input[data-audio]").forEach(enhance); }
+  scan();
+  new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
 })();
 </script>
 

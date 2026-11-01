@@ -9,11 +9,56 @@ const ORDER_STATUSES = [
 
 const ADMIN_COOKIE = "sevenbox_admin";
 
+// ========================================
+// AUTO SCHEMA (new columns are added automatically, no manual migration)
+// ========================================
+
+let SCHEMA_READY = false;
+
+async function ensureSchema(env) {
+  if (SCHEMA_READY) return;
+
+  const addColumn = async (table, column, definition) => {
+    const info = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+    const names = (info.results || []).map(r => r.name);
+    if (!names.length || names.includes(column)) return;
+    try {
+      await env.DB.prepare(
+        `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+      ).run();
+    } catch (e) {
+      // a parallel request may have added it already
+      const again = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+      if (!(again.results || []).some(r => r.name === column)) throw e;
+    }
+  };
+
+  for (const table of ["apps", "books"]) {
+    await addColumn(table, "download_type", "TEXT DEFAULT 'none'");
+    await addColumn(table, "download_url", "TEXT DEFAULT ''");
+    await addColumn(table, "download_label", "TEXT DEFAULT ''");
+  }
+  await addColumn("books", "sample_audio", "TEXT DEFAULT ''");
+  await addColumn("books", "sample_enabled", "INTEGER DEFAULT 0");
+  await addColumn("orders", "item_type", "TEXT DEFAULT 'product'");
+  await addColumn("orders", "item_id", "INTEGER");
+
+  SCHEMA_READY = true;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     try {
+      if (url.pathname.startsWith("/api/")) {
+        try {
+          await ensureSchema(env);
+        } catch (e) {
+          console.error("ensureSchema error:", e);
+        }
+      }
+
       // =========================
       // PUBLIC API
       // =========================
@@ -388,7 +433,8 @@ export default {
               status,
               admin_note,
               created_at,
-              updated_at
+              updated_at,
+              item_type
              FROM orders
              ORDER BY id DESC
              LIMIT 200`
@@ -497,7 +543,9 @@ export default {
               status,
               admin_note,
               created_at,
-              updated_at
+              updated_at,
+              item_type,
+              item_id
              FROM orders
              WHERE tracking_code = ?`
           )
@@ -510,6 +558,42 @@ export default {
             error:
               "Order not found"
           }, 404);
+        }
+
+        // digital orders: reveal the download link after the order is confirmed
+        const digitalTable =
+          order.item_type === "app" ? "apps"
+            : order.item_type === "book" ? "books"
+            : null;
+
+        if (
+          digitalTable &&
+          order.item_id &&
+          order.status !== "ثبت سفارش" &&
+          order.status !== "لغو سفارش"
+        ) {
+          try {
+            const item = await env.DB.prepare(
+              `SELECT download_type, download_url, download_label
+               FROM ${digitalTable}
+               WHERE id = ?`
+            ).bind(order.item_id).first();
+
+            if (
+              item &&
+              item.download_url &&
+              item.download_type &&
+              item.download_type !== "none"
+            ) {
+              order.download = {
+                type: item.download_type,
+                url: item.download_url,
+                label: item.download_label || ""
+              };
+            }
+          } catch (e) {
+            console.error("download lookup error:", e);
+          }
         }
 
         return json({
@@ -526,13 +610,13 @@ export default {
         url.pathname === "/sitemap.xml" &&
         request.method === "GET"
       ) {
+        const origin = url.origin;
+        const pages = ["/", "/shop.html", "/apps.html", "/library.html", "/tracking.html"];
         const sitemap =
-          `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://7box-site.sevenbox.workers.dev/</loc>
-  </url>
-</urlset>`;
+          `<?xml version="1.0" encoding="UTF-8"?>\n` +
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+          pages.map(pg => `  <url>\n    <loc>${origin}${pg}</loc>\n  </url>`).join("\n") +
+          `\n</urlset>`;
 
         return new Response(
           sitemap,
@@ -560,18 +644,22 @@ if (url.pathname === "/api/banners" && request.method === "GET") {
 
 if (url.pathname === "/api/apps" && request.method === "GET") {
   const result = await env.DB.prepare(
-    `SELECT id, name, image, category, description, price, stock
-     FROM apps WHERE active = 1 ORDER BY id ASC`
+    `SELECT * FROM apps WHERE active = 1 ORDER BY id ASC`
   ).all();
-  return jsonCached({ ok: true, apps: result.results || [] });
+  return jsonCached({
+    ok: true,
+    apps: (result.results || []).map(r => publicCatalogRow(r, "apps"))
+  });
 }
 
 if (url.pathname === "/api/books" && request.method === "GET") {
   const result = await env.DB.prepare(
-    `SELECT id, name, image, category, description, price, stock
-     FROM books WHERE active = 1 ORDER BY id ASC`
+    `SELECT * FROM books WHERE active = 1 ORDER BY id ASC`
   ).all();
-  return jsonCached({ ok: true, books: result.results || [] });
+  return jsonCached({
+    ok: true,
+    books: (result.results || []).map(r => publicCatalogRow(r, "books"))
+  });
 }
 
 /* ========== ADMIN BANNERS ========== */
@@ -650,6 +738,15 @@ if (url.pathname === "/api/admin/books" && request.method === "DELETE") {
       if (url.pathname === "/api/admin/upload-image" && request.method === "POST") {
         if (!await isAdmin(request, env)) return unauthorized();
         return await uploadImage(request, env);
+      }
+
+      if (url.pathname === "/api/admin/upload-audio" && request.method === "POST") {
+        if (!await isAdmin(request, env)) return unauthorized();
+        return await uploadAudioChunk(request, url, env);
+      }
+
+      if (url.pathname.startsWith("/api/audio/") && (request.method === "GET" || request.method === "HEAD")) {
+        return await serveAudio(url, request, env, ctx);
       }
 
       if (url.pathname.startsWith("/api/img/") && request.method === "GET") {
@@ -1304,7 +1401,8 @@ async function deleteProduct(
     await env.DB.prepare(
       `SELECT COUNT(*) AS count
        FROM orders
-       WHERE product_id = ?`
+       WHERE product_id = ?
+         AND COALESCE(item_type, 'product') = 'product'`
     )
     .bind(id)
     .first();
@@ -1418,7 +1516,8 @@ async function changeOrderStatus(
         product_name,
         quantity,
         status,
-        customer_name
+        customer_name,
+        item_type
        FROM orders
        WHERE tracking_code = ?`
     )
@@ -1443,6 +1542,32 @@ async function changeOrderStatus(
     return {
       ok: true,
       changed: false,
+      order,
+      oldStatus,
+      newStatus
+    };
+  }
+
+  // digital orders (apps / books) have no stock: only the status changes
+  if (
+    order.item_type === "app" ||
+    order.item_type === "book"
+  ) {
+    await env.DB.prepare(
+      `UPDATE orders
+       SET status = ?, updated_at = ?
+       WHERE tracking_code = ?`
+    )
+    .bind(
+      newStatus,
+      new Date().toISOString(),
+      trackingCode
+    )
+    .run();
+
+    return {
+      ok: true,
+      changed: true,
       order,
       oldStatus,
       newStatus
@@ -1961,7 +2086,8 @@ async function deleteOrder(
           product_id,
           product_name,
           quantity,
-          status
+          status,
+          item_type
          FROM orders
          WHERE id = ?`
       )
@@ -1976,7 +2102,8 @@ async function deleteOrder(
           product_id,
           product_name,
           quantity,
-          status
+          status,
+          item_type
          FROM orders
          WHERE tracking_code = ?`
       )
@@ -1992,16 +2119,22 @@ async function deleteOrder(
     }, 404);
   }
 
+  const isDigitalOrder =
+    order.item_type === "app" ||
+    order.item_type === "book";
+
   const product =
-    await env.DB.prepare(
-      `SELECT
-        id,
-        stock
-       FROM products
-       WHERE id = ?`
-    )
-    .bind(order.product_id)
-    .first();
+    isDigitalOrder
+      ? null
+      : await env.DB.prepare(
+          `SELECT
+            id,
+            stock
+           FROM products
+           WHERE id = ?`
+        )
+        .bind(order.product_id)
+        .first();
 
   const wasCancelled =
     clean(order.status) ===
@@ -2149,11 +2282,18 @@ async function createOrder(
     }, 400);
   }
 
+  const itemType =
+    body.item_type === "app" || body.item_type === "book"
+      ? body.item_type
+      : "product";
+
+  const isDigital = itemType !== "product";
+
   const productId =
     Number(body.product_id);
 
   const quantity =
-    Number(body.quantity);
+    isDigital ? 1 : Number(body.quantity);
 
   const customerName =
     clean(
@@ -2164,16 +2304,16 @@ async function createOrder(
     clean(body.phone);
 
   const province =
-    clean(body.province);
+    isDigital ? "دیجیتال" : clean(body.province);
 
   const city =
-    clean(body.city);
+    isDigital ? "دیجیتال" : clean(body.city);
 
   const address =
-    clean(body.address);
+    isDigital ? "محصول دیجیتال (بدون ارسال)" : clean(body.address);
 
   const postalCode =
-    clean(body.postal_code);
+    isDigital ? "0000000000" : clean(body.postal_code);
 
   const receiptBase64 =
     body.receipt_base64 ||
@@ -2233,7 +2373,7 @@ async function createOrder(
     }, 400);
   }
 
-  if (!province) {
+  if (!isDigital && !province) {
     return json({
       ok: false,
       error:
@@ -2241,7 +2381,7 @@ async function createOrder(
     }, 400);
   }
 
-  if (!city) {
+  if (!isDigital && !city) {
     return json({
       ok: false,
       error:
@@ -2250,8 +2390,9 @@ async function createOrder(
   }
 
   if (
-    !address ||
-    address.length < 5
+    !isDigital &&
+    (!address ||
+    address.length < 5)
   ) {
     return json({
       ok: false,
@@ -2261,8 +2402,9 @@ async function createOrder(
   }
 
   if (
-    !postalCode ||
-    postalCode.length < 5
+    !isDigital &&
+    (!postalCode ||
+    postalCode.length < 5)
   ) {
     return json({
       ok: false,
@@ -2279,6 +2421,11 @@ async function createOrder(
     }, 400);
   }
 
+  const catalogTable =
+    itemType === "app" ? "apps"
+      : itemType === "book" ? "books"
+      : "products";
+
   const product =
     await env.DB.prepare(
       `SELECT
@@ -2287,12 +2434,17 @@ async function createOrder(
         price,
         stock,
         active
-       FROM products
+       FROM ${catalogTable}
        WHERE id = ?
        LIMIT 1`
     )
     .bind(productId)
     .first();
+
+  // digital items have no stock / shipping
+  if (isDigital && product) {
+    product.stock = null;
+  }
 
   if (!product) {
     return json({
@@ -2375,10 +2527,12 @@ async function createOrder(
     .first();
 
   const shippingCost =
-    Number(
-      shippingSetting?.value ||
-      300000
-    );
+    isDigital
+      ? 0
+      : Number(
+          shippingSetting?.value ||
+          300000
+        );
 
   if (
     !Number.isFinite(
@@ -2436,10 +2590,12 @@ async function createOrder(
         status,
         admin_note,
         created_at,
-        updated_at
+        updated_at,
+        item_type,
+        item_id
       )
       VALUES (
-        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
       )`
     )
     .bind(
@@ -2462,7 +2618,9 @@ async function createOrder(
       "ثبت سفارش",
       null,
       now,
-      now
+      now,
+      itemType,
+      product.id
     );
 
   // ========================================
@@ -2541,7 +2699,12 @@ async function createOrder(
       const telegramMessage =
         `🛒 سفارش جدید 7BOX\n\n` +
         `🔖 کد رهگیری: ${trackingCode}\n` +
-        `📦 محصول: ${product.name}\n` +
+        `📦 ${
+          itemType === "app" ? "اپلیکیشن/بازی"
+            : itemType === "book" ? "کتاب دیجیتال"
+            : "محصول"
+        }: ${product.name}\n` +
+        (isDigital ? `⚡ سفارش دیجیتال (بدون ارسال فیزیکی)\n` : ``) +
         `🔢 تعداد: ${quantity}\n` +
         `💰 قیمت واحد: ${formatToman(unitPrice)}\n` +
         `🚚 ارسال واحد: ${formatToman(shippingCost)}\n` +
@@ -3563,33 +3726,67 @@ async function catalogList(type, env) {
   return json({ ok: true, items: result.results || [] });
 }
 
+const DOWNLOAD_TYPES = ["none", "direct", "external"];
+
+function readCatalogBody(type, body) {
+  const data = {
+    name: clean(body.name),
+    image: clean(body.image),
+    category: clean(body.category),
+    description: clean(body.description),
+    price: normalizePrice(body.price),
+    stock: normalizeStock(body.stock),
+    active: normalizeActive(body.active),
+    download_type: DOWNLOAD_TYPES.includes(body.download_type) ? body.download_type : "none",
+    download_url: clean(body.download_url),
+    download_label: clean(body.download_label).slice(0, 40)
+  };
+
+  if (type === "books") {
+    data.sample_audio = clean(body.sample_audio);
+    data.sample_enabled = normalizeActive(body.sample_enabled);
+    if (!data.sample_audio) data.sample_enabled = 0;
+  }
+
+  let error = null;
+  if (!data.name) error = "نام الزامی است.";
+  else if (!data.image) error = "تصویر الزامی است.";
+  else if (!data.category) error = "دسته‌بندی الزامی است.";
+  else if (!data.description) error = "توضیحات الزامی است.";
+  else if (Number.isNaN(data.price)) error = "قیمت نامعتبر است.";
+  else if (Number.isNaN(data.stock)) error = "موجودی نامعتبر است.";
+  else if (data.download_type !== "none") {
+    if (!data.download_url) {
+      error = "لینک دانلود را وارد کنید یا نوع لینک را «بدون لینک» بگذارید.";
+    } else if (!/^https?:\/\//i.test(data.download_url) && !data.download_url.startsWith("/")) {
+      error = "لینک دانلود باید با https:// شروع شود.";
+    }
+  }
+  if (!error && data.sample_audio &&
+      !/^https?:\/\//i.test(data.sample_audio) && !data.sample_audio.startsWith("/")) {
+    error = "آدرس صوت نمونه نامعتبر است.";
+  }
+
+  if (data.download_type === "none") data.download_url = "";
+  return { data, error };
+}
+
 async function catalogCreate(type, request, env) {
   const table = validateCatalogTable(type);
   let body;
   try { body = await request.json(); }
   catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
 
-  const name        = clean(body.name);
-  const image       = clean(body.image);
-  const category    = clean(body.category);
-  const description = clean(body.description);
-  const price       = normalizePrice(body.price);
-  const stock       = normalizeStock(body.stock);
-  const active      = normalizeActive(body.active);
+  const { data, error } = readCatalogBody(type, body);
+  if (error) return json({ ok: false, error }, 400);
 
-  if (!name)        return json({ ok: false, error: "نام الزامی است." }, 400);
-  if (!image)       return json({ ok: false, error: "تصویر الزامی است." }, 400);
-  if (!category)    return json({ ok: false, error: "دسته‌بندی الزامی است." }, 400);
-  if (!description) return json({ ok: false, error: "توضیحات الزامی است." }, 400);
+  data.created_at = new Date().toISOString();
+  const cols = Object.keys(data);
 
   const result = await env.DB.prepare(
-    `INSERT INTO ${table}
-       (name, image, category, description, price, stock, active, created_at)
-     VALUES (?,?,?,?,?,?,?,?)`
-  ).bind(
-    name, image, category, description,
-    price, stock, active, new Date().toISOString()
-  ).run();
+    `INSERT INTO ${table} (${cols.join(", ")})
+     VALUES (${cols.map(() => "?").join(",")})`
+  ).bind(...cols.map(c => data[c])).run();
 
   return json({
     ok: true, message: "با موفقیت افزوده شد.",
@@ -3613,30 +3810,33 @@ async function catalogUpdate(type, request, env) {
   ).bind(id).first();
   if (!exists) return json({ ok: false, error: "مورد پیدا نشد." }, 404);
 
-  const name        = clean(body.name);
-  const image       = clean(body.image);
-  const category    = clean(body.category);
-  const description = clean(body.description);
-  const price       = normalizePrice(body.price);
-  const stock       = normalizeStock(body.stock);
-  const active      = normalizeActive(body.active);
+  const { data, error } = readCatalogBody(type, body);
+  if (error) return json({ ok: false, error }, 400);
 
-  if (!name)        return json({ ok: false, error: "نام الزامی است." }, 400);
-  if (!image)       return json({ ok: false, error: "تصویر الزامی است." }, 400);
-  if (!category)    return json({ ok: false, error: "دسته‌بندی الزامی است." }, 400);
-  if (!description) return json({ ok: false, error: "توضیحات الزامی است." }, 400);
-
+  const cols = Object.keys(data);
   await env.DB.prepare(
-    `UPDATE ${table} SET
-       name = ?, image = ?, category = ?, description = ?,
-       price = ?, stock = ?, active = ?
-     WHERE id = ?`
-  ).bind(
-    name, image, category, description,
-    price, stock, active, id
-  ).run();
+    `UPDATE ${table} SET ${cols.map(c => c + " = ?").join(", ")} WHERE id = ?`
+  ).bind(...cols.map(c => data[c]), id).run();
 
   return json({ ok: true, message: "بروزرسانی شد." });
+}
+
+// only free items expose the download link publicly;
+// paid items get it through the order tracking page after confirmation
+function publicCatalogRow(row, type) {
+  const out = { ...row };
+  const free = !(Number(row.price) > 0);
+  const hasDownload =
+    !!row.download_url && row.download_type && row.download_type !== "none";
+  out.free = free ? 1 : 0;
+  out.has_download = hasDownload ? 1 : 0;
+  if (!free || !hasDownload) delete out.download_url;
+  if (type === "books") {
+    const sample = Number(row.sample_enabled) === 1 && !!row.sample_audio;
+    out.sample_enabled = sample ? 1 : 0;
+    if (!sample) delete out.sample_audio;
+  }
+  return out;
 }
 
 async function catalogDelete(type, request, env) {
@@ -3796,4 +3996,205 @@ async function serveWebpVariant(request, url, env) {
   } catch (e) {
     return null;
   }
+}
+
+
+// ========================================
+// SAMPLE AUDIO (chunked storage in D1)
+// ========================================
+
+const AUDIO_CHUNK_MAX = 700 * 1024;
+const AUDIO_MAX_CHUNKS = 8;
+const AUDIO_TYPES = {
+  "audio/mpeg": "mp3",
+  "audio/mp3": "mp3",
+  "audio/mp4": "m4a",
+  "audio/x-m4a": "m4a",
+  "audio/aac": "aac",
+  "audio/ogg": "ogg",
+  "audio/wav": "wav",
+  "audio/x-wav": "wav",
+  "audio/webm": "webm"
+};
+const AUDIO_MIME_BY_EXT = {
+  mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac",
+  ogg: "audio/ogg", wav: "audio/wav", webm: "audio/webm"
+};
+
+async function ensureAudioTables(env) {
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS audio_files (
+       id TEXT PRIMARY KEY,
+       mime TEXT NOT NULL,
+       size INTEGER NOT NULL,
+       chunks INTEGER NOT NULL,
+       created_at TEXT NOT NULL DEFAULT (datetime('now'))
+     )`
+  ).run();
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS audio_chunks (
+       audio_id TEXT NOT NULL,
+       idx INTEGER NOT NULL,
+       data TEXT NOT NULL,
+       PRIMARY KEY (audio_id, idx)
+     )`
+  ).run();
+}
+
+// POST /api/admin/upload-audio?id=<16hex>&idx=0&total=3&mime=audio/mpeg
+async function uploadAudioChunk(request, url, env) {
+  const id = url.searchParams.get("id") || "";
+  const idx = Number(url.searchParams.get("idx"));
+  const total = Number(url.searchParams.get("total"));
+  const mime = (url.searchParams.get("mime") || "").toLowerCase();
+
+  if (!/^[a-f0-9]{16}$/.test(id)) {
+    return json({ ok: false, error: "شناسه فایل نامعتبر است" }, 400);
+  }
+  if (!Number.isInteger(idx) || !Number.isInteger(total) ||
+      idx < 0 || total < 1 || total > AUDIO_MAX_CHUNKS || idx >= total) {
+    return json({ ok: false, error: "حجم فایل صوتی بیش از حد مجاز است (حداکثر ۵ مگابایت)" }, 413);
+  }
+  const ext = AUDIO_TYPES[mime];
+  if (!ext) {
+    return json({ ok: false, error: "فرمت صوت پشتیبانی نمی‌شود (MP3 / M4A / AAC / OGG / WAV)" }, 415);
+  }
+
+  const buf = await request.arrayBuffer();
+  if (!buf.byteLength) return json({ ok: false, error: "تکه فایل خالی است" }, 400);
+  if (buf.byteLength > AUDIO_CHUNK_MAX) {
+    return json({ ok: false, error: "تکه فایل بزرگ‌تر از حد مجاز است" }, 413);
+  }
+
+  try {
+    await ensureAudioTables(env);
+
+    if (idx === 0) {
+      await env.DB.batch([
+        env.DB.prepare("DELETE FROM audio_chunks WHERE audio_id = ?").bind(id),
+        env.DB.prepare("DELETE FROM audio_files WHERE id = ?").bind(id)
+      ]);
+    }
+
+    await env.DB.prepare(
+      "INSERT OR REPLACE INTO audio_chunks (audio_id, idx, data) VALUES (?, ?, ?)"
+    ).bind(id, idx, bytesToBase64(new Uint8Array(buf))).run();
+
+    if (idx === total - 1) {
+      const agg = await env.DB.prepare(
+        "SELECT COUNT(*) AS n FROM audio_chunks WHERE audio_id = ?"
+      ).bind(id).first();
+      if (Number(agg?.n) !== total) {
+        return json({ ok: false, error: "آپلود ناقص ماند، دوباره تلاش کنید" }, 409);
+      }
+      const size = (total - 1) * AUDIO_CHUNK_MAX + buf.byteLength;
+      await env.DB.prepare(
+        "INSERT OR REPLACE INTO audio_files (id, mime, size, chunks) VALUES (?, ?, ?, ?)"
+      ).bind(id, mime, size, total).run();
+      return json({ ok: true, done: true, url: `/api/audio/${id}.${ext}` });
+    }
+  } catch (e) {
+    console.error("uploadAudioChunk error:", e);
+    return json({ ok: false, error: "ذخیره صوت ناموفق بود" }, 500);
+  }
+
+  return json({ ok: true, done: false });
+}
+
+async function serveAudio(url, request, env, ctx) {
+  const m = url.pathname.match(/^\/api\/audio\/([a-f0-9]{16})\.(mp3|m4a|aac|ogg|wav|webm)$/);
+  if (!m) return new Response("Not found", { status: 404 });
+
+  const cache = caches.default;
+  const cacheKey = new Request(url.origin + url.pathname, { method: "GET" });
+
+  let full = await cache.match(cacheKey);
+  let bytes = null;
+  let mime = AUDIO_MIME_BY_EXT[m[2]];
+
+  if (full) {
+    bytes = new Uint8Array(await full.arrayBuffer());
+    mime = full.headers.get("Content-Type") || mime;
+  } else {
+    let meta = null;
+    let rows = [];
+    try {
+      meta = await env.DB.prepare(
+        "SELECT mime, size, chunks FROM audio_files WHERE id = ?"
+      ).bind(m[1]).first();
+      if (meta) {
+        const r = await env.DB.prepare(
+          "SELECT data FROM audio_chunks WHERE audio_id = ? ORDER BY idx ASC"
+        ).bind(m[1]).all();
+        rows = r.results || [];
+      }
+    } catch (e) {
+      meta = null;
+    }
+    if (!meta || rows.length !== Number(meta.chunks)) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    const parts = rows.map(r => {
+      const bin = atob(r.data);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    });
+    const totalLen = parts.reduce((n, p) => n + p.length, 0);
+    bytes = new Uint8Array(totalLen);
+    let off = 0;
+    for (const p of parts) { bytes.set(p, off); off += p.length; }
+    mime = meta.mime;
+
+    if (ctx && ctx.waitUntil) {
+      ctx.waitUntil(cache.put(cacheKey, new Response(bytes, {
+        status: 200,
+        headers: {
+          "Content-Type": mime,
+          "Cache-Control": "public, max-age=31536000, immutable"
+        }
+      })));
+    }
+  }
+
+  const baseHeaders = {
+    "Content-Type": mime,
+    "Accept-Ranges": "bytes",
+    "Cache-Control": "public, max-age=31536000, immutable",
+    "X-Content-Type-Options": "nosniff"
+  };
+
+  const range = request.headers.get("Range");
+  const rm = range && range.match(/^bytes=(\d*)-(\d*)$/);
+  if (rm && (rm[1] !== "" || rm[2] !== "")) {
+    let start, end;
+    if (rm[1] === "") {
+      start = Math.max(0, bytes.length - Number(rm[2]));
+      end = bytes.length - 1;
+    } else {
+      start = Number(rm[1]);
+      end = rm[2] === "" ? bytes.length - 1 : Math.min(Number(rm[2]), bytes.length - 1);
+    }
+    if (start >= bytes.length || start > end) {
+      return new Response(null, {
+        status: 416,
+        headers: { ...baseHeaders, "Content-Range": `bytes */${bytes.length}` }
+      });
+    }
+    const slice = bytes.subarray(start, end + 1);
+    return new Response(request.method === "HEAD" ? null : slice, {
+      status: 206,
+      headers: {
+        ...baseHeaders,
+        "Content-Range": `bytes ${start}-${end}/${bytes.length}`,
+        "Content-Length": String(slice.length)
+      }
+    });
+  }
+
+  return new Response(request.method === "HEAD" ? null : bytes, {
+    status: 200,
+    headers: { ...baseHeaders, "Content-Length": String(bytes.length) }
+  });
 }
