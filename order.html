@@ -98,7 +98,7 @@ input::placeholder,textarea::placeholder{color:var(--muted-2)}
     <div id="productLoading" class="loading">در حال دریافت اطلاعات محصول...</div>
     <div id="productArea" style="display:none">
       <div class="product-box">
-        <div class="product-image-wrap"><img id="productImage" class="product-image" alt="محصول"></div>
+        <div class="product-image-wrap"><img id="productImage" class="product-image" alt="محصول" width="92" height="92" decoding="async"></div>
         <div class="product-info">
           <div id="productName" class="product-name"></div>
           <div id="productPrice" class="product-price"></div>
@@ -161,7 +161,7 @@ input::placeholder,textarea::placeholder{color:var(--muted-2)}
           <label for="receipt">تصویر رسید را انتخاب کنید *</label>
           <input id="receipt" type="file" accept="image/jpeg,image/png,image/webp" required>
           <div class="upload-help">فرمت‌های مجاز: JPG، PNG، WEBP<br>حداکثر حجم پیشنهادی: 5 مگابایت</div>
-          <div id="receiptPreview" class="receipt-preview"><img id="receiptPreviewImage" alt="پیش‌نمایش رسید"></div>
+          <div id="receiptPreview" class="receipt-preview"><img id="receiptPreviewImage" alt="پیش‌نمایش رسید" decoding="async"></div>
         </div>
       </div>
 
