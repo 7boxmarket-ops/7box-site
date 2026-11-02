@@ -181,6 +181,6 @@ async function trackOrder(e){e.preventDefault();const input=document.getElementB
 function initNav(){const t=document.getElementById("navToggle"),l=document.getElementById("navLinks");if(t&&l)t.addEventListener("click",()=>l.classList.toggle("open"))}
 document.addEventListener("DOMContentLoaded",()=>{initNav();loadBanners();const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();const tf=document.getElementById("trackingForm");if(tf)tf.addEventListener("submit",trackOrder);if(document.getElementById("productsGrid"))loadSection({api:API.products,gridId:"productsGrid",type:"product",emptyText:"در حال حاضر محصولی برای نمایش وجود ندارد."});if(document.getElementById("appsGrid"))loadSection({api:API.apps,gridId:"appsGrid",type:"app",emptyText:"به‌زودی اپلیکیشن‌های جدید اضافه می‌شوند."});if(document.getElementById("booksGrid"))loadSection({api:API.books,gridId:"booksGrid",type:"book",emptyText:"به‌زودی کتاب‌های جدید اضافه می‌شوند."})});
 </script>
-<script src="catalog.js?v=1"></script>
+<script src="catalog.js?v=2"></script>
 </body>
 </html>

@@ -12,3 +12,10 @@ run_worker_first = ["/api/*", "/*.png", "/*.jpg", "/*.jpeg"]
 binding = "DB"
 database_name = "sevenbox-orders"
 database_id = "b0668796-5d2e-4777-92bd-a8e5c637d89f"
+
+# ---- اختیاری: آپلود فایل‌های حجیم (APK / PDF / صوت کامل) ----
+# ۱) در داشبورد Cloudflare یک R2 bucket بسازید (مثلاً 7box-files)
+# ۲) این سه خط را از حالت کامنت خارج کنید و دوباره deploy کنید
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "7box-files"

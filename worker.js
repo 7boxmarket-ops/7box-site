@@ -38,6 +38,10 @@ async function ensureSchema(env) {
     await addColumn(table, "download_url", "TEXT DEFAULT ''");
     await addColumn(table, "download_label", "TEXT DEFAULT ''");
   }
+  for (const table of ["apps", "books"]) {
+    await addColumn(table, "access_mode", "TEXT DEFAULT ''");
+  }
+  await addColumn("books", "audio_url", "TEXT DEFAULT ''");
   await addColumn("books", "sample_audio", "TEXT DEFAULT ''");
   await addColumn("books", "sample_enabled", "INTEGER DEFAULT 0");
   await addColumn("orders", "item_type", "TEXT DEFAULT 'product'");
@@ -574,22 +578,24 @@ export default {
         ) {
           try {
             const item = await env.DB.prepare(
-              `SELECT download_type, download_url, download_label
-               FROM ${digitalTable}
-               WHERE id = ?`
+              `SELECT * FROM ${digitalTable} WHERE id = ?`
             ).bind(order.item_id).first();
 
-            if (
-              item &&
-              item.download_url &&
-              item.download_type &&
-              item.download_type !== "none"
-            ) {
-              order.download = {
-                type: item.download_type,
-                url: item.download_url,
-                label: item.download_label || ""
-              };
+            if (item) {
+              if (
+                item.download_url &&
+                item.download_type &&
+                item.download_type !== "none"
+              ) {
+                order.download = {
+                  type: item.download_type,
+                  url: item.download_url,
+                  label: item.download_label || ""
+                };
+              }
+              if (item.audio_url) {
+                order.audio = { url: item.audio_url };
+              }
             }
           } catch (e) {
             console.error("download lookup error:", e);
@@ -743,6 +749,26 @@ if (url.pathname === "/api/admin/books" && request.method === "DELETE") {
       if (url.pathname === "/api/admin/upload-audio" && request.method === "POST") {
         if (!await isAdmin(request, env)) return unauthorized();
         return await uploadAudioChunk(request, url, env);
+      }
+
+      if (url.pathname === "/api/admin/upload-config" && request.method === "GET") {
+        if (!await isAdmin(request, env)) return unauthorized();
+        const r2 = !!env.FILES;
+        return json({
+          ok: true,
+          backend: r2 ? "r2" : "d1",
+          chunk: r2 ? R2_PART_SIZE : AUDIO_CHUNK_MAX,
+          max: r2 ? R2_MAX_BYTES : AUDIO_CHUNK_MAX * AUDIO_MAX_CHUNKS - 1
+        });
+      }
+
+      if (url.pathname === "/api/admin/upload-file" && request.method === "POST") {
+        if (!await isAdmin(request, env)) return unauthorized();
+        return await uploadFileChunk(request, url, env);
+      }
+
+      if (url.pathname.startsWith("/api/file/") && (request.method === "GET" || request.method === "HEAD")) {
+        return await serveAudio(url, request, env, ctx);
       }
 
       if (url.pathname.startsWith("/api/audio/") && (request.method === "GET" || request.method === "HEAD")) {
@@ -2444,6 +2470,17 @@ async function createOrder(
   // digital items have no stock / shipping
   if (isDigital && product) {
     product.stock = null;
+
+    const modeRow = await env.DB.prepare(
+      `SELECT access_mode, price FROM ${catalogTable} WHERE id = ?`
+    ).bind(productId).first();
+
+    if (effectiveMode(modeRow || {}) !== "order") {
+      return json({
+        ok: false,
+        error: "این مورد از طریق ثبت سفارش در سایت قابل خرید نیست."
+      }, 400);
+    }
   }
 
   if (!product) {
@@ -3727,6 +3764,14 @@ async function catalogList(type, env) {
 }
 
 const DOWNLOAD_TYPES = ["none", "direct", "external"];
+const ACCESS_MODES = ["free", "order", "store"];
+
+// free = public download, order = in-site order (link after approval),
+// store = buy on another site (price is display only)
+function effectiveMode(row) {
+  if (ACCESS_MODES.includes(row.access_mode)) return row.access_mode;
+  return Number(row.price) > 0 ? "order" : "free";
+}
 
 function readCatalogBody(type, body) {
   const data = {
@@ -3739,10 +3784,12 @@ function readCatalogBody(type, body) {
     active: normalizeActive(body.active),
     download_type: DOWNLOAD_TYPES.includes(body.download_type) ? body.download_type : "none",
     download_url: clean(body.download_url),
-    download_label: clean(body.download_label).slice(0, 40)
+    download_label: clean(body.download_label).slice(0, 40),
+    access_mode: ACCESS_MODES.includes(body.access_mode) ? body.access_mode : ""
   };
 
   if (type === "books") {
+    data.audio_url = clean(body.audio_url);
     data.sample_audio = clean(body.sample_audio);
     data.sample_enabled = normalizeActive(body.sample_enabled);
     if (!data.sample_audio) data.sample_enabled = 0;
@@ -3755,12 +3802,21 @@ function readCatalogBody(type, body) {
   else if (!data.description) error = "توضیحات الزامی است.";
   else if (Number.isNaN(data.price)) error = "قیمت نامعتبر است.";
   else if (Number.isNaN(data.stock)) error = "موجودی نامعتبر است.";
-  else if (data.download_type !== "none") {
+  else if (data.access_mode === "order" && !(data.price > 0)) {
+    error = "برای فروش داخل سایت، قیمت را وارد کنید.";
+  } else if (data.access_mode === "store" && !data.download_url) {
+    error = "برای خرید از سایت دیگر، آدرس صفحه آن سایت را وارد کنید.";
+  } else if (data.download_type !== "none") {
     if (!data.download_url) {
       error = "لینک دانلود را وارد کنید یا نوع لینک را «بدون لینک» بگذارید.";
     } else if (!/^https?:\/\//i.test(data.download_url) && !data.download_url.startsWith("/")) {
       error = "لینک دانلود باید با https:// شروع شود.";
     }
+  }
+  if (data.access_mode === "store") data.download_type = "external";
+  if (!error && data.audio_url &&
+      !/^https?:\/\//i.test(data.audio_url) && !data.audio_url.startsWith("/")) {
+    error = "آدرس فایل صوتی نامعتبر است.";
   }
   if (!error && data.sample_audio &&
       !/^https?:\/\//i.test(data.sample_audio) && !data.sample_audio.startsWith("/")) {
@@ -3825,12 +3881,20 @@ async function catalogUpdate(type, request, env) {
 // paid items get it through the order tracking page after confirmation
 function publicCatalogRow(row, type) {
   const out = { ...row };
-  const free = !(Number(row.price) > 0);
-  const hasDownload =
+  const mode = effectiveMode(row);
+  const hasMain =
     !!row.download_url && row.download_type && row.download_type !== "none";
-  out.free = free ? 1 : 0;
-  out.has_download = hasDownload ? 1 : 0;
-  if (!free || !hasDownload) delete out.download_url;
+  const hasAudio = type === "books" && !!row.audio_url;
+  out.mode = mode;
+  out.free = mode === "free" ? 1 : 0;
+  out.has_download = hasMain || hasAudio ? 1 : 0;
+  out.has_main = hasMain ? 1 : 0;
+  out.has_audio = hasAudio ? 1 : 0;
+  // links are public only for free items and for "buy on another site"
+  if (mode === "order") {
+    delete out.download_url;
+    delete out.audio_url;
+  }
   if (type === "books") {
     const sample = Number(row.sample_enabled) === 1 && !!row.sample_audio;
     out.sample_enabled = sample ? 1 : 0;
@@ -3838,24 +3902,6 @@ function publicCatalogRow(row, type) {
   }
   return out;
 }
-
-async function catalogDelete(type, request, env) {
-  const table = validateCatalogTable(type);
-  let body;
-  try { body = await request.json(); }
-  catch { return json({ ok: false, error: "Invalid JSON" }, 400); }
-
-  const id = Number(body.id);
-  if (!Number.isInteger(id) || id <= 0) {
-    return json({ ok: false, error: "شناسه نامعتبر." }, 400);
-  }
-
-  await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`)
-    .bind(id).run();
-
-  return json({ ok: true, message: "حذف شد." });
-}
-
 
 // ========================================
 // IMAGE OPTIMIZATION HELPERS
@@ -4014,12 +4060,20 @@ const AUDIO_TYPES = {
   "audio/ogg": "ogg",
   "audio/wav": "wav",
   "audio/x-wav": "wav",
-  "audio/webm": "webm"
+  "audio/webm": "webm",
+  "application/pdf": "pdf",
+  "application/vnd.android.package-archive": "apk",
+  "application/zip": "zip",
+  "application/epub+zip": "epub"
 };
 const AUDIO_MIME_BY_EXT = {
   mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac",
-  ogg: "audio/ogg", wav: "audio/wav", webm: "audio/webm"
+  ogg: "audio/ogg", wav: "audio/wav", webm: "audio/webm",
+  pdf: "application/pdf", apk: "application/vnd.android.package-archive",
+  zip: "application/zip", epub: "application/epub+zip"
 };
+const R2_PART_SIZE = 8 * 1024 * 1024;
+const R2_MAX_BYTES = 300 * 1024 * 1024;
 
 async function ensureAudioTables(env) {
   await env.DB.prepare(
@@ -4053,11 +4107,11 @@ async function uploadAudioChunk(request, url, env) {
   }
   if (!Number.isInteger(idx) || !Number.isInteger(total) ||
       idx < 0 || total < 1 || total > AUDIO_MAX_CHUNKS || idx >= total) {
-    return json({ ok: false, error: "حجم فایل صوتی بیش از حد مجاز است (حداکثر ۵ مگابایت)" }, 413);
+    return json({ ok: false, error: "حجم فایل بیش از حد مجاز است (حداکثر ۵ مگابایت). برای فایل حجیم‌تر R2 را فعال کنید یا لینک بیرونی بدهید." }, 413);
   }
   const ext = AUDIO_TYPES[mime];
   if (!ext) {
-    return json({ ok: false, error: "فرمت صوت پشتیبانی نمی‌شود (MP3 / M4A / AAC / OGG / WAV)" }, 415);
+    return json({ ok: false, error: "فرمت فایل پشتیبانی نمی‌شود" }, 415);
   }
 
   const buf = await request.arrayBuffer();
@@ -4091,7 +4145,7 @@ async function uploadAudioChunk(request, url, env) {
       await env.DB.prepare(
         "INSERT OR REPLACE INTO audio_files (id, mime, size, chunks) VALUES (?, ?, ?, ?)"
       ).bind(id, mime, size, total).run();
-      return json({ ok: true, done: true, url: `/api/audio/${id}.${ext}` });
+      return json({ ok: true, done: true, url: `/api/file/${id}.${ext}` });
     }
   } catch (e) {
     console.error("uploadAudioChunk error:", e);
@@ -4102,8 +4156,46 @@ async function uploadAudioChunk(request, url, env) {
 }
 
 async function serveAudio(url, request, env, ctx) {
-  const m = url.pathname.match(/^\/api\/audio\/([a-f0-9]{16})\.(mp3|m4a|aac|ogg|wav|webm)$/);
+  const m = url.pathname.match(/^\/api\/(?:audio|file)\/([a-f0-9]{16})\.(mp3|m4a|aac|ogg|wav|webm|pdf|apk|zip|epub)$/);
   if (!m) return new Response("Not found", { status: 404 });
+
+  const attach = ["apk", "zip", "epub"].includes(m[2])
+    ? { "Content-Disposition": `attachment; filename="7box-${m[1].slice(0, 6)}.${m[2]}"` }
+    : {};
+
+  // optional R2 storage (large files)
+  if (env.FILES) {
+    try {
+      const key = m[1] + "." + m[2];
+      const obj = request.method === "HEAD"
+        ? await env.FILES.head(key)
+        : await env.FILES.get(key, { range: request.headers });
+      if (obj) {
+        const h = new Headers({
+          "Content-Type": AUDIO_MIME_BY_EXT[m[2]],
+          "Accept-Ranges": "bytes",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "X-Content-Type-Options": "nosniff",
+          ...attach
+        });
+        let status = 200;
+        const rg = obj.range;
+        if (rg && request.headers.get("Range")) {
+          let off = rg.offset ?? 0;
+          let len = rg.length ?? (obj.size - off);
+          if (rg.suffix !== undefined) { off = Math.max(0, obj.size - rg.suffix); len = obj.size - off; }
+          status = 206;
+          h.set("Content-Range", `bytes ${off}-${off + len - 1}/${obj.size}`);
+          h.set("Content-Length", String(len));
+        } else {
+          h.set("Content-Length", String(obj.size));
+        }
+        return new Response(request.method === "HEAD" ? null : obj.body, { status, headers: h });
+      }
+    } catch (e) {
+      console.error("R2 serve error:", e);
+    }
+  }
 
   const cache = caches.default;
   const cacheKey = new Request(url.origin + url.pathname, { method: "GET" });
@@ -4162,7 +4254,8 @@ async function serveAudio(url, request, env, ctx) {
     "Content-Type": mime,
     "Accept-Ranges": "bytes",
     "Cache-Control": "public, max-age=31536000, immutable",
-    "X-Content-Type-Options": "nosniff"
+    "X-Content-Type-Options": "nosniff",
+    ...attach
   };
 
   const range = request.headers.get("Range");
@@ -4197,4 +4290,63 @@ async function serveAudio(url, request, env, ctx) {
     status: 200,
     headers: { ...baseHeaders, "Content-Length": String(bytes.length) }
   });
+}
+
+
+// POST /api/admin/upload-file?id=<16hex>&ext=pdf&idx=0&total=1
+//   D1 mode: same chunk protocol as upload-audio (max ~5MB)
+//   R2 mode (env.FILES bound): action=start | part | complete (multipart, up to 300MB)
+async function uploadFileChunk(request, url, env) {
+  const ext = (url.searchParams.get("ext") || "").toLowerCase();
+  const mime = AUDIO_MIME_BY_EXT[ext];
+  if (!mime) return json({ ok: false, error: "فرمت فایل پشتیبانی نمی‌شود" }, 415);
+
+  if (!env.FILES) {
+    url.searchParams.set("mime", mime);
+    return await uploadAudioChunk(request, url, env);
+  }
+
+  const id = url.searchParams.get("id") || "";
+  if (!/^[a-f0-9]{16}$/.test(id)) {
+    return json({ ok: false, error: "شناسه فایل نامعتبر است" }, 400);
+  }
+  const key = `${id}.${ext}`;
+  const action = url.searchParams.get("action") || "part";
+
+  try {
+    if (action === "start") {
+      const mp = await env.FILES.createMultipartUpload(key, {
+        httpMetadata: { contentType: mime }
+      });
+      return json({ ok: true, uploadId: mp.uploadId });
+    }
+
+    const mp = env.FILES.resumeMultipartUpload(key, url.searchParams.get("uploadId") || "");
+
+    if (action === "part") {
+      const n = Number(url.searchParams.get("n"));
+      if (!Number.isInteger(n) || n < 1 || n > 100) {
+        return json({ ok: false, error: "شماره بخش نامعتبر است" }, 400);
+      }
+      const buf = await request.arrayBuffer();
+      if (!buf.byteLength || buf.byteLength > R2_PART_SIZE) {
+        return json({ ok: false, error: "اندازه بخش نامعتبر است" }, 400);
+      }
+      const part = await mp.uploadPart(n, buf);
+      return json({ ok: true, partNumber: part.partNumber, etag: part.etag });
+    }
+
+    if (action === "complete") {
+      const body = await request.json();
+      const parts = Array.isArray(body.parts) ? body.parts : [];
+      if (!parts.length) return json({ ok: false, error: "بخشی ارسال نشده" }, 400);
+      await mp.complete(parts.map(p => ({ partNumber: Number(p.partNumber), etag: String(p.etag) })));
+      return json({ ok: true, done: true, url: `/api/file/${id}.${ext}` });
+    }
+  } catch (e) {
+    console.error("uploadFileChunk R2 error:", e);
+    return json({ ok: false, error: "ذخیره فایل ناموفق بود" }, 500);
+  }
+
+  return json({ ok: false, error: "درخواست نامعتبر" }, 400);
 }

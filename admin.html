@@ -1776,10 +1776,14 @@ function catalogFieldsHtml(prefix, type, item) {
   item = item || {};
   const T = CAT_TYPES[type];
   const v = k => escapeHtml(item[k] === null || item[k] === undefined ? "" : item[k]);
-  const dl = item.download_type || "none";
   const isBook = type === "books";
-  const opt = (val, label) =>
-    `<option value="${val}" ${dl === val ? "selected" : ""}>${label}</option>`;
+  const mode = ["free", "order", "store"].includes(item.access_mode)
+    ? item.access_mode
+    : (Number(item.price) > 0 ? "order" : "free");
+  const dl = item.download_type || "none";
+  const mopt = (val, label) => `<option value="${val}" ${mode === val ? "selected" : ""}>${label}</option>`;
+  const dopt = (val, label) => `<option value="${val}" ${dl === val ? "selected" : ""}>${label}</option>`;
+  const fileKind = isBook ? "pdf" : "app";
 
   return `
     <div class="field"><label>${T.nameLabel} *</label>
@@ -1788,29 +1792,37 @@ function catalogFieldsHtml(prefix, type, item) {
       <input id="${prefix}-category" type="text" placeholder="${T.catPh}" value="${v("category")}"></div>
     <div class="field full"><label>تصویر *</label>
       <input id="${prefix}-image" data-img="1" type="text" placeholder="https://... یا از دکمه آپلود استفاده کنید" value="${v("image")}"></div>
+
+    <div class="field full"><label>روش دریافت / فروش</label>
+      <select id="${prefix}-mode" onchange="toggleDl('${prefix}')">
+        ${mopt("free", "۱) رایگان — دانلود برای همه")}
+        ${mopt("order", "۲) فروش داخل سایت — ثبت سفارش (لینک بعد از تأیید نمایش داده می‌شود)")}
+        ${mopt("store", "۳) خرید از سایت دیگر (بازار، مایکت و ...) — فقط نمایش قیمت")}
+      </select>
+      <div class="dl-hint" id="${prefix}-modehint"></div></div>
+
     <div class="field"><label>قیمت (تومان)</label>
-      <input id="${prefix}-price" type="number" min="0" placeholder="خالی = رایگان" value="${v("price")}"></div>
-    <div class="field"><label>نوع لینک دانلود</label>
+      <input id="${prefix}-price" type="number" min="0" placeholder="خالی = بدون قیمت" value="${v("price")}"></div>
+    <div class="field" id="${prefix}-typebox"><label>نوع لینک</label>
       <select id="${prefix}-dltype" onchange="toggleDl('${prefix}')">
-        ${opt("none", "بدون لینک دانلود")}
-        ${opt("direct", "لینک مستقیم دانلود")}
-        ${opt("external", "انتقال به سایت دیگر (بازار، مایکت و ...)")}
+        ${dopt("none", "بدون لینک")}
+        ${dopt("direct", "فایل / لینک مستقیم دانلود")}
+        ${dopt("external", "انتقال به سایت دیگر")}
       </select></div>
-    <div class="field full" id="${prefix}-urlbox" style="${dl === "none" ? "display:none" : ""}">
-      <label>آدرس لینک</label>
-      <input id="${prefix}-dlurl" type="text" dir="ltr" placeholder="https://..." value="${v("download_url")}">
+
+    <div class="field full" id="${prefix}-urlbox">
+      <label id="${prefix}-urllabel">${isBook ? "فایل کتاب (PDF) یا آدرس لینک" : "فایل برنامه (APK / ZIP) یا آدرس لینک"}</label>
+      <input id="${prefix}-dlurl" data-file="${fileKind}" type="text" dir="ltr" placeholder="https://... یا آپلود فایل" value="${v("download_url")}">
     </div>
-    <div class="field full" id="${prefix}-labelbox" style="${dl === "external" ? "" : "display:none"}">
-      <label>متن دکمه (برای انتقال به سایت دیگر)</label>
+    <div class="field full" id="${prefix}-labelbox">
+      <label>متن دکمه</label>
       <input id="${prefix}-dllabel" type="text" maxlength="40" placeholder="مثلاً دریافت از بازار" value="${v("download_label")}">
     </div>
-    <div class="field full"><div class="dl-hint">
-      اگر قیمت خالی یا ۰ باشد، دکمه دانلود برای همه نمایش داده می‌شود. اگر قیمت دارد، مشتری سفارش ثبت می‌کند و بعد از تأیید شما، لینک در صفحه «پیگیری سفارش» برایش نمایش داده می‌شود.
-    </div></div>
     ${isBook ? `
-    <div class="field full"><label>صوت نمونه (آدرس یا آپلود فایل)</label>
-      <input id="${prefix}-sample" data-audio="1" type="text" dir="ltr" placeholder="https://... یا آپلود فایل صوتی" value="${v("sample_audio")}">
-    </div>
+    <div class="field full"><label>فایل صوتی کتاب (نسخه کامل — اختیاری)</label>
+      <input id="${prefix}-audio" data-file="audio" type="text" dir="ltr" placeholder="آپلود فایل صوتی یا آدرس لینک" value="${v("audio_url")}"></div>
+    <div class="field full"><label>صوت نمونه برای پخش در سایت</label>
+      <input id="${prefix}-sample" data-file="audio" type="text" dir="ltr" placeholder="آپلود نمونه کوتاه یا آدرس لینک" value="${v("sample_audio")}"></div>
     <div class="field full"><div class="active-toggle">
       <input id="${prefix}-sampleon" type="checkbox" ${Number(item.sample_enabled) === 1 ? "checked" : ""}>
       <label for="${prefix}-sampleon">نمایش «پخش نمونه» در صفحه کتاب فعال باشد</label></div></div>` : ""}
@@ -1821,10 +1833,27 @@ function catalogFieldsHtml(prefix, type, item) {
       <label for="${prefix}-active">در سایت نمایش داده شود</label></div></div>`;
 }
 
+const MODE_HINTS = {
+  free: "دکمه دانلود برای همه نمایش داده می‌شود.",
+  order: "مشتری سفارش و رسید ثبت می‌کند؛ بعد از تأیید شما، لینک در صفحه «پیگیری سفارش» نمایش داده می‌شود. قیمت الزامی است.",
+  store: "قیمت فقط نمایشی است و دکمه، کاربر را به سایت دیگر می‌برد. آدرس صفحه خرید را در «آدرس لینک» بنویسید."
+};
+
 function toggleDl(prefix) {
-  const t = document.getElementById(prefix + "-dltype").value;
-  document.getElementById(prefix + "-urlbox").style.display = t === "none" ? "none" : "";
-  document.getElementById(prefix + "-labelbox").style.display = t === "external" ? "" : "none";
+  const g = k => document.getElementById(prefix + "-" + k);
+  const mode = g("mode").value;
+  const store = mode === "store";
+  const type = store ? "external" : g("dltype").value;
+  g("modehint").textContent = MODE_HINTS[mode] || "";
+  g("typebox").style.display = store ? "none" : "";
+  g("urlbox").style.display = type === "none" ? "none" : "";
+  g("labelbox").style.display = type === "external" ? "" : "none";
+  const lab = document.getElementById(prefix + "-urllabel");
+  if (lab && store) lab.textContent = "آدرس صفحه خرید در سایت دیگر";
+  const url = g("dlurl");
+  if (url) {
+    if (type === "external" || store) url.removeAttribute("data-file-on");
+  }
 }
 
 function readCatalogForm(prefix, type) {
@@ -1843,11 +1872,13 @@ function readCatalogForm(prefix, type) {
     price,
     stock: null,
     active: g("active").checked,
-    download_type: g("dltype").value,
+    access_mode: g("mode").value,
+    download_type: g("mode").value === "store" ? "external" : g("dltype").value,
     download_url: g("dlurl").value,
     download_label: g("dllabel").value
   };
   if (type === "books") {
+    body.audio_url = g("audio").value;
     body.sample_audio = g("sample").value;
     body.sample_enabled = g("sampleon").checked;
   }
@@ -1865,6 +1896,7 @@ async function loadCatalog(type) {
       return;
     }
     container.innerHTML = items.map(item => catalogCard(item, type)).join("");
+    items.forEach(item => toggleDl(`cat-${Number(item.id)}${type}`));
   } catch (error) {
     container.innerHTML = '<div class="empty" style="grid-column:1/-1">خطا در دریافت.</div>';
     showMessage("globalMessage", error.message, "error");
@@ -1917,6 +1949,7 @@ async function deleteCatalogItem(id, name, type) {
   const fields = document.getElementById(type === "apps" ? "addAppsFields" : "addBooksFields");
   const form = document.getElementById(type === "apps" ? "addAppsForm" : "addBooksForm");
   fields.innerHTML = catalogFieldsHtml(prefix, type, {});
+  toggleDl(prefix);
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     try {
@@ -1926,6 +1959,7 @@ async function deleteCatalogItem(id, name, type) {
       });
       showMessage("globalMessage", "با موفقیت اضافه شد.");
       fields.innerHTML = catalogFieldsHtml(prefix, type, {});
+      toggleDl(prefix);
       loadCatalog(type);
     } catch (error) { showMessage("globalMessage", error.message, "error"); }
   });
@@ -1942,6 +1976,7 @@ function showTab(name) {
 }
 document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
 showTab((location.hash || "").replace("#", ""));
+window.addEventListener("hashchange", () => showTab((location.hash || "").replace("#", "")));
 (function () {
   const h = document.querySelector("header");
   const set = () => { if (h) document.documentElement.style.setProperty("--hdr", h.offsetHeight + "px"); };
@@ -2099,37 +2134,61 @@ showTab((location.hash || "").replace("#", ""));
   new MutationObserver(() => scan()).observe(document.body, { childList: true, subtree: true });
 })();
 
-/* ===== sample audio upload (chunked) ===== */
+/* ===== file upload (pdf / apk / audio) — chunked, D1 or R2 ===== */
 (function () {
-  const CHUNK = 700 * 1024;          // must match AUDIO_CHUNK_MAX in worker.js
-  const MAX = 5 * 1024 * 1024;
-  const MIME = { mp3: "audio/mpeg", m4a: "audio/mp4", aac: "audio/aac", ogg: "audio/ogg", wav: "audio/wav", webm: "audio/webm" };
+  const KINDS = {
+    app:   { exts: ["apk", "zip"],                          accept: ".apk,.zip", btn: "📦 آپلود فایل برنامه" },
+    pdf:   { exts: ["pdf", "epub"],                         accept: ".pdf,.epub", btn: "📄 آپلود فایل PDF" },
+    audio: { exts: ["mp3", "m4a", "aac", "ogg", "wav"],     accept: "audio/*,.mp3,.m4a,.aac,.ogg,.wav", btn: "🎧 آپلود فایل صوتی" }
+  };
+  let CONFIG = null;
 
   function rid() {
     const a = new Uint8Array(8);
     crypto.getRandomValues(a);
     return Array.from(a).map(b => b.toString(16).padStart(2, "0")).join("");
   }
-  function mimeOf(f) {
-    const ext = (f.name.split(".").pop() || "").toLowerCase();
-    return MIME[ext] || (f.type === "audio/mpeg" ? "audio/mpeg" : "");
+  function fa(n) { return String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]); }
+  function mb(n) { return fa((n / 1048576).toFixed(1)) + " MB"; }
+  async function config() {
+    if (CONFIG) return CONFIG;
+    try {
+      const r = await fetch("/api/admin/upload-config", { credentials: "same-origin" });
+      const d = await r.json();
+      CONFIG = d && d.ok ? d : { backend: "d1", chunk: 700 * 1024, max: 5 * 1024 * 1024 - 1 };
+    } catch (e) { CONFIG = { backend: "d1", chunk: 700 * 1024, max: 5 * 1024 * 1024 - 1 }; }
+    return CONFIG;
   }
-  function mb(n) { return (n / 1048576).toFixed(1).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]) + " MB"; }
+  async function call(url, opts) {
+    const res = await fetch(url, Object.assign({ method: "POST", credentials: "same-origin" }, opts));
+    let data = null;
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok || !data || !data.ok) throw new Error((data && data.error) || "آپلود ناموفق بود");
+    return data;
+  }
 
-  async function send(file, mime, onProgress) {
+  async function send(file, ext, cfg, onProgress) {
     const id = rid();
-    const total = Math.ceil(file.size / CHUNK);
+    const total = Math.ceil(file.size / cfg.chunk);
+    const base = `/api/admin/upload-file?id=${id}&ext=${ext}`;
+    if (cfg.backend === "r2") {
+      const start = await call(base + "&action=start");
+      const parts = [];
+      for (let i = 0; i < total; i++) {
+        const d = await call(`${base}&action=part&uploadId=${encodeURIComponent(start.uploadId)}&n=${i + 1}`,
+          { headers: { "Content-Type": "application/octet-stream" }, body: file.slice(i * cfg.chunk, (i + 1) * cfg.chunk) });
+        parts.push({ partNumber: d.partNumber, etag: d.etag });
+        onProgress(Math.round(((i + 1) / total) * 100));
+      }
+      const done = await call(`${base}&action=complete&uploadId=${encodeURIComponent(start.uploadId)}`,
+        { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ parts }) });
+      return done.url;
+    }
     let url = "";
     for (let i = 0; i < total; i++) {
-      const blob = file.slice(i * CHUNK, (i + 1) * CHUNK);
-      const res = await fetch(
-        `/api/admin/upload-audio?id=${id}&idx=${i}&total=${total}&mime=${encodeURIComponent(mime)}`,
-        { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/octet-stream" }, body: blob }
-      );
-      let data = null;
-      try { data = await res.json(); } catch (e) {}
-      if (!res.ok || !data || !data.ok) throw new Error((data && data.error) || "آپلود ناموفق بود");
-      if (data.url) url = data.url;
+      const d = await call(`${base}&idx=${i}&total=${total}`,
+        { headers: { "Content-Type": "application/octet-stream" }, body: file.slice(i * cfg.chunk, (i + 1) * cfg.chunk) });
+      if (d.url) url = d.url;
       onProgress(Math.round(((i + 1) / total) * 100));
     }
     if (!url) throw new Error("آپلود کامل نشد");
@@ -2137,42 +2196,58 @@ showTab((location.hash || "").replace("#", ""));
   }
 
   function enhance(input) {
-    if (input.dataset.audioUp) return;
-    input.dataset.audioUp = "1";
+    if (input.dataset.fileUp) return;
+    input.dataset.fileUp = "1";
+    const kind = KINDS[input.dataset.file] || KINDS.audio;
+
     const box = document.createElement("div");
     box.className = "img-up";
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = "🎧 آپلود صوت نمونه";
+    btn.textContent = kind.btn;
     const msg = document.createElement("span");
     msg.className = "img-up-msg";
     const file = document.createElement("input");
     file.type = "file";
-    file.accept = "audio/*,.mp3,.m4a,.aac,.ogg,.wav";
+    file.accept = kind.accept;
     file.style.display = "none";
-    const prev = document.createElement("audio");
-    prev.className = "audio-prev";
-    prev.controls = true;
-    prev.preload = "none";
-    prev.style.display = input.value ? "" : "none";
-    if (input.value) prev.src = input.value;
+    box.append(btn, msg, file);
+    input.insertAdjacentElement("afterend", box);
+
+    let prev = null;
+    if (input.dataset.file === "audio") {
+      prev = document.createElement("audio");
+      prev.className = "audio-prev";
+      prev.controls = true;
+      prev.preload = "none";
+      box.insertAdjacentElement("afterend", prev);
+      const sync = () => { prev.style.display = input.value ? "" : "none"; if (input.value) prev.src = input.value; };
+      input.addEventListener("change", sync);
+      sync();
+    }
 
     btn.addEventListener("click", () => file.click());
-    input.addEventListener("change", () => {
-      prev.style.display = input.value ? "" : "none";
-      if (input.value) prev.src = input.value;
-    });
     file.addEventListener("change", async () => {
       const f = file.files && file.files[0];
       file.value = "";
       if (!f) return;
       msg.className = "img-up-msg";
-      const mime = mimeOf(f);
-      if (!mime) { msg.className = "img-up-msg err"; msg.textContent = "فرمت مجاز: MP3، M4A، AAC، OGG، WAV"; return; }
-      if (f.size > MAX) { msg.className = "img-up-msg err"; msg.textContent = "حجم فایل " + mb(f.size) + " است؛ حداکثر ۵ مگابایت. نمونه را کوتاه‌تر کنید."; return; }
+      const ext = (f.name.split(".").pop() || "").toLowerCase();
+      if (!kind.exts.includes(ext)) {
+        msg.className = "img-up-msg err";
+        msg.textContent = "فرمت مجاز: " + kind.exts.join("، ").toUpperCase();
+        return;
+      }
+      const cfg = await config();
+      if (f.size > cfg.max) {
+        msg.className = "img-up-msg err";
+        msg.textContent = "حجم فایل " + mb(f.size) + " است و حداکثر " + mb(cfg.max) + " مجاز است." +
+          (cfg.backend === "d1" ? " برای فایل حجیم‌تر R2 را فعال کنید یا لینک بیرونی بگذارید." : "");
+        return;
+      }
       btn.disabled = true;
       try {
-        const url = await send(f, mime, p => { msg.textContent = "در حال آپلود… " + p + "٪"; });
+        const url = await send(f, ext, cfg, p => { msg.textContent = "در حال آپلود… " + fa(p) + "٪"; });
         input.value = url;
         input.dispatchEvent(new Event("change", { bubbles: true }));
         msg.textContent = "✓ آپلود شد (" + mb(f.size) + ") — برای ثبت نهایی دکمه ذخیره/افزودن را بزنید";
@@ -2181,13 +2256,9 @@ showTab((location.hash || "").replace("#", ""));
         msg.textContent = (e && e.message) || "خطا در آپلود";
       } finally { btn.disabled = false; }
     });
-
-    box.appendChild(btn); box.appendChild(msg); box.appendChild(file);
-    input.insertAdjacentElement("afterend", box);
-    box.insertAdjacentElement("afterend", prev);
   }
 
-  function scan() { document.querySelectorAll("input[data-audio]").forEach(enhance); }
+  function scan() { document.querySelectorAll("input[data-file]").forEach(enhance); }
   scan();
   new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
 })();
