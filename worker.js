@@ -3918,7 +3918,52 @@ async function catalogUpdate(type, request, env) {
 
   return json({ ok: true, message: "بروزرسانی شد." });
 }
+async function catalogDelete(type, request, env) {
+  const table = validateCatalogTable(type);
+  let body;
 
+  try {
+    body = await request.json();
+  } catch {
+    return json({ ok: false, error: "Invalid JSON" }, 400);
+  }
+
+  const id = Number(body.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return json({ ok: false, error: "شناسه نامعتبر." }, 400);
+  }
+
+  const item = await env.DB.prepare(
+    `SELECT id, name FROM ${table} WHERE id = ?`
+  ).bind(id).first();
+
+  if (!item) {
+    return json({ ok: false, error: "مورد پیدا نشد." }, 404);
+  }
+
+  const order = await env.DB.prepare(
+    `SELECT tracking_code FROM orders
+     WHERE item_type = ? AND item_id = ?
+     LIMIT 1`
+  ).bind(type === "apps" ? "app" : "book", id).first();
+
+  if (order) {
+    return json({
+      ok: false,
+      error: "این مورد در سوابق سفارش استفاده شده و برای حفظ سوابق قابل حذف نیست. می‌توانید آن را غیرفعال کنید."
+    }, 409);
+  }
+
+  const result = await env.DB.prepare(
+    `DELETE FROM ${table} WHERE id = ?`
+  ).bind(id).run();
+
+    if (Number(result?.meta?.changes || 0) !== 1) {
+    return json({ ok: false, error: "حذف مورد انجام نشد." }, 500);
+  }
+
+  return json({ ok: true, message: "مورد با موفقیت حذف شد.", id });
+}
 // only free items expose the download link publicly;
 // paid items get it through the order tracking page after confirmation
 function publicCatalogRow(row, type) {
