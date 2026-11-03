@@ -14,48 +14,90 @@ const ADMIN_COOKIE = "sevenbox_admin";
 // ========================================
 
 let SCHEMA_READY = false;
+let SCHEMA_PROMISE = null;
+
+// the exact columns that used to be added one by one (same order, same definitions)
+const SCHEMA_COLUMNS = {
+  apps: [
+    ["download_type", "TEXT DEFAULT 'none'"],
+    ["download_url", "TEXT DEFAULT ''"],
+    ["download_label", "TEXT DEFAULT ''"],
+    ["access_mode", "TEXT DEFAULT ''"]
+  ],
+  books: [
+    ["download_type", "TEXT DEFAULT 'none'"],
+    ["download_url", "TEXT DEFAULT ''"],
+    ["download_label", "TEXT DEFAULT ''"],
+    ["access_mode", "TEXT DEFAULT ''"],
+    ["audio_url", "TEXT DEFAULT ''"],
+    ["sample_audio", "TEXT DEFAULT ''"],
+    ["sample_enabled", "INTEGER DEFAULT 0"]
+  ],
+  orders: [
+    ["item_type", "TEXT DEFAULT 'product'"],
+    ["item_id", "INTEGER"]
+  ]
+};
+
+async function runSchemaCheck(env) {
+  const tables = Object.keys(SCHEMA_COLUMNS);
+
+  // one single round trip to D1 for all tables (was 13 sequential queries)
+  let infos = null;
+  try {
+    infos = await env.DB.batch(
+      tables.map(t => env.DB.prepare(`PRAGMA table_info(${t})`))
+    );
+  } catch (e) {
+    infos = null; // fall back to one query per table below
+  }
+
+  for (let i = 0; i < tables.length; i++) {
+    const table = tables[i];
+
+    let info = infos && infos[i];
+    if (!info) info = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+
+    const names = (info.results || []).map(r => r.name);
+    if (!names.length) continue; // table does not exist yet
+
+    for (const [column, definition] of SCHEMA_COLUMNS[table]) {
+      if (names.includes(column)) continue;
+      try {
+        await env.DB.prepare(
+          `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+        ).run();
+      } catch (e) {
+        // a parallel request may have added it already
+        const again = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+        if (!(again.results || []).some(r => r.name === column)) throw e;
+      }
+    }
+  }
+}
 
 async function ensureSchema(env) {
   if (SCHEMA_READY) return;
 
-  const addColumn = async (table, column, definition) => {
-    const info = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
-    const names = (info.results || []).map(r => r.name);
-    if (!names.length || names.includes(column)) return;
-    try {
-      await env.DB.prepare(
-        `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
-      ).run();
-    } catch (e) {
-      // a parallel request may have added it already
-      const again = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
-      if (!(again.results || []).some(r => r.name === column)) throw e;
-    }
-  };
-
-  for (const table of ["apps", "books"]) {
-    await addColumn(table, "download_type", "TEXT DEFAULT 'none'");
-    await addColumn(table, "download_url", "TEXT DEFAULT ''");
-    await addColumn(table, "download_label", "TEXT DEFAULT ''");
+  // concurrent requests in the same isolate share one check
+  if (!SCHEMA_PROMISE) {
+    SCHEMA_PROMISE = runSchemaCheck(env)
+      .then(() => { SCHEMA_READY = true; })
+      .finally(() => { SCHEMA_PROMISE = null; });
   }
-  for (const table of ["apps", "books"]) {
-    await addColumn(table, "access_mode", "TEXT DEFAULT ''");
-  }
-  await addColumn("books", "audio_url", "TEXT DEFAULT ''");
-  await addColumn("books", "sample_audio", "TEXT DEFAULT ''");
-  await addColumn("books", "sample_enabled", "INTEGER DEFAULT 0");
-  await addColumn("orders", "item_type", "TEXT DEFAULT 'product'");
-  await addColumn("orders", "item_id", "INTEGER");
-
-  SCHEMA_READY = true;
+  return SCHEMA_PROMISE;
 }
 
-export default {
+const worker = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     try {
-      if (url.pathname.startsWith("/api/")) {
+      if (
+        url.pathname.startsWith("/api/") &&
+        !url.pathname.startsWith("/api/img/") &&
+        !url.pathname.startsWith("/api/audio/")
+      ) {
         try {
           await ensureSchema(env);
         } catch (e) {
@@ -4350,3 +4392,72 @@ async function uploadFileChunk(request, url, env) {
 
   return json({ ok: false, error: "درخواست نامعتبر" }, 400);
 }
+
+// ========================================
+// EDGE CACHE FOR THE PUBLIC CATALOG API
+// Most visitors are answered from Cloudflare's cache without touching
+// the Worker logic or D1. Admin, orders and everything private is never cached.
+// ========================================
+
+const EDGE_CACHED_PATHS = [
+  "/api/banners",
+  "/api/products",
+  "/api/apps",
+  "/api/books"
+];
+const EDGE_CACHED_SET = new Set(EDGE_CACHED_PATHS);
+
+function edgeCacheKey(url, path) {
+  return new Request(url.origin + path, { method: "GET" });
+}
+
+export default {
+  async fetch(request, env, ctx) {
+    let url;
+    try {
+      url = new URL(request.url);
+    } catch (e) {
+      return worker.fetch(request, env, ctx);
+    }
+
+    if (request.method === "GET" && EDGE_CACHED_SET.has(url.pathname)) {
+      const cache = caches.default;
+      const key = edgeCacheKey(url, url.pathname);
+
+      try {
+        const hit = await cache.match(key);
+        if (hit) return hit;
+      } catch (e) {}
+
+      const res = await worker.fetch(request, env, ctx);
+
+      if (res.status === 200 && ctx && ctx.waitUntil) {
+        ctx.waitUntil(cache.put(key, res.clone()).catch(() => {}));
+      }
+      return res;
+    }
+
+    const res = await worker.fetch(request, env, ctx);
+
+    // after a successful admin change, drop this location's cached copies
+    if (
+      request.method !== "GET" &&
+      request.method !== "HEAD" &&
+      url.pathname.startsWith("/api/admin/") &&
+      url.pathname !== "/api/admin/login" &&
+      url.pathname !== "/api/admin/logout" &&
+      res.status < 400 &&
+      ctx && ctx.waitUntil
+    ) {
+      ctx.waitUntil(
+        Promise.all(
+          EDGE_CACHED_PATHS.map(p =>
+            caches.default.delete(edgeCacheKey(url, p)).catch(() => false)
+          )
+        )
+      );
+    }
+
+    return res;
+  }
+};

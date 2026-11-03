@@ -122,7 +122,7 @@ section{padding:70px 0;position:relative}
 <nav class="site-nav">
   <div class="wrap nav-inner">
     <a href="/" class="nav-brand">
-      <img src="file_0000000088e481fdb76b9fde3b01e677.png" alt="7BOX" width="38" height="38" decoding="async" fetchpriority="high">
+      <img src="logo-168.webp" onerror="this.onerror=null;this.src='logo-168.png'" alt="7BOX" width="38" height="38" decoding="async" fetchpriority="high">
       <span>7BOX</span>
     </a>
     <button class="nav-toggle" id="navToggle" aria-label="منو">☰</button>
@@ -181,6 +181,6 @@ async function trackOrder(e){e.preventDefault();const input=document.getElementB
 function initNav(){const t=document.getElementById("navToggle"),l=document.getElementById("navLinks");if(t&&l)t.addEventListener("click",()=>l.classList.toggle("open"))}
 document.addEventListener("DOMContentLoaded",()=>{initNav();loadBanners();const y=document.getElementById("year");if(y)y.textContent=new Date().getFullYear();const tf=document.getElementById("trackingForm");if(tf)tf.addEventListener("submit",trackOrder);if(document.getElementById("productsGrid"))loadSection({api:API.products,gridId:"productsGrid",type:"product",emptyText:"در حال حاضر محصولی برای نمایش وجود ندارد."});if(document.getElementById("appsGrid"))loadSection({api:API.apps,gridId:"appsGrid",type:"app",emptyText:"به‌زودی اپلیکیشن‌های جدید اضافه می‌شوند."});if(document.getElementById("booksGrid"))loadSection({api:API.books,gridId:"booksGrid",type:"book",emptyText:"به‌زودی کتاب‌های جدید اضافه می‌شوند."})});
 </script>
-<script src="catalog.js?v=2"></script>
+<script src="catalog.js?v=3"></script>
 </body>
 </html>

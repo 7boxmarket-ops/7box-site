@@ -202,7 +202,9 @@
     var limit = Number(g.getAttribute("data-limit")) || 0;
     if (typeof skeletonCards === "function") g.innerHTML = skeletonCards(4);
     try {
-      var r = await fetch(o.api);
+      // reuse the request the page already started in <head> (index only), otherwise fetch normally
+      var pre = typeof takePre === "function" ? takePre(o.gridId) : null;
+      var r = await (pre || fetch(o.api));
       if (!r.ok) throw new Error(r.status);
       var d = await r.json();
       var items = typeof extractItems === "function" ? extractItems(d)
