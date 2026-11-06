@@ -683,7 +683,7 @@ const worker = {
 
 if (url.pathname === "/api/banners" && request.method === "GET") {
   const result = await env.DB.prepare(
-    `SELECT id, title, subtitle, cta, link, image, sort_order
+    `SELECT id, title, subtitle, cta, link, image, sort_order, image_x, image_y
      FROM banners WHERE active = 1
      ORDER BY sort_order ASC, id ASC`
   ).all();
@@ -692,12 +692,19 @@ if (url.pathname === "/api/banners" && request.method === "GET") {
 
 if (url.pathname === "/api/apps" && request.method === "GET") {
   const result = await env.DB.prepare(
-    `SELECT * FROM apps WHERE active = 1 ORDER BY id ASC`
+    `SELECT * FROM apps WHERE active = 1 AND app_type = 'app' ORDER BY id ASC`
   ).all();
   return jsonCached({
     ok: true,
     apps: (result.results || []).map(r => publicCatalogRow(r, "apps"))
   });
+}
+
+if (url.pathname === "/api/games" && request.method === "GET") {
+  const result = await env.DB.prepare(
+    `SELECT * FROM apps WHERE active = 1 AND app_type = 'game' ORDER BY id ASC`
+  ).all();
+  return jsonNoStore({ ok: true, games: (result.results || []).map(r => publicCatalogRow(r, "apps")) });
 }
 
 if (url.pathname === "/api/books" && request.method === "GET") {
@@ -755,6 +762,24 @@ if (url.pathname === "/api/admin/apps" && request.method === "PUT") {
 if (url.pathname === "/api/admin/apps" && request.method === "DELETE") {
   if (!await isAdmin(request, env)) return unauthorized();
   return await catalogDelete("apps", request, env);
+}
+
+/* ========== ADMIN GAMES (same table; distinct app_type) ========== */
+if (url.pathname === "/api/admin/games" && request.method === "GET") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogList("games", env);
+}
+if (url.pathname === "/api/admin/games" && request.method === "POST") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogCreate("games", request, env);
+}
+if (url.pathname === "/api/admin/games" && request.method === "PUT") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogUpdate("games", request, env);
+}
+if (url.pathname === "/api/admin/games" && request.method === "DELETE") {
+  if (!await isAdmin(request, env)) return unauthorized();
+  return await catalogDelete("games", request, env);
 }
 
 /* ========== ADMIN BOOKS ========== */
@@ -3681,14 +3706,11 @@ function json(
     }
   );
 }
-function jsonCached(data) {
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "public, max-age=60, stale-while-revalidate=300"
-    }
-  });
+function jsonCached(data) { return jsonNoStore(data); }
+function jsonNoStore(data) {
+  return new Response(JSON.stringify(data), { status: 200, headers: {
+    "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store, max-age=0"
+  }});
 }
 
 // ========================================
@@ -3707,6 +3729,8 @@ async function createBanner(request, env) {
   const image     = clean(body.image);
   const sortOrder = Number(body.sort_order) || 0;
   const active    = normalizeActive(body.active);
+  const imageX = Math.max(0, Math.min(100, Number(body.image_x ?? 50)));
+  const imageY = Math.max(0, Math.min(100, Number(body.image_y ?? 50)));
 
   if (!title) {
     return json({ ok: false, error: "عنوان بنر الزامی است." }, 400);
@@ -3717,11 +3741,11 @@ async function createBanner(request, env) {
 
   const result = await env.DB.prepare(
     `INSERT INTO banners
-      (title, subtitle, cta, link, image, sort_order, active, created_at)
-     VALUES (?,?,?,?,?,?,?,?)`
+      (title, subtitle, cta, link, image, sort_order, active, image_x, image_y, created_at)
+     VALUES (?,?,?,?,?,?,?,?,?,?)`
   ).bind(
     title, subtitle || null, cta || null, link || null,
-    image || null, sortOrder, active, new Date().toISOString()
+    image || null, sortOrder, active, imageX, imageY, new Date().toISOString()
   ).run();
 
   return json({
@@ -3752,6 +3776,8 @@ async function updateBanner(request, env) {
   const image     = clean(body.image);
   const sortOrder = Number(body.sort_order) || 0;
   const active    = normalizeActive(body.active);
+  const imageX = Math.max(0, Math.min(100, Number(body.image_x ?? 50)));
+  const imageY = Math.max(0, Math.min(100, Number(body.image_y ?? 50)));
 
   if (!title) {
     return json({ ok: false, error: "عنوان بنر الزامی است." }, 400);
@@ -3760,11 +3786,11 @@ async function updateBanner(request, env) {
   await env.DB.prepare(
     `UPDATE banners SET
        title = ?, subtitle = ?, cta = ?, link = ?,
-       image = ?, sort_order = ?, active = ?
+       image = ?, sort_order = ?, active = ?, image_x = ?, image_y = ?
      WHERE id = ?`
   ).bind(
     title, subtitle || null, cta || null, link || null,
-    image || null, sortOrder, active, id
+    image || null, sortOrder, active, imageX, imageY, id
   ).run();
 
   return json({ ok: true, message: "بنر بروزرسانی شد." });
@@ -3790,7 +3816,7 @@ async function deleteBanner(request, env) {
 // GENERIC CATALOG (apps / books)
 // ========================================
 
-const CATALOG_TABLES = { apps: "apps", books: "books" };
+const CATALOG_TABLES = { apps: "apps", games: "apps", books: "books" };
 
 function validateCatalogTable(type) {
   if (!CATALOG_TABLES[type]) throw new Error("Invalid catalog type");
@@ -3800,7 +3826,11 @@ function validateCatalogTable(type) {
 async function catalogList(type, env) {
   const table = validateCatalogTable(type);
   const result = await env.DB.prepare(
-    `SELECT * FROM ${table} ORDER BY id ASC`
+    type === "games"
+      ? `SELECT * FROM ${table} WHERE app_type = 'game' ORDER BY id ASC`
+      : type === "apps"
+        ? `SELECT * FROM ${table} WHERE app_type = 'app' ORDER BY id ASC`
+        : `SELECT * FROM ${table} ORDER BY id ASC`
   ).all();
   return json({ ok: true, items: result.results || [] });
 }
@@ -3878,6 +3908,7 @@ async function catalogCreate(type, request, env) {
   const { data, error } = readCatalogBody(type, body);
   if (error) return json({ ok: false, error }, 400);
 
+  if (type === "apps" || type === "games") data.app_type = type === "games" ? "game" : "app";
   data.created_at = new Date().toISOString();
   const cols = Object.keys(data);
 
@@ -3911,6 +3942,7 @@ async function catalogUpdate(type, request, env) {
   const { data, error } = readCatalogBody(type, body);
   if (error) return json({ ok: false, error }, 400);
 
+  if (type === "apps" || type === "games") data.app_type = type === "games" ? "game" : "app";
   const cols = Object.keys(data);
   await env.DB.prepare(
     `UPDATE ${table} SET ${cols.map(c => c + " = ?").join(", ")} WHERE id = ?`
@@ -3934,8 +3966,8 @@ async function catalogDelete(type, request, env) {
   }
 
   const item = await env.DB.prepare(
-    `SELECT id, name FROM ${table} WHERE id = ?`
-  ).bind(id).first();
+    `SELECT id, name FROM ${table} WHERE id = ?${type === "apps" || type === "games" ? " AND app_type = ?" : ""}`
+  ).bind(...(type === "apps" || type === "games" ? [id, type === "games" ? "game" : "app"] : [id])).first();
 
   if (!item) {
     return json({ ok: false, error: "مورد پیدا نشد." }, 404);
@@ -3945,7 +3977,7 @@ async function catalogDelete(type, request, env) {
     `SELECT tracking_code FROM orders
      WHERE item_type = ? AND item_id = ?
      LIMIT 1`
-  ).bind(type === "apps" ? "app" : "book", id).first();
+  ).bind(type === "apps" || type === "games" ? "app" : "book", id).first();
 
   if (order) {
     return json({
@@ -4448,6 +4480,7 @@ const EDGE_CACHED_PATHS = [
   "/api/banners",
   "/api/products",
   "/api/apps",
+  "/api/games",
   "/api/books"
 ];
 const EDGE_CACHED_SET = new Set(EDGE_CACHED_PATHS);
@@ -4465,7 +4498,7 @@ export default {
       return worker.fetch(request, env, ctx);
     }
 
-    if (request.method === "GET" && EDGE_CACHED_SET.has(url.pathname)) {
+    if (false && request.method === "GET" && EDGE_CACHED_SET.has(url.pathname)) {
       const cache = caches.default;
       const key = edgeCacheKey(url, url.pathname);
 

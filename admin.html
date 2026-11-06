@@ -547,7 +547,8 @@
       <nav class="tabs" id="adminTabs" role="tablist" aria-label="بخش‌های مدیریت">
         <button type="button" class="tab active" data-tab="orders">🧾 سفارش‌ها <span class="tab-badge" id="tabPending" style="display:none"></span></button>
         <button type="button" class="tab" data-tab="products">🛍 فروشگاه</button>
-        <button type="button" class="tab" data-tab="apps">📱 اپ و بازی</button>
+        <button type="button" class="tab" data-tab="apps">📱 اپلیکیشن‌ها</button>
+        <button type="button" class="tab" data-tab="games">🎮 بازی‌ها</button>
         <button type="button" class="tab" data-tab="books">📚 کتاب‌ها</button>
         <button type="button" class="tab" data-tab="banners">🖼 بنرها</button>
       </nav>
@@ -686,7 +687,7 @@
       <!-- TAB: APPS -->
       <div class="tab-panel hidden" data-panel="apps">
         <details class="fold">
-          <summary>＋ افزودن اپ یا بازی جدید</summary>
+          <summary>＋ افزودن اپلیکیشن جدید</summary>
           <div class="fold-body">
             <form id="addAppsForm" data-type="apps">
               <div class="add-product-grid" id="addAppsFields"></div>
@@ -696,12 +697,29 @@
         </details>
         <section class="section">
           <div class="section-header">
-            <div class="section-title">اپلیکیشن‌ها و بازی‌ها</div>
+            <div class="section-title">اپلیکیشن‌ها</div>
             <button class="btn gray small" onclick="loadCatalog('apps')">بروزرسانی</button>
           </div>
           <div class="section-body">
             <div id="appsContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div>
           </div>
+        </section>
+      </div>
+
+      <!-- TAB: GAMES -->
+      <div class="tab-panel hidden" data-panel="games">
+        <details class="fold">
+          <summary>＋ افزودن بازی جدید</summary>
+          <div class="fold-body">
+            <form id="addGamesForm" data-type="games">
+              <div class="add-product-grid" id="addGamesFields"></div>
+              <div class="add-actions"><button class="btn green" type="submit">＋ افزودن بازی</button></div>
+            </form>
+          </div>
+        </details>
+        <section class="section">
+          <div class="section-header"><div class="section-title">بازی‌ها</div><button class="btn gray small" onclick="loadCatalog('games')">بروزرسانی</button></div>
+          <div class="section-body"><div id="gamesContainer" class="products-grid"><div class="loading">در حال دریافت...</div></div></div>
         </section>
       </div>
 
@@ -739,6 +757,8 @@
         <div class="field"><label>متن دکمه</label><input id="bnCta" type="text"></div>
         <div class="field"><label>لینک</label><input id="bnLink" type="text" placeholder="#products"></div>
         <div class="field full"><label>آدرس تصویر</label><input id="bnImage" type="text" placeholder="https://..."></div>
+        <div class="field"><label>جای افقی تصویر</label><input id="bnImageX" type="range" min="0" max="100" value="50" oninput="document.getElementById('bnImageXVal').textContent=this.value+'٪'"><small id="bnImageXVal">۵۰٪</small></div>
+        <div class="field"><label>جای عمودی تصویر</label><input id="bnImageY" type="range" min="0" max="100" value="50" oninput="document.getElementById('bnImageYVal').textContent=this.value+'٪'"><small id="bnImageYVal">۵۰٪</small></div>
         <div class="field"><label>ترتیب</label><input id="bnSort" type="number" min="0" value="0"></div>
         <div class="field">
           <label>وضعیت</label>
@@ -910,6 +930,7 @@
     loadProducts(),
     loadBanners(),
     loadCatalog("apps"),
+    loadCatalog("games"),
     loadCatalog("books"),
     loadOrders()
   ]);
@@ -1684,10 +1705,10 @@ async function loadBanners() {
 function bannerCard(b) {
   const id = Number(b.id);
   const active = Number(b.active) === 1;
-  const previewStyle = b.image ? `background-image:url('${escapeHtml(b.image)}')` : `background:linear-gradient(135deg,#065f46,#10b981)`;
+  const previewStyle = b.image ? `background-image:url('${escapeHtml(b.image)}');background-position:${Number(b.image_x ?? 50)}% ${Number(b.image_y ?? 50)}%` : `background:linear-gradient(135deg,#065f46,#10b981)`;
   return `
     <div class="banner-card">
-      <div class="banner-preview" style="${previewStyle}">
+      <div class="banner-preview" id="bn-preview-${id}" style="${previewStyle}">
         <div class="banner-preview-content">
           <strong>${escapeHtml(b.title)}</strong>
           <small>${escapeHtml(b.subtitle || "")}</small>
@@ -1700,6 +1721,8 @@ function bannerCard(b) {
           <div class="field"><label>دکمه</label><input id="bn-cta-${id}" value="${escapeHtml(b.cta || "")}"></div>
           <div class="field"><label>لینک</label><input id="bn-link-${id}" value="${escapeHtml(b.link || "")}"></div>
           <div class="field full"><label>تصویر</label><input id="bn-image-${id}" value="${escapeHtml(b.image || "")}"></div>
+          <div class="field"><label>جای افقی تصویر: <span id="bn-xv-${id}">${Number(b.image_x ?? 50)}٪</span></label><input id="bn-x-${id}" type="range" min="0" max="100" value="${Number(b.image_x ?? 50)}" oninput="document.getElementById('bn-xv-${id}').textContent=this.value+'٪';document.getElementById('bn-preview-${id}').style.backgroundPosition=this.value+'% '+document.getElementById('bn-y-${id}').value+'%'"></div>
+          <div class="field"><label>جای عمودی تصویر: <span id="bn-yv-${id}">${Number(b.image_y ?? 50)}٪</span></label><input id="bn-y-${id}" type="range" min="0" max="100" value="${Number(b.image_y ?? 50)}" oninput="document.getElementById('bn-yv-${id}').textContent=this.value+'٪';document.getElementById('bn-preview-${id}').style.backgroundPosition=document.getElementById('bn-x-${id}').value+'% '+this.value+'%'"></div>
           <div class="field"><label>ترتیب</label><input id="bn-sort-${id}" type="number" value="${Number(b.sort_order) || 0}"></div>
           <div class="field"><label>وضعیت</label>
             <div class="active-toggle"><input id="bn-active-${id}" type="checkbox" ${active ? "checked" : ""}><label for="bn-active-${id}">فعال</label></div>
@@ -1724,6 +1747,8 @@ async function saveBanner(id) {
         cta: document.getElementById(`bn-cta-${id}`).value,
         link: document.getElementById(`bn-link-${id}`).value,
         image: document.getElementById(`bn-image-${id}`).value,
+        image_x: Number(document.getElementById(`bn-x-${id}`).value),
+        image_y: Number(document.getElementById(`bn-y-${id}`).value),
         sort_order: Number(document.getElementById(`bn-sort-${id}`).value) || 0,
         active: document.getElementById(`bn-active-${id}`).checked
       })
@@ -1753,6 +1778,8 @@ document.getElementById("addBannerForm").addEventListener("submit", async (e) =>
         cta: document.getElementById("bnCta").value,
         link: document.getElementById("bnLink").value,
         image: document.getElementById("bnImage").value,
+        image_x: Number(document.getElementById("bnImageX").value),
+        image_y: Number(document.getElementById("bnImageY").value),
         sort_order: Number(document.getElementById("bnSort").value) || 0,
         active: document.getElementById("bnActive").checked
       })
@@ -1768,7 +1795,8 @@ document.getElementById("addBannerForm").addEventListener("submit", async (e) =>
 
 /* ===== apps / books (shared catalog) ===== */
 const CAT_TYPES = {
-  apps:  { one: "اپ / بازی", nameLabel: "نام اپ / بازی", catPh: "مثلاً بازی، ابزار، آموزشی" },
+  apps:  { one: "اپلیکیشن", nameLabel: "نام اپلیکیشن", catPh: "مثلاً ابزار، آموزشی، مالی" },
+  games: { one: "بازی", nameLabel: "نام بازی", catPh: "مثلاً معمایی، فکری، سرگرمی" },
   books: { one: "کتاب",      nameLabel: "نام کتاب",      catPh: "مثلاً رمان، آموزشی" }
 };
 
@@ -1944,10 +1972,10 @@ async function deleteCatalogItem(id, name, type) {
   } catch (error) { showMessage("globalMessage", error.message, "error"); }
 }
 
-["apps", "books"].forEach(type => {
+["apps", "games", "books"].forEach(type => {
   const prefix = "new-" + type;
-  const fields = document.getElementById(type === "apps" ? "addAppsFields" : "addBooksFields");
-  const form = document.getElementById(type === "apps" ? "addAppsForm" : "addBooksForm");
+  const fields = document.getElementById(type === "apps" ? "addAppsFields" : type === "games" ? "addGamesFields" : "addBooksFields");
+  const form = document.getElementById(type === "apps" ? "addAppsForm" : type === "games" ? "addGamesForm" : "addBooksForm");
   fields.innerHTML = catalogFieldsHtml(prefix, type, {});
   toggleDl(prefix);
   form.addEventListener("submit", async (e) => {
